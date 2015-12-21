@@ -1,0 +1,11 @@
+AGGREGATE mcount(start int) : int
+{
+    TABLE tmp(i int) as values(start);
+    INITIALIZE :
+    ITERATE :
+    {
+	UPDATE tmp SET i=i+1;
+	INSERT INTO return SELECT i FROM tmp;
+    }
+};
+

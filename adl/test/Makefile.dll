@@ -1,0 +1,95 @@
+#
+# Makefile for MinGW.
+#
+CC = gcc
+CXX = c++
+
+ATLAS_HOME = /home/lc/atlas/
+inc_dir = $(ATLAS_HOME)include
+
+DEBUG = -g -Wall -I$(inc_dir)#-O2
+CXXFLAGS = $(DEBUG)
+CFLAGS = $(DEBUG)
+CPPFLAGS = -I.
+
+AS = as
+DLLTOOL = dlltool
+DLLWRAP = dllwrap
+
+exeext = .exe
+
+#
+# Various targets to build.
+#
+DLL_NAME = tabf.dll
+DLL_EXP_LIB = libcdll.a
+DLL_EXP_DEF = cdll.def
+
+
+all: $(DLL_NAME) 
+
+#
+# sources, objects, etc. 
+#
+SRCS  = $(wildcard *.cc *.c)
+OBJS  = $(SRCS:.cc=.o)
+OBJS := $(OBJS:.c=.o)
+
+#
+# DLL related variables. These are used when building the DLL. See later.
+#
+
+# Must define BUILDING_DLL when building the DLL. Otherwise import/exports 
+# will not work correctly. See dllclass.h for more info.
+DLL_CFLAGS = -DBUILDING_DLL=1
+# The default entry point defined by dllwrap; the default user callback
+# is DllMain, and there is stub in dllinit.c. 
+DLL_LDFLAGS = 
+# any extra libraries that your DLL may depend on.
+DLL_LDLIBS = 
+
+DLL_SRCS  = tabf_dll.c dllinit.c
+DLL_OBJS  = $(DLL_SRCS:.cc=.o)
+DLL_OBJS := $(DLL_OBJS:.c=.o)
+
+###
+#
+# Making DLL
+#
+###
+
+#
+# Note that we let dllwrap create both the DEF and IMPORT library in
+# one shot. No need to run dlltool anymore.
+#
+DLLWRAP_FLAGS = --export-all --output-def $(DLL_EXP_DEF) \
+	--implib $(DLL_EXP_LIB) \
+	--driver-name $(CC)
+
+$(DLL_NAME) $(DLL_EXP_DEF) $(DLL_EXP_LIB): $(DLL_OBJS)
+	$(DLLWRAP) $(DLLWRAP_FLAGS) -o $(DLL_NAME) \
+	    $(DLL_OBJS) $(DLL_LDFLAGS) $(DLL_LDLIBS)
+
+#
+# dependencies.
+#
+
+
+cdll.o: cdll.c
+dllinit.o: dllinit.c
+
+
+#
+# default rules for building DLL objects. Note that client programs (ie.,
+# the ones that *use* the DLL) have to be compiled without the DLL_CFLAGS
+# flags.
+#
+.cc.o:
+	$(CXX) -c $(DLL_CFLAGS) $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+.c.o:
+	$(CC) -c $(DLL_CFLAGS) $(CPPFLAGS) $(CFLAGS) -o $@ $<
+
+# Note that we omit the $(DLL_CFLAGS) for client programs.
+clean:
+	-rm -f $(OBJS) $(DLL_NAME) $(DLL_EXP_LIB) $(DLL_EXP_DEF) $(TESTPROGS)
+

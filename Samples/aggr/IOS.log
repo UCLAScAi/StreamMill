@@ -1,0 +1,36 @@
+Got Command DoesUserExist from user hamidmou, at Thu Oct 15 19:20:35 2009
+Handled doesUserNameExist command
+Got Command DoesUserExist from user hamid, at Thu Oct 15 19:20:40 2009
+Handled doesUserNameExist command
+Got Command DoesUserExist from user hamid, at Thu Oct 15 19:20:46 2009
+Handled doesUserNameExist command
+Got Command AddNewUser from user hamid, at Thu Oct 15 19:20:59 2009
+Added user hamid, password hamid279
+Handled addNewUser command
+Got Command DoesUserExist from user hamid, at Thu Oct 15 19:21:05 2009
+Handled doesUserNameExist command
+Got Command AuthenticateUser from user hamid, at Thu Oct 15 19:21:08 2009
+Handled authenticateUser command
+Got Command ViewAllQueries from user hamid, at Thu Oct 15 19:21:11 2009
+Handled ViewAllQueries command
+Got Command AddStreams from user hamid, at Thu Oct 15 19:21:48 2009
+command ./eslcc port5442 >& errorsFile
+ERROR: sh: ./eslcc: No such file or directory
+ERROR: Error in stmt 0: sh: ./eslcc: No such file or directory
+
+
+Handled AddDeclares command
+Got Command AddStreams from user hamid, at Thu Oct 15 19:22:10 2009
+command ./eslcc port5442 >& errorsFile
+ERROR: sh: ./eslcc: No such file or directory
+ERROR: Error in stmt 0: sh: ./eslcc: No such file or directory
+
+
+Handled AddDeclares command
+Got Command AddStreams from user hamid, at Thu Oct 15 19:22:17 2009
+command ./eslcc port5441 >& errorsFile
+ERROR: sh: ./eslcc: No such file or directory
+ERROR: Error in stmt 0: sh: ./eslcc: No such file or directory
+
+
+Handled AddDeclares command

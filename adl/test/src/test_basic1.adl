@@ -1,0 +1,4 @@
+table test(i int);
+
+insert into stdout values(1,2), (2,3), (3,4);
+

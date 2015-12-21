@@ -1,0 +1,5 @@
+table t(a int) memory;
+
+insert into t values(1);
+
+select sum(a) over(rows 10 preceding slide 2) from t;

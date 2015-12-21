@@ -1,0 +1,36 @@
+AGGREGATE hamidmou$Topk      (Next INT):
+REAL
+{
+ TABLE state (max Int);
+ TABLE count (id Int, val Real, cnt int);
+INITIALIZE:
+{
+ INSERT INTO state VALUES (1);
+ INSERT INTO count VALUES (1, Next, 0);
+}
+
+ITERATE:
+{
+ UPDATE state SET  max=max+1;
+ 
+DELETE FROM count 
+  WHERE id+1000 = (SELECT max FROM state);
+ 
+INSERT INTO count VALUES ((SELECT max FROM state), Next, 0);
+ 
+UPDATE count SET cnt=cnt+1
+  WHERE 
+   val <= Next and (id <> (SELECT max FROM state));
+
+ DELETE FROM count
+  WHERE cnt >= 20;
+ 
+INSERT INTO return SELECT count(id) from count;
+}
+
+TERMINATE:
+{
+}
+
+};
+

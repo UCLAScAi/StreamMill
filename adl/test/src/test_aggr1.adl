@@ -1,0 +1,24 @@
+/*simple aggregate, with group by*/
+
+TABLE test(a int, b int);
+
+AGGREGATE min(x int) : int
+{
+  table t (a int);
+
+  INITIALIZE : {
+    INSERT INTO t VALUES(x);
+  }
+  ITERATE:  {
+    INSERT INTO t SELECT x FROM t WHERE x<a;
+    DELETE FROM t WHERE a>x;
+  }
+  TERMINATE: {
+    INSERT INTO return SELECT a FROM t;
+  }
+}
+INSERT INTO test VALUES(5,4),(3,2),(3,3),(4,2),(3,1),(5,2);
+
+INSERT INTO stdout SELECT a,b FROM test;
+
+INSERT INTO stdout SELECT a, min(b) FROM test GROUP BY a;

@@ -1,0 +1,16 @@
+prefix=/home/training/workspace/SMMServer/atlas
+AXLDIR=$(prefix)
+LIBDIR=$(AXLDIR)/lib/
+BERKELEY_INC=${prefix}/include
+BERKELEY_LIB=${prefix}/lib/libdb.a
+ADL_INC=${AXLDIR}/include
+ADL_LIB=$(LIBDIR)/libatlas.a
+IMDB_LIB=$(LIBDIR)/libimdb.a
+RTREE_LIB=$(LIBDIR)/librtree.a
+SWIMFIS_LIB=$(LIBDIR)/libswimfis.a
+CXX=g++
+test: test.o
+	${CXX} -g -w -o test test.o $(prefix)/lib/libatlas.a $(prefix)/lib/libdbug.a ${ADL_LIB} ${SWIMFIS_LIB} ${BERKELEY_LIB} ${IMDB_LIB} ${RTREE_LIB} /usr/lib/libmm.a -ldl
+
+test.o: test.cc
+	${CXX} -g -w -c -I${BERKELEY_INC} -I${ADL_INC} test.cc 

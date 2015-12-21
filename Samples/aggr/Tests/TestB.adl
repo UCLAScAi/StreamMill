@@ -1,0 +1,43 @@
+/****
+
+  create function aggregatetestb(a int)
+  returns real 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!AggregateTestB!F!aggregatetestb';
+
+  replace function aggregatetestb(a int)
+  returns REAL 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!AggregateTestB!F!aggregatetestb';
+
+ ***/
+
+AGGREGATE aggregatetestb(Next INT):
+real
+{
+		TABLE state (sum INT);
+
+AGR_INIT:
+	{
+		insert into state values (0);
+	}  
+AGR_DETAIL:
+	{
+		insert into state select (sum+Next) from state; 
+	}
+AGR_FINAL:
+	{
+		INSERT INTO return  select max(sum) from state;
+	}
+
+};

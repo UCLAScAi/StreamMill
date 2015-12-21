@@ -1,0 +1,22 @@
+/*simple aggregate, no group by*/
+
+table test(a int);
+
+AGGREGATE min(x int) : int
+{
+  table t (a int);
+
+  INITIALIZE : {
+    INSERT INTO t values(x);
+  }
+  ITERATE:  {
+    INSERT INTO t select x from t where x<a;
+    DELETE FROM t WHERE a>x;
+  }
+  TERMINATE: {
+    INSERT INTO return select a from t;
+  }
+}
+insert into test values(3),(2),(5);
+
+insert into stdout SELECT min(a) FROM test;

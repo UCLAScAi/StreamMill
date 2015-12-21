@@ -1,0 +1,238 @@
+table flowers(id int, SL real, SW real, PL real, PW real, isSetosa int);
+table flowers1(id int, SL real, SW real, PL real, PW real, isSetosa int);
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl); 
+}; 
+
+
+table classStat(ens int, classLbl int, cnt real) memory;
+table colStat(ens int, col int, val int, classLbl int, cnt real) memory;
+table ensId(nEns int) memory;
+table activeEns(ens int) memory;
+table weights(trainEns int, testEns int, w real) memory;
+
+Aggregate learnClassifier(coli int, vali int, classLbli int, numColsi int, ensSize int):(a int) {
+  table ensCnt(cnt int) memory;
+  table tuples(col int, val int, classLbl int) memory;
+
+  Aggregate mysum(a real):(b real) {
+    table t(s real) memory;
+    initialize: {
+      insert into t values (a);
+    }
+    iterate: {
+      update t set s = s + a;
+    }
+    terminate: {
+      insert into return select s from t;
+    }
+  };
+
+  Aggregate calcProb(trainEns int, coli int, vali int, classLbli int, numColsi int):(p real) {
+    table vSoFar(cls int, p real) memory;
+    table dv(d real) memory;
+  
+
+    Aggregate updateVSoFar(trainEns int, classLbli int, coli int, vali int, numColsi int):(a int) {
+      initialize: iterate: {
+        update vSoFar set p = p*((select cnt from classStat where classLbl = classLbli and ens=trainEns)
+                                    /(select sum(cnt) from classStat where ens = trainEns)) where coli = 1 and cls = classLbli;
+        update vSoFar set p = p * (select cnt from colStat where ens = trainEns and col = coli and val = vali and classLbl = classLbli)
+                                 /(select cnt from classStat where classLbl = classLbli and ens = trainEns) 
+           where exists (select cnt from colStat where ens = trainEns and col = coli and val = vali and classLbl = classLbli)
+                 and cls = classLbli;
+        update vSoFar set p = 0 where SQLCODE <> 0 and cls = classLbli;
+      }
+    };
+
+    initialize: {
+      insert into vSoFar select classLbl, 1 from classStat where ens = trainEns;
+      select updateVSoFar(trainEns, classLbl, coli, vali, numColsi)
+      from classStat where ens = trainEns;
+    }
+    iterate: {
+
+      select updateVSoFar(trainEns, classLbl, coli, vali, numColsi)
+      from classStat where ens = trainEns;
+
+      insert into dv select mysum(p) from vSoFar where coli = numColsi;
+     
+      insert into return select p/d from vSoFar, dv where coli = numColsi and cls = classLbli and d <> 0;
+      insert into return values(0) where coli = numColsi and SQLCODE <> 0;
+      update vSoFar set p = 1 where coli = numColsi;
+      delete from dv where coli = numColsi;
+    }
+  };
+
+  Aggregate pMul(p real, ensSize int):(a real) {
+    table soFar(a real) memory;
+    table c(cnt int) memory;
+    initialize: {
+      insert into soFar values((1-p)*(1-p));
+      insert into c values(1);
+    }
+    iterate: {
+      update soFar set a = a + ((1-p)*(1-p));
+      update c set cnt = cnt + 1;
+      insert into soFar values((1-p)*(1-p)) where SQLCODE <> 0;
+      insert into c values(1) where SQLCODE = 0;
+
+      insert into stdout values ('---pMul returning---') where 1 <> 1;
+      /* here we use the following formula, slightly different from as proposed in
+         the paper: 1 - MSEi (where MSEi is exactly as proposed in the paper)*/
+      insert into return select (1 - a/ensSize) from soFar where exists (select cnt from c where cnt = ensSize);
+      delete from soFar where SQLCODE = 0;
+      delete from c where SQLCODE = 0;
+    }
+  };
+
+  Aggregate updateWeights(trainEns int, testEns int, numColsi int, ensSize int):(a int) {
+    table tProbs(p real) memory;
+    initialize: iterate: {
+      insert into tProbs select calcProb(trainEns, col, val, classLbl, numColsi) from tuples;
+      insert into weights values (trainEns, testEns, (select pMul(p, ensSize) from tProbs));
+      delete from tProbs;
+    }
+  };
+  
+
+  initialize: {
+    insert into ensId values(1);
+    insert into ensCnt values(1);
+    insert into colStat values ((select nEns from ensId), coli, vali, classLbli, 1); 
+    insert into classStat values ((select nEns from ensId), classLbli, 1) where SQLCODE <> 0 and coli = numColsi;
+    insert into activeEns values((select nEns from ensId));
+    insert into tuples values(coli, vali, classLbli);
+  }
+  iterate: {
+    insert into tuples values(coli, vali, classLbli);
+
+    update classStat set cnt = cnt + 1 where ens = (select nEns from ensId) and classLbl = classLbli and coli = numColsi;
+    /* if first instance of classLbl */
+    insert into classStat values ((select nEns from ensId), classLbli, 1) where SQLCODE <> 0 and coli = numColsi; 
+
+    update colStat set cnt = cnt + 1
+      where ens = (select nEns from ensId) and col = coli and val = vali and classLbl = classLbli;
+    /* if first instance of classLbl for this coli, vali combination */
+    insert into colStat values ((select nEns from ensId), coli, vali, classLbli, 1) where SQLCODE <> 0; 
+    
+    update ensCnt set cnt = 0 where coli = numColsi and cnt = ensSize;
+    update ensId set nEns = nEns + 1 where SQLCODE = 0;
+    insert into activeEns values((select nEns from ensId)) where SQLCODE = 0;
+
+    select updateWeights(ens, nEns, numColsi, ensSize)
+    from activeEns, ensId
+    where ens < nEns and SQLCODE = 0;
+
+    delete from tuples where (select cnt from ensCnt) = 0 and coli = numColsi;
+    update ensCnt set cnt = cnt + 1 where coli = numColsi;
+
+  }
+};
+
+Aggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int, ensSize int):(ido int, classLblo int, classo int) {
+  table classes(ens int, cls int, p real) memory;
+  table cEns(ens int) memory;
+  table c(cnt int) memory;  
+
+  Aggregate updateP(ensi int, clsi int, coli int, vali int):(o real) {
+    initialize: iterate: {
+      update classes set p = p * (select cnt from colStat where ens = ensi and col = coli and val = vali and classLbl = clsi)/(select cnt from classStat where classLbl = clsi and ens = ensi) 
+         where exists (select cnt from colStat where ens = ensi and col = coli and val = vali and classLbl = clsi) and cls = clsi and ens = ensi;
+
+      update classes set p = 0 where cls = clsi and ens = ensi and SQLCODE <> 0;
+    }
+  };
+
+  Aggregate mymax(a real):(b real) {
+    table t(m real) memory;
+    initialize: {
+      insert into t values(a);
+    }
+    iterate: {
+      update t set m = a where m < a;
+    }
+    terminate: {
+      insert into return select m from t;
+    }
+  };
+
+  Aggregate initP(ensi int, classLbli int):(a int) {
+    initialize: iterate: {
+      update classes set p = (select cnt from classStat where classLbl = classLbli and ens=ensi)
+                                /(select sum(cnt) from classStat where ens = ensi)
+      where ens = ensi and cls = classLbli;
+    }   
+  };
+
+  Aggregate mmaxPair(idi int, classLbli int, clsi int, ensWi real, pi real):(ido int, classLblo int, clso int) {
+    table probs(cls int, p real) memory;
+    table mSoFar(cls int, p real) memory;
+    initialize: {
+      delete from probs where cls = clsi;
+      insert into probs values(clsi, ensWi*pi);
+      insert into mSoFar select cls, p from probs;
+      insert into stdout values('--vals init--') where 1 <> 1;	
+    }
+    iterate: {
+      insert into stdout values('--vals iter--') where 1 <> 1;
+      update probs set p = p + ensWi*pi where cls = clsi;
+      insert into probs values(clsi, ensWi*pi) where not exists(select cls from probs where cls = clsi);
+      
+      update mSoFar set cls = clsi, p = (select p from probs where cls = clsi)
+        where p < (select p from probs where cls = clsi);
+    }
+    terminate: {
+      insert into return select idi, classLbli, cls from mSoFar where p > 0;
+      insert into return values(idi, classLbli, -1) where SQLCODE <> 0;
+    }
+  }
+
+  initialize: iterate: {
+    insert into classes select ens, classLbl, 0 from classStat where coli = 1;
+
+    insert into cEns values(1) where not exists(select ens from cEns);
+
+    update c set cnt = cnt+1 where coli = numColsi;
+    insert into c values(1) where coli = numColsi and SQLCODE <> 0;
+
+    select initP(ens, cls)
+    from classes as c, weights as w
+    where coli = 1 and c.ens = w.trainEns and w.testEns = (select ens from cEns);
+
+    select updateP(ens, cls, coli, vali)
+    from classes as c, weights as w
+    where c.ens = w.trainEns and w.testEns = (select ens from cEns);
+
+    insert into return select mmaxPair(idi, classLbli, cls, w.w, p) 
+                       from classes as c, weights as w 
+                       where c.ens = w.trainEns and w.testEns = (select ens from cEns) and coli = numColsi;
+    insert into return values(idi, classLbli, -1) where coli = numColsi and SQLCODE <> 0;
+    
+    delete from classes where coli = numColsi;
+    update c set cnt = 0 where coli = numColsi and cnt = ensSize;
+    update cEns set ens = ens + 1 where SQLCODE = 0;
+  }
+}
+
+load from '/home/hthakkar/adl/sql/esl/ios/iris.data' into flowers;
+load from '/home/hthakkar/adl/sql/esl/ios/iris1.data' into flowers1;
+
+select learnClassifier(d.col, d.val, d.classLbl, 4, 30)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+select trainEns, testEns, w from weights;
+
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl, 30)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+/*
+select ens, classLbl, cnt from classStat;
+select ens, col, val, classLbl, cnt from colStat;*/
+
+/*
+insert into stdout select id, d.col, d.val from flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) as d;*/
+
+

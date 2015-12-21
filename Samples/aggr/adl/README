@@ -1,0 +1,27 @@
+********************************************************************************
+Program: adlc
+Author: Haixun Wang
+E-mail: hxwang@cs.ucla.edu
+********************************************************************************
+
+OS: UNIX (BSD, System V, MINIX, POSIX)
+
+Copying: GNU GPL version 2
+Copyright holder: Free Software Foundation, Inc. 
+
+Version: ntsql version 0.5
+
+Required: vsprintf and vfprintf routines.
+
+Machines: It has been compiled and run on the following environments:
+	Solaris 2.6
+	Linux
+
+********************************************************************************
+Building ADLC
+
+o turn on debug info
+
+	configure --enable-debug 
+********************************************************************************
+

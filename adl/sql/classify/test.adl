@@ -1,0 +1,72 @@
+table points(x int) memory;
+
+caggregate countDist(x1 int):(y int) {
+  @
+    /* global c stuff here */
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int);  #just for example
+
+  @
+    /* things to put in the status structure here */
+        hash_map<int, int, hash<int> >* hs;
+  @
+
+  initialize: {
+    @
+        /* Random c code here -- init*/
+        status->hs = new hash_map<int, int, hash<int> >;
+        if(status->hs->count(x1)==0) {
+          status->hs->operator[](x1) = 1;
+        }
+
+        memset(&key, 0, sizeof(key));
+        memset(&data, 0, sizeof(data));
+        data.data = datadata;
+        key.data = keydata;
+        int tmp = status->hs->size();
+        memcpy((char*)data.data+0, &tmp, sizeof(int));
+        data.size = 4;
+        key.size = 0;
+        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+          adlabort(rc, "IM_REL->put()");
+        }
+
+        //printf("%d\n", status->hs->size());
+    @
+
+  }
+  iterate: {
+    @
+        /* Random c code here -- iter*/
+        if(status->hs->count(x1)==0) {
+          status->hs->operator[](x1) = 1;
+        }
+
+        memset(&key, 0, sizeof(key));
+        memset(&data, 0, sizeof(data));
+        data.data = datadata;
+        key.data = keydata;
+        int tmp = status->hs->size();
+        memcpy((char*)data.data+0, &tmp, sizeof(int));
+        data.size = 4;
+        key.size = 0;
+        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+          adlabort(rc, "IM_REL->put()");
+        }
+
+        //printf("%d\n", status->hs->size());
+    @
+  }
+};
+
+/*load from '/home/hthakkar/adl/sql/esl/ios/output.txt' into points;*/
+insert into points values (1);
+insert into points values (2);
+insert into points values (2);
+insert into points values (3);
+insert into points values (1);
+
+select countDist(x)
+from points;

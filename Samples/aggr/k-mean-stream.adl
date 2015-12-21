@@ -1,0 +1,95 @@
+/* 2-dimensional points for now */
+TABLE Points(X REAL, Y REAL) MEMORY;
+
+/* the first k points will be used as initial mean */
+AGGREGATE kmean(k INT, X REAL, Y REAL) : (X REAL, Y REAL, C INT)
+{
+  /* Pno = partition number, (X, Y) = mean */
+  /* The second half is used to store mean-calculation metrics */
+  TABLE Means(Pno INT, X REAL, Y REAL, XSum REAL, YSum REAL, Total INT) MEMORY;
+  
+  /* distance of the current point to different partition centers */
+  TABLE Distance(Pno INT, Dist REAL) MEMORY;
+
+  /* partition result */
+  TABLE Result(X REAL, Y REAL, C INT) MEMORY;
+
+  /* temp variable */
+  TABLE MinDist(Val REAL) MEMORY;
+
+  /* finding the partition with the minimum distance */
+  AGGREGATE MyMin(MyDist REAL) : (YourPno REAL)
+  {
+    TABLE Temp(B REAL) MEMORY;
+
+    INITIALIZE: {
+      INSERT INTO Temp VALUES (MyDist);
+    }
+    
+    ITERATE: {
+      UPDATE Temp SET B = MyDist WHERE MyDist < Temp.B;
+    }
+    
+    TERMINATE: {
+      INSERT INTO RETURN
+      SELECT Temp.B FROM Temp;
+    }
+  };
+
+  INITIALIZE:
+  ITERATE:
+  {
+    /* pick the first k points as initial centers */
+    /* assuming first k points are different */
+    INSERT INTO Means
+    VALUES ((SELECT COUNT(M.Pno) FROM Means AS M) + 1, X, Y, 0, 0, 0)
+    WHERE (SELECT COUNT(M.Pno) FROM Means AS M) < k;
+    
+    /* calculate Euclidean distance to each center */
+    DELETE FROM Distance;
+
+    INSERT INTO Distance
+    SELECT M.Pno, sqrt((M.X - X) * (M.X - X) + (M.Y - Y) * (M.Y - Y))
+    FROM Means AS M;
+
+    /* assign the current point to one of the partitions */
+    /* based on the shortest distance between the point and a center */
+    DELETE FROM Result;
+    INSERT INTO Result VALUES(X, Y, -1);
+
+    DELETE FROM MinDist;
+    INSERT INTO MinDist 
+    SELECT MyMin(Distance.Dist) FROM Distance;
+
+    UPDATE Result SET C = (SELECT D.Pno FROM Distance AS D WHERE D.Dist = (SELECT Val FROM MinDist));
+    
+    /* increment the total number of records belong to partition Pno */
+    UPDATE Means
+    SET Total = Means.Total + 1,
+        XSum = Means.XSum + X,
+        YSum = Means.YSum + Y
+    WHERE Means.Pno = (SELECT Result.C FROM Result);
+    
+    /* re-calculate mean values */
+    UPDATE Means
+    SET X = Means.XSum / Means.Total,
+        Y = Means.YSum / Means.Total
+    WHERE Means.Pno = (SELECT Result.C FROM Result);
+
+    /* output */
+    INSERT INTO RETURN
+    SELECT R.X, R.Y, R.C FROM Result AS R;
+  }
+
+  TERMINATE: {
+/* debug info */
+SELECT M.Pno, M.X, M.Y, M.XSum, M.YSum, M.Total FROM Means AS M;
+  }
+};
+
+/* load data into Points table */
+LOAD FROM './test1' INTO Points;
+
+/* Partition the points into k different classes */
+SELECT kmean(2, X, Y) FROM Points;
+SELECT kmean(4, X, Y) FROM Points;

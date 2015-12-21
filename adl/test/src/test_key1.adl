@@ -1,0 +1,5 @@
+table keytest(a int, b int) BTREE(a);
+
+insert into keytest values(3,4),(5,7),(1,9);
+
+insert into stdout select a,b from keytest where a=1+4;

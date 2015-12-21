@@ -1,0 +1,23 @@
+AGGREGATE hamidmou$Top 5  (Next INT):
+ REAL
+{
+
+TABLE state (sum INT, cnt INT);
+
+INITIALIZE:
+{
+INSERT INTO state VALUES (Next, 1);
+}
+
+ITERATE:
+{
+UPDATE state SET sum=sum+Next, cnt=cnt+1;
+INSERT INTO return SELECT sum/cnt FROM state;
+}
+
+TERMINATE:
+{
+}
+
+};
+

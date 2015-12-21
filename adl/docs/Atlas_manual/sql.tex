@@ -1,0 +1,69 @@
+
+%Here we summarize the subset of standard SQL supported in ATLaS:
+\begin{table}[!hb]
+\renewcommand{\baselinestretch}{0.9}
+\centering
+{\bf SQL Statements}\\[0.2cm]
+\framebox{
+\begin{tabular}{rll}
+    \bnf{SQL-statement} &$\rightarrow$&  \bnf{select-st}$|$
+    \bnf{delete-st}$|$ \bnf{insert-st}$|$ \bnf{update-st}\\[0.1cm]
+%\\
+    \bnf{select-st} &$\rightarrow$&  \bnf{query} [\bnf{order-clause}] `;` \\
+    \bnf{order-clause} &$\rightarrow$& `ORDER` \ `BY` \bnf{exp} [`ASC` $|$ `DSC`]
+    [`,` \bnf{exp} [`ASC` $|$ `DSC`]]*\\
+    \bnf{query}  &$\rightarrow$& \bnf{query-block} [\bnf{set-op} \bnf{query-block}]*\\
+ \bnf{set-op}  &$\rightarrow$&  `UNION`$|$`INTERSECT`$|$`EXCEPT` \\[0.1cm]
+    \bnf{query-block} &$\rightarrow$& `SELECT` \bnf{hxp} [, \bnf{hxp}]* \\
+    && `FROM` \bnf{squn} [`,` \bnf{squn}]* \\
+    && [`WHERE` \bnf{exp}] \\
+    && [`GROUP` \ `BY` \bnf{exp} [`,` \bnf{exp}]* \\
+    && [`HAVING` \bnf{exp}] \\[0.1cm]
+    \bnf{delete} &$\rightarrow$& `DELETE` \ `FROM` \bnf{id} [`WHERE` \bnf{exp}] `;` \\
+    \bnf{insert} &$\rightarrow$& `INSERT` \ `INTO` \bnf{id} \bnf{select-st} `;`\\
+    & & VALUE ... not defined?\\
+    \bnf{update} &$\rightarrow$& `UPDATE` \bnf{id} `SET` \bnf{update-list} [`WHERE` \bnf{exp}] `;` \\
+    \bnf{update-list} &$\rightarrow$& \bnf{id} `=` \bnf{exp} [`,` \bnf{id} `=` \bnf{exp}]*\\[0.1cm]
+%\end{tabular}
+%\begin{tabular}{rll}
+    \bnf{exp} &$\rightarrow$& `NIL`
+ $|$ \bnf{num}
+$|$ \bnf{float}
+$|$ \bnf{string}
+$|$ \bnf{id} [ `.` \bnf{id}]
+ $|$ \bnf{ref}\\
+ %&& $|$ \bnf{exp} (`+`$|$`-`$|$`*`$|$`/`$|$`  \\
+    && $|$ \bnf{exp} (`=`$|$` $<$ `$|$` $<=$`$|$`$>$`$|$`$>=$ `$|$`$<>$`) \bnf{exp}\\
+    && $|$ \bnf{exp} (`AND`$|$`OR`$|$`IN`$|$`NOT`\ `IN`) \bnf{exp}\\
+    && $|$ `EXISTS` \bnf{exp}\\
+    && $|$ (`max`$|$`min`$|$`count`$|$`sum`$|$`avg`) `(`\bnf{exp}`)`\\
+   % && $|$ \bnf{udf} [ `$\rightarrow$` \bnf{id}]\\
+%    && $|$ \bnf{case-exp}\\
+    && $|$ `(` \bnf{exp} `)`\\
+    && $|$ `(` \bnf{query} `)`\\
+    %&& $|$ `{` {@ \bnf{vdec}} {@ \bnf{exp} `;`} `}` \\
+  \bnf{ref} &$\rightarrow$& \bnf{ref} `$\rightarrow$` \bnf{id}
+ $|$ \bnf{id} [`.` \bnf{id}] `$\rightarrow$` \bnf{id}\\[0.1cm]
+% \end{tabular}
+%\begin{tabular}{rll}
+ %\bnf{case-exp} &$\rightarrow$& `CASE` \bnf{exp} \bnf{when-exp-list} [`ELSE` \bnf{exp}] `END`\\
+ %   && $|$ `CASE` \bnf{when-exp-list}  [`ELSE` \bnf{exp}] `END`\\
+ %   \bnf{when-exp-list} &$\rightarrow$& `WHEN` \bnf{exp} `THEN` \bnf{exp}
+%[`WHEN` \bnf{exp} `THEN` \bnf{exp}]*\\
+    \bnf{id} &$\rightarrow$& \bnf{letter} [\bnf{letter} $|$ \bnf{digit}]* \\
+    \bnf{letter} &$\rightarrow$& (`a`-`z`$|$`A`-`Z`)\\
+    \bnf{digit} &$\rightarrow$& (`0`-`9`)\\[0.1cm]
+%\\
+    \bnf{hxp} &$\rightarrow$& \bnf{exp} [[`AS`] \bnf{hxp-alias}] $|$ [\bnf{id} `.`] `*`\\
+    \bnf{hxp-alias} &$\rightarrow$& \bnf{id} $|$ `(` \bnf{id} [`,` \bnf{id}]* `)`\\
+    \bnf{qun-alias} &$\rightarrow$& [`AS`] \bnf{id} [`(` \bnf{id} {@ `,` \bnf{id}} `)`]\\[0.1cm]
+    %\bnf{udf} &$\rightarrow$& \bnf{id} `(` [\bnf{exp} {@ `,` \bnf{exp}}] `)`\\
+%\\
+%    \bnf{case-exp} &$\rightarrow$& `CASE` \bnf{exp} \bnf{when-exp-list} [`ELSE` \bnf{exp}] `END`\\
+%    && $|$ `CASE` \bnf{when-exp-list}  [`ELSE` \bnf{exp}] `END`\\
+%    \bnf{when-exp-list} &$\rightarrow$& `WHEN` \bnf{exp} `THEN` \bnf{exp} {@ `WHEN` \bnf{exp} `THEN` \bnf{exp}}\\
+%    \bnf{id} &$\rightarrow$& \bnf{letter} {@ \bnf{letter} $|$ \bnf{digit}}\\
+  \end{tabular}
+  }
+\caption{Syntax of the basic SQL Statements supported in ATLaS} \label{table:sql}
+\end{table}

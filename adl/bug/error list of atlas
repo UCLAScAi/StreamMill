@@ -1,0 +1,316 @@
+features:
+1. when the number of return variable is greater than one, names has to be specified.
+	e.g.
+	aggregate regionQuery(x int,y int):(r1 int,r2 int)
+	aggregate regionQuery(x int, y int ):int
+2. comment not support:  //
+
+3. update table
+	set (a,b) = (select 1,2);	
+
+
+----------------------------------------------------------------
+
+0. error message
+
+    this one takes some time, but it's not difficult
+
+1. some times, an error program will be dead with no response at all, u h=
+ave to end the program to kill the process
+   a simple case is :
+             table test (a int);
+             select a, b from test;
+
+    i've never experienced that. i will look into it
+
+2. does not support "select *"
+
+    right. rewriting is needed
+
+3. does not support "distinct"
+
+    distinct is not easy to support. it will be a major effort
+
+4. does not support some mathematical functions such as log(), abs(), etc=
+=2E =
+
+   //just add #include <math.h> in the generated cc program is ok
+
+    the solution takes only one line of code, in trans2C.cc
+
+5. when load table in windows, does not support "c:" in the path name
+
+    fix it in lex.cc
+
+6. can't create index
+
+    what do you mean? B+-tree index works fine for me
+
+7. can not recursive many times. I wrote a aggregate fac(n) which recusiv=
+ely calls itself to calculate the factorial of n, it can at most calculat=
+e 23!, no result for 24!. And    it's not because the number is too large=
+, even accumulation of 1+2+..24 can't work, so the reason is it can't rec=
+ursive many times due to overflow of memory
+
+    this is interesting. did i put too many things on stack? I will look =
+into it.
+
+8. can't support "update ... set ...=3D(select ...)  "
+
+    i remeber this one works, but i have to check
+
+9. can't support "in"
+
+    right -- but we can get around with that by using "exist" -- i'm not =
+sure if we should support it
+
+10.can't have a defined aggregate in "update", namely, can't
+    "update ... set a=3Dfac(b);"
+
+     this is probably true. =
+
+    =
+
+11.In the iterate (or terminate) part of an aggregate, you can't use =
+
+    "delete from tmp;"
+   instead, you have to use
+    "delete from tmp where 1=3D1;"
+   but if not in aggregate, you can "delete from tmp"
+
+    interesting. this is probably easy to fix though.
+   =
+
+12.seems some logic error with delete, look at the following two programs=
+:
+   =
+
+   (1)
+        table t1 (a int);
+        table t2 (b int);
+        insert into t1 values (2), (3);
+        insert into t2 values (2), (3);
+        delete from t1 where exists (select b from t2 where b>a); =
+
+   (2)
+        table t1 (a int);
+        table t2 (b int);
+        insert into t1 values (2), (3);
+        insert into t2 values (2), (3);
+        delete from t1 where exists (select b from t2 where b>2); =
+
+        =
+
+    for program (1), it is correct in db2 (which is also same to our gues=
+s), =
+
+    t1 will have only 3 left, 2 deleted.
+    however, in atlas, the program goes dead.
+    =
+
+    for program (2), in db2 (which is also same to our guess),
+    all records in t1 will be deleted, =
+
+    however, in atlas, 2 will be deleted, 3 WILL NOT!
+
+    =
+
+ =
+
+
+   =
+
+--alternative_39ur02lsidjfo90485sldmfk098l45
+Content-Type: text/html; charset="gb2312"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<DEFANGED_META http-equiv=3DContent-Type content=3D"text/html; charset=3Dgb2312">
+ <!-- <DEFANGED_STYLE> --> </DEFANGED_STYLE>
+
+<DEFANGED_META content=3D"MSHTML 6.00.2600.0" name=3DGENERATOR></HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV>Thanks for the list. Some of them are bugs, some are just features n=
+ot =
+
+implemented yet (probably not urgent). We need to fix the bugs first -- l=
+et me =
+
+know which you can handle, probably I will give you some explanation of t=
+he =
+
+code. I can also take care some of them.<BR><BR>Regards,<BR><BR></DIV>
+<DIV><FONT face=3DArial size=3D2>0. error message<BR><BR>&nbsp;&nbsp;&nbs=
+p; this one =
+
+takes some time, but it's not difficult</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>1. some times, an error program will be =
+dead with =
+
+no response at all, u have to end the program&nbsp;to kill the =
+
+process<BR>&nbsp;&nbsp; a simple case is =
+
+:<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp; =
+
+table test (a =
+
+int);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp; =
+
+select a, b from test;<BR><BR>&nbsp;&nbsp;&nbsp; i've never experienced t=
+hat. i =
+
+will look into it</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>2. does not support "select =
+
+*"<BR><BR>&nbsp;&nbsp;&nbsp; right. rewriting is needed</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>3. does not support =
+
+"distinct"<BR><BR>&nbsp;&nbsp;&nbsp; distinct is not easy to support. it =
+will be =
+
+a major effort</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>4. does not support some mathematical fu=
+nctions =
+
+such as log(), abs(), etc. <BR>&nbsp;&nbsp; //just add #include &lt;math.=
+h&gt; =
+
+in the generated cc program is ok<BR><BR>&nbsp;&nbsp;&nbsp; the solution =
+takes =
+
+only one line of code, in trans2C.cc</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>5. when load table in windows, does not =
+support =
+
+"c:" in the path name</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><BR>&nbsp;&nbsp;&nbsp; fix it in =
+
+lex.cc<BR></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>6. can't create index</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><BR>&nbsp;&nbsp;&nbsp; what do you mean?=
+ B+-tree =
+
+index works fine for me<BR><BR></FONT><FONT face=3DArial size=3D2>7. can =
+not =
+
+recursive many times. I wrote a aggregate fac(n) which recusively calls =
+
+itself&nbsp;to calculate the factorial of n, it can at most calculate 23!=
+, no =
+
+result for 24!. And&nbsp;&nbsp;&nbsp; it's not because the number is too =
+large, =
+
+even accumulation of 1+2+..24 can't work,&nbsp;so the reason is it can't =
+
+recursive many times due to overflow of memory</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><BR>&nbsp;&nbsp;&nbsp; this is interesti=
+ng. did i =
+
+put too many things on stack? I will look into it.<BR></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>8. can't support "update ... set ...=3D(=
+select =
+
+=2E..)&nbsp; "</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><BR>&nbsp;&nbsp;&nbsp; i remeber this on=
+e works, =
+
+but i have to check<BR></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>9. can't support "in"</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><BR>&nbsp;&nbsp;&nbsp; right -- but we c=
+an get =
+
+around with that by using "exist" -- i'm not sure if we should support =
+
+it<BR></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2>10.can't have a defined aggregate in "up=
+date", =
+
+namely, can't<BR>&nbsp;&nbsp;&nbsp; "update ... set =
+
+a=3Dfac(b);"<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp; this is probably true. =
+
+<BR>&nbsp;&nbsp;&nbsp; <BR>11.In the iterate (or terminate) part of an =
+
+aggregate, you can't use <BR>&nbsp;&nbsp;&nbsp; "delete from =
+
+tmp;"<BR>&nbsp;&nbsp; instead, you have to use<BR>&nbsp;&nbsp;&nbsp; "del=
+ete =
+
+from tmp where 1=3D1;"<BR>&nbsp;&nbsp; but if not in aggregate, you can "=
+delete =
+
+from tmp"<BR><BR>&nbsp;&nbsp;&nbsp; interesting.&nbsp;this is probably ea=
+sy to =
+
+fix though.<BR>&nbsp;&nbsp; <BR>12.seems some logic error with delete, lo=
+ok at =
+
+the following two programs:<BR>&nbsp;&nbsp; <BR>&nbsp;&nbsp; =
+
+(1)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; table t1 (a =
+
+int);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; table t2 (b =
+
+int);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; insert into t1 values=
+ (2), =
+
+(3);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; insert into t2 values =
+(2), =
+
+(3);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete from t1 where e=
+xists =
+
+(select b from t2 where b&gt;a); <BR>&nbsp;&nbsp; =
+
+(2)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; table t1 (a =
+
+int);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; table t2 (b =
+
+int);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; insert into t1 values=
+ (2), =
+
+(3);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; insert into t2 values =
+(2), =
+
+(3);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete from t1 where e=
+xists =
+
+(select b from t2 where b&gt;2); <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; =
+
+<BR>&nbsp;&nbsp;&nbsp; for program (1), it is correct in db2 (which is al=
+so same =
+
+to our guess), <BR>&nbsp;&nbsp;&nbsp; t1 will have only 3 left, 2 =
+
+deleted.<BR>&nbsp;&nbsp;&nbsp; however, in atlas, the program goes =
+
+dead.<BR>&nbsp;&nbsp;&nbsp; <BR>&nbsp;&nbsp;&nbsp; for program (2), in db=
+2 =
+
+(which is also same to our guess),<BR>&nbsp;&nbsp;&nbsp; all records in t=
+1 will =
+
+be deleted, <BR>&nbsp;&nbsp;&nbsp; however, in atlas, 2 will be deleted, =
+3 WILL =
+
+NOT!<BR><BR>&nbsp;&nbsp;&nbsp; <BR>&nbsp;</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>&nbsp;&nbsp; </FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV></BODY></HTML>
+
+--alternative_39ur02lsidjfo90485sldmfk098l45--
+
+

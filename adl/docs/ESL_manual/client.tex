@@ -1,0 +1,472 @@
+\documentclass[10pt]{article}
+%\usepackage{html}
+\usepackage{graphicx}
+\usepackage{algorithm,algorithmic}
+\usepackage{amsmath, amssymb, latexsym}
+\usepackage{verbatim}
+%\usepackage{subfigure}
+\renewcommand{\algorithmiccomment}[1]{{\it /* #1 */}}
+\newcommand{\alglabel}[1]{\newcounter{#1}\setcounter{#1}{\value{ALC@line}}}
+\newcommand{\algref}[1]{\arabic{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\textheight}{8in}
+\setlength{\textwidth}{5.2in}
+\setlength{\topmargin}{-.15in}
+%\addtolength{\oddsidemargin}{+0.2in}
+\pagestyle{plain}
+%\addtolength{\textheight}{+0.95in}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Haixun's packages
+%\newcommand\bnf[1]{$\langle$#1$\rangle$}
+\newcommand\bnf[1]{#1}
+\newcommand\exa[1]{\nopagebreak \begin{flushleft}\smallskip \nopagebreak
+                \begin{minipage}[t]{#1}\sloppy}
+\newcommand\exb[1]{\end{minipage}\kern 1cm\begin{minipage}[t]{#1}\sloppy }
+\newcommand\exc{\end{minipage}\kern -3cm \smallskip\end{flushleft}}
+\newcommand\oben[1]{\begin{center}\begin{minipage}{#1}\hrule\medskip}
+\newcommand\unten  {\vspace{-.4cm}\hrule \end{minipage}\end{center}}
+\newcommand\share[1]{\raisebox{1.5ex}[0pt]{#1}}
+%%%%%%%%%%%%%%%%%%%from KDD%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem} \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\def\inv{\vspace*{-0.2cm}} %\def\back{\hspace*{-2cm}}
+\def\pinv{\vspace*{0.2cm}}
+\def\newdef#1{\emph{#1}}
+%---------------------------------------------------------
+\def\cdf{\sf} %Note: < and > are not in this font; use $<$ and $>$
+\def\kw#1{\tt #1}
+\def\cw{\small \tt }
+\def\bw{\small \tt}
+%
+\newenvironment{codedisplay}
+%{\renewcommand{\baselinestretch}{1}
+{\vspace{-\partopsep}\cdf\addtolength{\baselineskip}{-1pt}
+\samepage  \begin{tabbing} \quad
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \
+\=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\kill}
+{\end{tabbing}\vspace{-\partopsep}\vspace{-\topsep}%\vspace{-\parsep}
+}
+
+\title{\Huge \bf The Data Stream Mill User Manual -- Client \\}
+\author{\Large UCLA Web Information Lab\\http://wis.cs.ucla.edu}
+
+\begin{document}
+\maketitle
+
+%\renewcommand{\baselinestretch}{1.1}
+%\tableofcontents
+%\chapter{Introduction}
+This manual assumes that readers have the knowledge of ESL syntax \cite{ESL} and illustrate how to use the DSM client.
+%\chapter{The Client}
+
+Once you downloaded the client and java 1.4 or above, you can run ``java StreamMill'' under the java directory.
+
+This should start the GUI. Now, we will demonstrate the functionalities of each menu.
+
+Section~\ref{sec:tutorial} provides a short tutorial for the impatient.
+
+\section{Users Menu}
+\label{sec:user}
+The first step is to create a new user.  Then your work is saved on the server under your user name.  You can use the same user name and password to login again in the future.
+
+There are two kinds of users: private and public.  A private user does not share his work with others, while a public user does.  To switch the account type to private/public, you can click on {\em Make user public/private} menu.  The default value is private.
+
+If a user is public, it becomes a library itself.  Its name will appear under the {\em $Libraries \rightarrow View Library$} menu.  We will demonstrate how other users can access a library in Section~\ref{sec:lib}.
+
+When you logout from the server, you are prompted to deactivate your continuous queries.  This is helpful to save the server's system resources.
+\section{Modules Menu}
+\label{sec:module}
+Table~\ref{tab:module} summarize various kinds of modules in DSM.
+\begin{table}
+\begin{tabular}{|p{2.5cm}|p{5cm}|p{3cm}|}
+\hline
+Module & Description & Remark\\
+\hline
+Data Sources & Programs which feed data to streams. & One data source per file.  One data source can feed data to only one stream.\\
+\hline
+Streams & Their declaration specify how streams are created and timestamp & Multiple stream declarations are separated by semicolon.\\
+\hline
+Continuous Queries (CQs) &  CQs consume and produce data in streams continuously & Multiple CQ declarations are separated by semicolon.\\
+ \hline
+Tables & CQs can also retrieve data from database tables. & SOURCE keyword is required when declared\\
+\hline
+User Defined Aggregates (UDAs) & UDAs can be defined and used in CQs to perform computations of arbitrary complexity.& One UDA per file.  Filename should be the UDA name\\
+\hline
+\end{tabular}
+\caption{Various kinds of modules in DSM}
+\label{tab:module}
+\end{table}
+
+\begin{itemize}
+\item Adding Modules\\
+Modules can be uploaded from local files by clicking one of the following commands: {\em Add Data Source, Register Tables, Register Streams, Register Queries and Register Aggregate}.  {\bf Data Sources} \footnote{We only tested C/C++.  If you want to use other languages such as Java or Perl, please contact us for further instructions.} and {\bf UDAs} must be uploaded individually from separate files.  The filename of a file that contains a {\bf UDA} must have the same name as the UDA.  Multiple streams (tables, queries) can be uploaded from one file, where streams (tables, queries) are separated by a semicolon -- the file must also be ended by a semicolon. The extensions for data sources, streams, tables, queries and UDAs are {\em .cc, .dcl, .dcl, .cq and .aggr} respectively. 
+
+When you declare a table, remember to include the keyword {\em SOURCE} specifying the path and filename to store this table on the server.\cite{atlas}  It could be any valid filename.
+
+\item Viewing Modules\\
+At any point users can view modules uploaded to the server by clicking one of the following commands:{\em View Data Sources, View Tables, View Streams, View Queries and View Aggregates}.
+
+\item Activating and Deactivating Modules\\
+Users can activate and deactivate queries and data sources uploaded to the server by clicking {\em View Data Sources and \em View Queries}.  Once a data source is active, it starts to generate data.  Once a query is active, it starts to consume tuples from its source stream(s) and produce tuples to its destination stream.
+
+When users activate a query, the activation is propagated upstream to the source streams which generate data.  This ensures there is no inactive queries along the path between the data source and the activated query.
+
+\end{itemize}
+
+\section{Status Menu}
+\label{sec:status}
+At this point, data sources are feeding data to the streams and the CQs are running.  If the query return results to the ``STDOUT'' buffer by using ``INSERT INTO STDOUT'' statement\footnote{You can actually omit {\em INSERT INTO STDOUT}.  The default output is STDOUT}, a special buffer is created, namely, ``stdout\_queryID''.  Then you can view the results as follows:
+\begin{itemize}
+  \item Under the Status Menu, click on {\em View Buffers}
+  \item You should see all special ``stdout'' buffers.
+  \item Click on the {\em Monitor} button to monitor the buffer. The status will change to ``Monitoring''
+  \item The results of the continuous query will be seen on the new popup window.
+\end{itemize}
+
+Under {\em Status} menu, there is another important functionality -- {\em Execute Snapshot Query}.  Through this you can execute Atlas queries on tables.  You can insert into, update and delete from a table.  This is necessary for those ESL queries which involve tables, such as joining a stream with a table.  When you declare a table, make sure you include the {\em SOURCE} keyword (Section \ref{sec:module}).
+
+\section{Libraries Menu}
+\label{sec:lib}
+As we discussed in Section~\ref{sec:user}, a public user can share his modules through libraries.  When you click on {\em View Libraries}, a list of library names are shown.  After you choose one library, now you are in that public user's environment, except that you are only allowed to view and disallowed to change its modules.  You can use the menus {\em Modules} and {\em Status} to view modules and buffers discussed in Section~\ref{sec:module} and \ref{sec:status}.
+
+When you want to use the modules in one library, you can write in your queries the format of {\em library\_name\$module\_name}, where {\em module\_name} can be a stream, a table or an aggregate in that library.  For instance, if you want to use UDA {\em local\_items} and stream {\em query3} in the library {\em nexmark}, you can register the following query under your own environment:
+\begin{codedisplay}
+\kw{SELECT} nexmark\$local\_items(\ldots) \kw{FROM} nexmark\$query3;\\
+\end{codedisplay}
+
+
+\section{A Short Tutorial}
+\label{sec:tutorial}
+In this section, we illustrate how to set up a demo step by step.  You can find all the source files in the appendix.
+
+\begin{enumerate}
+\item Create a New User\\
+You can click {\em User $\rightarrow$ Create New User} menu.  After you enter the username and the password, you now login as the new user.
+
+
+\item Register a Stream\\
+You can declare a stream file {\em nexmark.dcl} as follows:
+
+\begin{verbatim}
+STREAM auction(auction_id INT, item_name CHAR(10), seller_id INT, 
+initial_price INT, category_id INT, expire_date TIMESTAMP, 
+input_time TIMESTAMP)  SOURCE 'auction.so' ORDER BY input_time;
+\end{verbatim}
+We will generate the data source {\em auction.so} in following step.  You can actually put more than one stream declartions per file.  
+
+Now you can click {\em Modules $\rightarrow$ Register Streams} to upload your streams.
+\item Optional: Register a UDA\\
+If your queries use a UDA, you need to register the UDA first.  Note that the file name must be the same as the name of UDA itself.  For instance, you can edit a local file called {\em local\_items.aggr} containing the UDA {\em local\_items}.  
+
+Then you can click {\em Modules $\rightarrow$ Register Aggregate} to upload the UDA.
+
+\item Register a Query\\
+After you registered streams and UDAs, you are ready to register continuous queries.  Suppose you have a local file called {\em nexmark.cq}.  Click {\em Modules $\rightarrow$ Register Queries} to upload the query file.
+
+Then click {\em Modules $\rightarrow$ View Registered Queries $\rightarrow$ activate} to activate your query.
+
+\item Adding Data Source\\
+Firstly, you need to edit a data source file on your local machine, for instance, {\em auction.cc}.
+
+Secondly,  you can click {\em Modules $\rightarrow$ Add Data Source} menu to upload {\em auction.cc}.
+
+Finally, you can click {\em Modules $\rightarrow$View Data Sources} menu.  A list of data sources are shown.  You can click {\em activate} button to activate data sources.
+
+Note that programming a data source from scratch is complicated.  Knowledge of C/C++ is required.  We suggest you derive your data source by modifying our examples.  The example {\em auction.cc} reads data from disk.  You can find another example under library {\em trafficDemo} which reads data from network. 
+
+One data source can feed data to only one stream.  Stream Mill will go round-robin to get data from each data source.
+
+Any data source file should compile correctly and have following two functions.
+\begin{verbatim}
+extern "C" int getTuple(buffer* dest);
+extern "C" int closeConnection();
+\end{verbatim}
+
+When the Data Source is deleted, {\em clsoeConnection()} is called. You can put clean-up codes in this function, e.g. closing ports/files etc.
+
+The key function of a data source is:
+\begin{verbatim}
+int getTuple(buffer *dest);
+\end{verbatim}
+Inside this function, users need to prepare a {\it cDBT} object.  The constructor for cDBT class is:
+\begin{verbatim}
+cDBT(int datasize, struct timeval *ts=NULL);
+\end{verbatim}
+{\it datasize} specifies the maximum tuple size excluding time stamp.  When the destination stream has time stamps, the parameter {\it ts} should point to a {\it timeval} structure, otherwise NULL.
+
+Data are stored in a member variable of {\it cDBT}, called {\it data}.  Users can use {\it memcpy()} to access it.
+
+Finally, users called {\it dest $\rightarrow$ put(cDBT*)} function to put data into the buffer.
+
+
+\item View the Results\\
+Click on {\em Status $\rightarrow$ View Buffers} menu.  A list of output buffers are shown.  You can monitor some buffers by clicking the {\em mornitor} buttons.  The results are then shown in the popup windows.
+
+\item Optional: Register a Table\\
+Click on {\em Modules $\rightarrow$ Register Tables} menu and upload the following {\em nexmark.tbl}:
+\begin{verbatim}
+TABLE category(id INT, name char(20), description char(50), parentcategory INT) SOURCE 'category';
+\end{verbatim}
+
+\item Optional: Execute Snapshot Queries\\
+Click on {\em Status $\rightarrow$ Execute Snapshot Queries} menu and upload the following snapshot query {\em nexmark.adl}:
+\begin{verbatim}
+INSERT INTO category VALUES(1, 'book', 'book', 0);
+SELECT id, name FROM category;
+\end{verbatim}
+
+Now you are ready to register CQs of joining a stream with a table:
+\begin{verbatim}
+SELECT A.item_name, C.name
+FROM Auction A, category C
+WHERE A.category = C.id;
+\end{verbatim}
+\end{enumerate}
+
+
+
+\section{Appendix}
+{\bf Sample Streams -- nexmark.dcl}
+\begin{verbatim}
+stream person(person_id int, name char(20), email char(20), credit_card int, 
+city char(20), state char(2), reg_time timestamp) 
+source 'person.so' order by reg_time;
+
+stream bid(auction_id int, price int, bidder_id int, bid_time timestamp)
+source 'bid.so' order by bid_time;
+
+stream auction(auction_id int, item_name char(10), seller_id int, initial_price int, 
+category_id int, expire_date timestamp, input_time timestamp)  source 'auction.so' 
+order by input_time;
+
+stream query3(tuple_type int, auction_id int, seller_id int, initial_price int, 
+person_id int, name char(20), city char(20), state char(2), in_time timestamp);
+
+stream query4(tuple_type int, auction_id int, initial_price int, category_id int, 
+seller_id int, expire_date timestamp, b_auc_id int, bid_price int, in_time timestamp);
+\end{verbatim}
+
+\vspace{1cm}
+{\bf Sample Queries -- nexmark.cq}
+\begin{verbatim}
+select auction_id, 0.8239*price, bidder_id, bid_time from bid;
+
+insert into stdout
+select local_items(tuple_type, auction_id, seller_id, person_id, name, city, state) 
+from query3 
+where tuple_type = 0 
+      or (tuple_type = 1 and state = 'KS' or state= 'NY' or state = 'SD');
+\end{verbatim}
+\vspace{1cm}
+{\bf A Sample UDA -- local\_items.aggr}
+\begin{verbatim}
+AGGREGATE local_items(tuple_type int, auction_id int, seller_id int, person_id int, 
+name char(20), city char(20), state char(2)): 
+(name char(20), city char(20), state char(2), auction_id int){
+    TABLE persons(pid int, pname char(20), pcity char(20), pstate char(2));
+    INITIALIZE :  ITERATE :{
+	insert into persons values(person_id, name, city, state) where tuple_type = 1;
+	insert into return select pname, pcity, pstate, auction_id from persons 
+	where tuple_type = 0 and seller_id = pid;
+    }
+};
+
+\end{verbatim}
+\vspace{1cm}
+{\bf A Sample Table Declaration -- nexmark.dcl}
+\begin{verbatim}
+TABLE category(id INT, name char(20), description char(50), parentcategory INT) SOURCE 'category';
+\end{verbatim}
+
+
+\vspace{1cm}
+{\bf Sample Snapshot (Atlas) Queries -- nexmark.adl}
+\begin{verbatim}
+INSERT INTO category VALUES(1, 'book', 'book', 0);
+SELECT id, name FROM category;
+\end{verbatim}
+
+\vspace{1cm}
+{\bf A sample data source -- auction.cc}
+\begin{verbatim}
+#include <sys/types.h>
+#include <sys/param.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/time.h>
+#include <iostream.h>
+#include <fstream.h>
+#include <dbt.h>
+#include <buffer.h>
+using namespace ESL;
+using namespace std;
+
+#define NUM_AUC_SEC 1
+
+typedef struct auction_type
+{
+  int id;
+  char itemName[11];
+  int sellerId;
+  int price;
+  int catId;
+  int expDiff;
+  void print() 
+  {
+    cout << id << "," << itemName << "," << sellerId << "," 
+    << price << "," << catId << "," << expDiff << endl;
+  }
+} auction_t;
+
+extern "C" int getTuple(buffer* dest);
+extern "C" int closeConnection();
+
+static struct timeval last_auction_tv;
+static bool first_auction = true;
+static int last_auction_id = 0;
+
+static auction_t auctions[2500];
+
+static bool loaded = false;
+ 
+void stringPad(char* src, char* dest, int length)
+{
+  int strlength = strlen(src);
+  int i = 0;
+  for(i; i < strlength; i++)
+  {
+    dest[i] = src[i];
+  }
+  for(i; i < length-1; i++)
+  {
+    dest[i] = ' ';
+  }
+  dest[length-1] = '\0';
+}
+int getTuple(buffer* dest)
+{
+  //cout << "auction:getTuple called" << endl;
+
+  //load all auctions from file once
+  if (!loaded) {
+    ifstream in("auctions.txt");
+    if(!in) {
+      cout << "file not found: auctions.txt" << endl;
+      return 2;
+    }
+    char read[200];
+    int count = 0;
+    while(!in.eof()) {
+      //while eof hasnt occured
+      in.getline(read, 200);
+      char delims[] = ",";
+      char *result = NULL;
+      result = strtok( read, delims );
+      if ( result != NULL ) {
+	auctions[count].id = atoi(result);
+      }
+      result = strtok( NULL, delims );
+      if ( result != NULL ) {
+	stringPad(result, auctions[count].itemName, 11);
+      }
+      result = strtok( NULL, delims );
+      if ( result != NULL ) {
+	auctions[count].sellerId = atoi(result);	
+      }
+      result = strtok( NULL, delims );
+      if ( result != NULL ) {
+	auctions[count].price = atoi(result);
+      }
+      result = strtok( NULL, delims );
+      if ( result != NULL ) {
+	auctions[count].catId = atoi(result);
+      }
+
+      result = strtok( NULL, delims );
+      if ( result != NULL ) {
+	//too long, make it to expire in 1-30 seconds
+	auctions[count].expDiff = (atoi(result) % 30) + 1;	
+      }
+      
+      count++;      
+    }
+    
+    loaded = true;
+  }
+  
+  struct timeval tv;
+  struct timezone tz;
+  
+  srand( time(NULL) );
+
+  int totalNum = 0;
+  
+  if (first_auction) {
+    totalNum = 5;
+    gettimeofday(&last_auction_tv, &tz);
+    first_auction = false;
+  } else {
+    gettimeofday(&tv, &tz);    
+    totalNum = (tv.tv_sec - last_auction_tv.tv_sec)*NUM_AUC_SEC;
+  }
+
+  //for now, only run for 2500 auctions, and stop producing data.  
+  if (totalNum <= 0 || (last_auction_id+1) >= 2500) return 2; // no data
+  
+  for (int i = 0; i < totalNum; i++) {
+    gettimeofday(&tv, &tz);
+    cDBT data(500, &tv);
+
+    int id = ++last_auction_id;
+    memcpy(data.data, (char*)&(auctions[id].id), sizeof(int)); //id
+    strcpy(data.data+sizeof(int), auctions[id].itemName); //item name
+    memcpy(data.data+sizeof(int)+10, (char*)&auctions[id].sellerId, 
+	sizeof(int)); //seller id
+    memcpy(data.data+sizeof(int)+10+sizeof(int), 
+	(char*)&auctions[id].price, sizeof(int)); //price
+    memcpy(data.data+sizeof(int)+10+sizeof(int)+sizeof(int), 
+	(char*)&auctions[id].catId, sizeof(int)); //catId
+
+    struct timeval tv2;
+    gettimeofday(&tv, &tz);    
+    gettimeofday(&tv2, &tz);
+    tv2.tv_sec += auctions[id].expDiff;
+    memcpy(data.data+sizeof(int)+10+sizeof(int)+sizeof(int)+sizeof(int), 
+	(char*)&tv2, sizeof(struct timeval)); //expire time
+    memcpy(data.data+sizeof(int)+10+sizeof(int)+sizeof(int)+sizeof(int)
+	+sizeof(struct timeval), (char*)&tv, sizeof(struct timeval)); //input time
+    
+    data.setTime(&tv);
+    dest->put(&data);
+  }
+  
+  gettimeofday(&last_auction_tv, &tz);
+
+  return 0;                     // Got data
+}
+
+int closeConnection()
+{
+  return 0;
+}
+
+\end{verbatim}
+
+
+%\input{issues}
+{\renewcommand{\baselinestretch}{1.01}
+  \small
+  \bibliographystyle{plain} \bibliography{atlas} 
+}
+
+
+\end{document}

@@ -1,0 +1,17 @@
+/* update a tuple with a key, if the key is not present, add in a new
+tuple */
+
+table test(a int, b int) BTREE(a);
+
+insert into test values(1,2),(2,3),(3,4);
+
+update test set b=b+1 WHERE a=2;
+
+insert into test values(2,1) WHERE SQLCODE>0;
+
+update test set b=b+1 WHERE a=4;
+
+insert into test values(4,1) WHERE SQLCODE>0;
+
+insert into stdout
+SELECT a, b FROM test;

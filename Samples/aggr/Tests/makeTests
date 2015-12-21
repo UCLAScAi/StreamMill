@@ -1,0 +1,17 @@
+/usr/local/Graphical_Debugger/workspace/StreamMill/sql/adlc --t TestA.adl
+/usr/local/Graphical_Debugger/workspace/StreamMill/sql/adlc --t TestB.adl
+/usr/local/Graphical_Debugger/workspace/StreamMill/sql/adlc --t TestC.adl
+/usr/local/Graphical_Debugger/workspace/StreamMill/sql/adlc --t TestD.adl
+gcc -fpic -c TestA.cc -I/usr/tdbms/etc/
+gcc -fpic -c TestB.cc -I/usr/tdbms/etc/
+gcc -fpic -c TestC.cc -I/usr/tdbms/etc/
+gcc -fpic -c TestD.cc -I/usr/tdbms/etc/
+gcc -fpic -shared TestA.o  -ldb /usr/local/Graphical_Debugger/workspace/StreamMill/dbug/dbug.o  /usr/local/Graphical_Debugger/workspace/StreamMill/im_db/libimdb.a /usr/local/Graphical_Debugger/workspace/StreamMill/sql/libatlas.a /usr/lib64/gcc/x86_64-suse-linux/4.1.2/libstdc++.so /usr/lib64/libdl.so  /usr/lib64/libm.so  /usr/local/lib/libmm.so  /usr/lib64/libpthread.so -o libAggregateTestA.so
+gcc -fpic -shared TestB.o  -ldb /usr/local/Graphical_Debugger/workspace/StreamMill/dbug/dbug.o  /usr/local/Graphical_Debugger/workspace/StreamMill/im_db/libimdb.a /usr/local/Graphical_Debugger/workspace/StreamMill/sql/libatlas.a /usr/lib64/gcc/x86_64-suse-linux/4.1.2/libstdc++.so /usr/lib64/libdl.so  /usr/lib64/libm.so  /usr/local/lib/libmm.so  /usr/lib64/libpthread.so -o libAggregateTestB.so
+gcc -fpic -shared TestC.o  -ldb /usr/local/Graphical_Debugger/workspace/StreamMill/dbug/dbug.o  /usr/local/Graphical_Debugger/workspace/StreamMill/im_db/libimdb.a /usr/local/Graphical_Debugger/workspace/StreamMill/sql/libatlas.a /usr/lib64/gcc/x86_64-suse-linux/4.1.2/libstdc++.so /usr/lib64/libdl.so  /usr/lib64/libm.so  /usr/local/lib/libmm.so  /usr/lib64/libpthread.so -o libAggregateTestC.so
+gcc -fpic -shared TestD.o  -ldb /usr/local/Graphical_Debugger/workspace/StreamMill/dbug/dbug.o  /usr/local/Graphical_Debugger/workspace/StreamMill/im_db/libimdb.a /usr/local/Graphical_Debugger/workspace/StreamMill/sql/libatlas.a /usr/lib64/gcc/x86_64-suse-linux/4.1.2/libstdc++.so /usr/lib64/libdl.so  /usr/lib64/libm.so  /usr/local/lib/libmm.so  /usr/lib64/libpthread.so -o libMyAggrD.so
+cp libAggregateTestA.so /usr/tdbms/lib/
+cp libAggregateTestB.so /usr/tdbms/lib/
+cp libAggregateTestC.so /usr/tdbms/lib/
+cp libMyAggrD.so /usr/tdbms/lib/
+cp *.o *.cc build

@@ -1,0 +1,211 @@
+table flowers(id int, SL real, SW real, PL real, PW real, isSetosa int);
+table flowers1(id int, SL real, SW real, PL real, PW real, isSetosa int);
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl); 
+}; 
+
+
+table accept(node int, col int, val int, classLbl int) memory;
+table equ(node int, col int, val int, nnode int) memory;
+
+Aggregate learnDTree(idi int, coli int, vali int, classLbli int, numColsi int, rrate int):(a int) {
+  table tuples(id int, col int, val int, classLbl int) memory;
+  table colStat(col int, val int, classLbl int, cnt int) memory;
+  table cnt(c int) memory;
+  table assignedAttrs(col int, val int) memory;
+  table nodeId(node int) memory;
+  table pair(val int) memory;
+
+    table entropy(col int, ent real) memory;
+    table newCol(col int) memory;
+
+  Aggregate distinctPossibleVals(idi int, coli int, vali int, classLbli int):(a int, b int) {
+    table dv(v int, c int) memory;
+    table temp(t int) memory;
+    initialize: iterate: {
+      insert into temp select a.col from assignedAttrs as a, tuples as t where t.id = idi and a.col = t.col and a.val <> t.val;
+      update dv set c = c + 1 where v = classLbli and (select count(1) from temp) = 0;
+      insert into dv values(classLbli, 1) where SQLCODE <> 0
+                                           and (select count(1) from temp) = 0;
+      delete from temp;
+    }
+    terminate: {
+      insert into return select v, c from dv;
+    }
+  };
+
+    table clStat(col int, val int, classLbl int, cnt int) memory;
+  Aggregate calcEntropy(coli int, vali int, classLbli int):(col int, ent real) {
+      table ce(col int, mult real, add real) memory;
+  
+      initialize: iterate: {
+        /* calculation of entropy here is incorrect, should be based on tuples table not colStat */
+        update ce set mult = mult*(select cnt from clStat where col = coli and val = vali and classLbl = classLbli), 
+                      add = add+(select cnt from clStat where col = coli and val = vali and classLbl = classLbli) 
+            where col = coli and exists (select cnt from clStat where col = coli and val = vali and classLbl = classLbli);
+        insert into ce values(coli, (select cnt from clStat where col = coli and val = vali and classLbl = classLbli), 
+                                    (select cnt from clStat where col = coli and val = vali and classLbl = classLbli)) 
+            where SQLCODE <> 0 and exists (select cnt from clStat where col = coli and val = vali and classLbl = classLbli);
+      }
+      terminate: {
+        insert into return select col, mult/add from ce;
+      }
+  };
+
+  Aggregate computeEntropy(idi int, coli int, vali int, classLbli int):(col int, ent Real) {
+    table temp1 (t int) memory;
+    
+    initialize: iterate: {
+      insert into temp1 select a.col from assignedAttrs as a, tuples as t where t.id = idi and a.col = t.col and a.val <> t.val;
+      update clStat set cnt = cnt + 1 where col = coli and val = vali and classLbl = classLbli and
+                                            (select count(1) from temp1) = 0;
+      insert into clStat values(coli, vali, classLbli, 1) where SQLCODE <> 0 and (select count(1) from temp1) = 0;
+      delete from temp1;
+    }
+    terminate: {
+      insert into return select calcEntropy(col, val, classLbl) from clStat;
+      delete from clStat;
+    }
+  };
+  
+  AGGREGATE minpair(iPoint Int, iValue real): (mPoint Int, mValue real) {
+    TABLE mvalue(value real) MEMORY; TABLE mpoints(point Int) MEMORY; 
+    INITIALIZE: { 
+      INSERT INTO mvalue VALUES (iValue); 
+      INSERT INTO mpoints VALUES(iPoint); 
+    } 
+    ITERATE: { 
+      UPDATE mvalue SET value = iValue WHERE iValue < value; 
+      DELETE FROM mpoints WHERE SQLCODE = 0; 
+      INSERT INTO mpoints SELECT iPoint FROM mvalue 
+           WHERE iValue =mvalue.value and SQLCODE = 0; 
+    }          
+    TERMINATE: { 
+      /*insert into stdout values('minpair returns');
+      insert into stdout select point, value from mpoints, mvalue;*/
+      INSERT INTO RETURN SELECT point, value FROM mpoints, mvalue; 
+    } 
+  }; 
+
+  Aggregate relearnDTree(nodei int, coli int, vali int):(a int) {
+    table dVals(v int, cnt int) memory;
+    table temp(n int, c int, v int) memory;
+    initialize: iterate: {
+      delete from entropy where 1 = 1;
+      delete from newCol where 1 = 1;
+      insert into assignedAttrs values(coli, vali);
+      
+      /* this if there are options even after all assignedAttrs */
+      insert into dVals select distinctPossibleVals(id, col, val, classLbl) from tuples;
+      insert into equ values(nodei, coli, vali, (select node+1 from nodeId))
+                      where (select count(1) from dVals) > 1;
+      update nodeId set node = node+1 where SQLCODE = 0;
+
+      /* else */
+      insert into accept values(nodei, coli, vali, (select v from dVals)) where SQLCODE <> 0;
+      insert into accept values(nodei, coli, vali, -1) where (select count(1) from dVals) = 0;
+
+      /*compute entropy for remaining attrs*/
+      insert into entropy select computeEntropy(id, col, val, classLbl) from tuples as c 
+        where (select count(1) from dVals) > 1
+        and not exists (select a.col from assignedAttrs as a where a.col = c.col);
+ 
+      delete from entropy where exists (select a.col from assignedAttrs as a where a.col = entropy.col);
+
+      /*if dVal has vals > 2 and entropy has nothing then, assing the max from dVal*/
+      insert into accept values(nodei, coli, vali, (select v from dVals where cnt = (select max(cnt) from dVals))) 
+                      where (select count(1) from dVals) > 1 and (select count(1) from entropy) = 0;
+      delete from equ where node = nodei and col = coli and val = vali and SQLCODE = 0;
+
+      /*select one with least entropy */
+      insert into newCol select minpair(col, ent)->mPoint from entropy where (select count(1) from dVals) > 1;
+
+      /*recursively call relearnDTree on all diff values of the selected attr */
+      insert into temp select ni.node, c.col, c.val from colStat as c, newCol as n, nodeId as ni where c.col = n.col and (select count(1) from dVals) > 1 group by ni.node, c.col, c.val;
+      
+      select relearnDTree(n, c, v) from temp;
+
+      delete from assignedAttrs where col = coli and val = vali;
+      delete from dVals;
+      delete from temp;
+    }
+  }
+
+  initialize: {
+    insert into tuples values(idi, coli, vali, classLbli);
+    insert into cnt values(0);
+  }
+  iterate: {
+    insert into tuples values(idi, coli, vali, classLbli);
+    update cnt set c = c+1 where coli = numColsi;
+    update colStat set cnt = cnt+1 where col = coli and val = vali and classLbl = classLbli;
+    insert into colStat values(coli, vali, classLbli, 1) where SQLCODE <> 0;
+        
+    delete from equ where (select c from cnt) = rrate and coli = numColsi;
+    delete from accept where (select c from cnt) = rrate and coli = numColsi;
+    delete from nodeId where (select c from cnt) = rrate and coli = numColsi;
+    delete from assignedAttrs where (select c from cnt) = rrate and coli = numColsi;
+    insert into nodeId values(1) where (select c from cnt) = rrate and coli = numColsi;
+
+    /*compute entropy for remaining attrs*/
+    insert into entropy select computeEntropy(id, col, val, classLbl) from tuples as c 
+                          where (select c from cnt) = rrate and coli = numColsi;
+
+    /*select one with least entropy */
+    insert into newCol select minpair(col, ent)->mPoint from entropy where (select c from cnt) = rrate and coli = numColsi;
+    insert into pair select val from colStat as c, newCol as n where c.col = n.col and (select c from cnt) = rrate and coli = numColsi group by val;
+
+    select relearnDTree(1, n.col, p.val) from newCol as n, pair as p where (select c from cnt) = rrate and coli = numColsi;
+
+    delete from pair where (select c from cnt) = rrate and coli = numColsi;
+    update cnt set c = 0 where c = rrate and coli = numColsi;
+  }
+};
+
+
+Aggregate evaluateClassifier(idi int, coli int, vali int, classLbli int, numColsi int):(ido int, classLblo int, clso int) {
+  table tuples(col int, val int, classLbl int) memory;
+
+  Aggregate classifyTuple(statei int):(classLblo int) {
+    initialize: iterate: {
+      insert into return select classLbl 
+                         from accept as a 
+                         where statei = a.node
+                           and exists (select t.col from tuples as t where t.col = a.col and t.val = a.val);
+
+      insert into return select classifyTuple(nnode) 
+                         from equ as e 
+                         where statei = e.node
+                           and SQLCODE <> 0 and exists(select t.col from tuples as t where t.col = e.col and t.val = e.val);
+
+      insert into return values (-1) where not exists (select a.classLbl from accept as a, tuples as t where a.node=statei and t.col = a.col and t.val = a.val)
+                                and not exists (select e.classLbl from equ as e, tuples as t where e.node=statei and t.col = e.col and t.val = e.val);
+    }
+  }
+
+  initialize: iterate: {
+    insert into tuples values(coli, vali, classLbli);
+    insert into return values(idi, classLbli, (select classifyTuple(1))) where coli = numColsi;
+    delete from tuples where coli = numColsi;
+  } 
+}
+
+
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into flowers;
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into flowers1;
+
+select learnDTree(id, d.col, d.val, d.classLbl, 4, 900)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+/*select id, SL, SW, PL, PW, isSetosa from flowers1;
+
+*/
+insert into stdout values('--transitions--');
+select node, col, val, nnode from equ;
+insert into stdout values('--accept states--');
+select node, col, val, classLbl from accept;
+
+select evaluateClassifier(id, d.col, d.val, d.classLbl, 4)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 

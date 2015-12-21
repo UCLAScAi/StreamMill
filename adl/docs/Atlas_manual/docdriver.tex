@@ -1,0 +1,76 @@
+\documentclass[10pt]{report}
+%\usepackage{html}
+\usepackage{graphicx}
+\usepackage{algorithm,algorithmic}
+\usepackage{Srcltx}
+\usepackage{amsmath, amssymb, latexsym}
+\usepackage{subfigure}
+\renewcommand{\algorithmiccomment}[1]{{\it /* #1 */}}
+\newcommand{\alglabel}[1]{\newcounter{#1}\setcounter{#1}{\value{ALC@line}}}
+\newcommand{\algref}[1]{\arabic{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\textheight}{8in}
+\setlength{\textwidth}{5.2in}
+\setlength{\topmargin}{-.15in}
+%\addtolength{\oddsidemargin}{+0.2in}
+\pagestyle{plain}
+%\addtolength{\textheight}{+0.95in}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Haixun's packages
+%\newcommand\bnf[1]{$\langle$#1$\rangle$}
+\newcommand\bnf[1]{#1}
+\newcommand\exa[1]{\nopagebreak \begin{flushleft}\smallskip \nopagebreak
+                \begin{minipage}[t]{#1}\sloppy}
+\newcommand\exb[1]{\end{minipage}\kern 1cm\begin{minipage}[t]{#1}\sloppy }
+\newcommand\exc{\end{minipage}\kern -3cm \smallskip\end{flushleft}}
+\newcommand\oben[1]{\begin{center}\begin{minipage}{#1}\hrule\medskip}
+\newcommand\unten  {\vspace{-.4cm}\hrule \end{minipage}\end{center}}
+\newcommand\share[1]{\raisebox{1.5ex}[0pt]{#1}}
+%%%%%%%%%%%%%%%%%%%from KDD%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem} \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\def\inv{\vspace*{-0.2cm}} %\def\back{\hspace*{-2cm}}
+\def\pinv{\vspace*{0.2cm}}
+\def\newdef#1{\emph{#1}}
+%---------------------------------------------------------
+\def\cdf{\sf} %Note: < and > are not in this font; use $<$ and $>$
+\def\kw#1{\tt #1}
+\def\cw{\small \tt }
+\def\bw{\small \tt}
+%
+\newenvironment{codedisplay}
+%{\renewcommand{\baselinestretch}{1}
+{\vspace{-\partopsep}\cdf\addtolength{\baselineskip}{-1pt}
+\samepage  \begin{tabbing} \quad
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \
+\=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\kill}
+{\end{tabbing}\vspace{-\partopsep}\vspace{-\topsep}%\vspace{-\parsep}
+}
+
+\title{\Huge \bf The ATLaS User Manual \\}
+\author{\Large Haixun Wang \\[0.1cm] \Large Carlo Zaniolo \\[0.1cm]\Large Richard Luo}
+
+\begin{document}
+\maketitle
+
+%\renewcommand{\baselinestretch}{1.1}
+\tableofcontents
+\include{introduction}
+\include{tabledcl}
+\include{sql}
+\include{aggregates}
+\include{tfunc}
+\include{examples}
+\include{datastructures}
+\include{apriori}
+\include{external}
+\include{ref}
+%\input{issues}
+\end{document}

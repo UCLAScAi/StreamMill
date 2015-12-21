@@ -1,0 +1,12 @@
+AGGREGATE local_items(tuple_type int, auction_id int, seller_id int, person_id int, name char(20), city char(20), state char(2)): (name char(20), city char(20), state char(2), auction_id int)
+{
+    TABLE persons(pid int, pname char(20), pcity char(20), pstate char(2)) MEMORY;
+
+    INITIALIZE :
+    ITERATE :
+    {
+	insert into persons values(person_id, name, city, state) where tuple_type = 1;
+
+	insert into return select pname, pcity, pstate, auction_id from persons where tuple_type = 0 and seller_id = pid;
+    }
+};

@@ -1,0 +1,42 @@
+table trainFl(id int, SL int, SW int, PL int, PW int, isSetosa int) memory;
+table sampleTrainFl(id int, SL int, SW int, PL int, PW int, isSetosa int) memory;
+table NBModel (a int) memory;
+table params(a char(10), b char(10)) memory;
+
+Aggregate sample(id int, SL int, SW int, PL int, PW int, isSetosa int):
+        (id int, sl int, sw int, pl int, pw int, issetosa int) {
+  initialize: iterate: {
+    insert into return values(id, SL, SW, PL, PW, isSetosa) 
+      where rand() < 0.9;
+  }
+};
+
+Aggregate blah(a int): int {
+  initialize: iterate: {
+  }
+};
+
+create modeltype naivebayesian {
+  sharedtables(NBModel),
+  sample(uda sample,
+         window false,
+         partables(params),
+         parameters(a int)
+        ),
+  train (uda blah,
+         window false,
+         partables(params),
+         parameters(a int)
+        ),
+  test (uda blah,
+        window false,
+        partables(params),
+        parameters(a int)
+       )
+};
+load from '/home/hthakkar/adl/sql/clsf/iris2.data' into trainFl;
+
+insert into sampleTrainFl run naivebayesian.sample on trainFl;
+
+run naivebayesian.train on sampleTrainFl;
+

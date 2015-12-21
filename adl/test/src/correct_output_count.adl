@@ -1,0 +1,55 @@
+WINDOW AGGREGATE mysum_online (Next INT): INT
+{
+
+TABLE inwindow (Next INT);
+TABLE state (sum INT);
+
+INITIALIZE:
+{
+INSERT INTO state VALUES (Next);
+insert into return select sum from state;
+}
+
+ITERATE:
+{
+UPDATE state SET sum=sum+Next;
+insert into return select sum from state;
+}
+
+EXPIRE:
+{
+  UPDATE state SET sum = sum - oldest().Next;
+}
+
+};
+
+AGGREGATE mysum_online (Next INT): INT
+{
+
+TABLE inwindow (Next INT);
+TABLE state (sum INT);
+
+INITIALIZE:
+{
+INSERT INTO state VALUES (Next);
+}
+
+ITERATE:
+{
+UPDATE state SET sum=sum+Next;
+}
+
+TERMINATE:
+{
+  insert into return select sum from state;
+}
+      
+};
+
+table t(a real) memory;
+insert into t values (1), (1), (1), (1), (1), (1), (1), (1), (1);
+select mysum_online(a) over(rows 5 preceding slide 3) from t;
+select mysum_online(a) over(rows 5 preceding) from t;
+select mysum_online(a) from t;
+select sum(a) over(rows 5 preceding slide 2) from t;
+select sum(a) from t;

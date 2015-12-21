@@ -1,0 +1,177 @@
+table pnts (x int, y int, clId int) memory;
+
+  table points(pId int, x real, y real, n int, cId int) memory;
+  table nPId(pId int) memory;
+  table ns(pId int, x real, y real, n int, cId int) memory;
+  table nsCnt(cnt int) memory;
+  table updateSeed(pId int, cId int) memory;
+  table nCId(cId int) memory;
+  table rCnt(cnt int) memory;
+  table distCount(dc int) memory;
+
+
+
+  aggregate countDistinct(a int):(b int) {
+    table soFar(s int) memory;
+    initialize: iterate: {
+      insert into soFar values(a) where not exists(select s from soFar where s = a);
+    }
+    terminate: {
+      insert into return select count(1) from soFar;
+    }
+  };
+
+  aggregate dbscan(iX Real, iY Real, gcId Int, minPt int, eps int): (AnInt Int) {
+    TABLE closepnts(P2 int, C2 Int) memory;
+    TABLE todo(P3 int) memory;
+    initialize: iterate: {
+
+      insert into closepnts
+        select p.pId, cId from points as p
+        where sqrt((p.x-iX)*(p.x-iX) + (p.y-iY)*(p.y-iY)) < eps; /*eps is max distance*/
+
+
+      /*update nCId set cId= cId+1
+        where Flag=0 and SQLCODE=0
+              and minPt < (select count(C2) from closepnts);*/
+      update points set cId = gcId
+        where points.cId=0
+          and exists (select S.P2 from closepnts as S
+                      where points.pId=P2);
+
+      insert into todo   /* points to be expanded*/
+        select C.P2
+        from closepnts as C
+        where minPt < (select count(C2) from closepnts) AND C.C2=0
+              AND NOT EXISTS (select P3 from todo as t
+                                    where C.P2=t.P3);
+
+      delete from closepnts where 1=1;
+      select dbscan(p.x, p.y, gcId, minPt, eps)
+      from todo, points as p
+      where p.pId = P3;
+
+      delete from todo where 1=1;
+    }
+    terminate: {
+      /*insert into RETURN  values(1);*/
+    }
+  }; /*end dbscan*/
+
+
+  aggregate updateClusterId(ptId int, tcId int):(a int) {
+    initialize: iterate: {
+      update points set cId = tcId where pId = ptId;
+    }
+  };
+
+  aggregate closestCId(x real, y real, x1 real, y1 real, c int):(c int) {
+    table cSoFar(dist real, cId int) memory;
+    initialize: {
+      insert into cSoFar values(sqrt((x1-x)*(x1-x) + (y1-y)*(y1-y)), c);
+    }
+    iterate: {
+      update cSoFar set dist = sqrt((x1-x)*(x1-x) + (y1-y)*(y1-y)), cId = c
+             where dist > (sqrt((x1-x)*(x1-x) + (y1-y)*(y1-y)));
+    }
+    terminate: {
+      insert into return select cId from cSoFar;
+    }
+  };
+
+Aggregate IncDBScan(x real, y real, minPts int, eps int, sl int):(a int, clId int, x real, y real) {
+
+
+  initialize: {
+    delete from nPId;
+    delete from nCId;
+    delete from rCnt;
+
+    insert into nPId values(2);
+    insert into points values(1, x, y, 0, 0);
+    insert into nCId values(1);
+    insert into rCnt values(1);
+  }
+  iterate: {
+    update rCnt set cnt = cnt + 1;
+    insert into ns select pId, p.x, p.y, p.n, p.cId from points as p 
+              where sqrt((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y)) < eps;
+    insert into nsCnt select count(1) from ns;
+
+    insert into points values((select pId from nPId), x, y, (select cnt from nsCnt), 0);
+    update nPId set pId = pId + 1;
+    insert into updateSeed select p1.pId, p1.cId from points as p1, ns as p2
+                    where p2.n = minPts - 1 and p1.n >= minPts
+                         and sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y)) < eps;
+
+    update points set n = n + 1 where exists (select pId from ns where ns.pId = points.pId);
+
+    insert into stdout values('---new point---');
+    insert into stdout values(x, y, (select pId from nPId), (select cnt from nsCnt));
+
+    /*insert into distCount select countDistinct(cId) from ns;*/
+
+    update points set cId = (select min(cId) from ns where cId > 0)
+    where pId = (select pId-1 from nPId) and not exists (select cId from updateSeed) and (select cnt from nsCnt) >= minPts;
+    
+
+    update points set cId = (select cId from nCId)
+           where exists (select pId from updateSeed where pId = points.pId) 
+                 and (select max(cId) from updateSeed) = 0;
+    update nCId set cId = cId + 1 where  SQLCODE = 0;  /*the above stmt was successful*/
+
+
+
+    select updateClusterId(pId, (select min(cId) from updateSeed where cId > 0))
+    from updateSeed
+    where SQLCODE <> 0;
+
+    /*merge all clusters if SQLCODE <> 0, meaning the above stmt did not succeed*/
+    /*    select updateClusterId(cId, (select min(cId) from updateSeed where cId > 0))
+       from updateSeed
+      where (select dc from distCount) > 2
+                        or ((select min(cId) from updateSeed) > 0 and (select dc from distCount) > 1);
+    */
+    /* if seed has unclustered and clustered points, need to assign cId to unclustered points, (not done below) */
+    /*   update points set cId = (select min(cId) from updateSeed where cId > 0)
+        where cId = 0
+          and (select count(1) from updateSeed) > 0
+           and (select dc from distCount) >= 2
+          and (select max(u.cId) from updateSeed as u where u.cId > 0) > 0
+          and exists (select u1.pId from updateSeed as u1 where u1.pId = points.pId);
+    */
+
+    insert into stdout values('-------updateSeed--------');
+    insert into stdout select pId, cId from updateSeed;
+
+    /*restart DBScan on already clustered tuples*/
+    select dbscan(pn.x, pn.y, pn.cId, minPts, eps)
+    from updateSeed as u, points as pn
+    where u.pId = pn.pId and pn.cId > 0;
+
+
+    /*update points
+      set cId = (select min(cId) from updateSeed where cId > 0)
+      where exists (select pId from updateSeed where pId = points.pId) and SQLCODE = 0;
+    */
+
+    insert into stdout select 1, p.pId, p.cId, p.x, p.y, p.n from points as p where (select cnt%sl from rCnt) = 0;
+    insert into return select 1, p.cId, p.x, p.y from points as p where (select cnt%sl from rCnt) = 0;
+    delete from ns;
+    delete from nsCnt;
+    delete from updateSeed;
+    delete from distCount;  
+  }
+
+  expire:
+  {
+  }
+
+
+}
+
+load from '/home/hthakkar/adl/sql/dataIncDBScan.dat' into pnts;
+
+select IncDBScan(x, y, 20, 10, 500)
+from pnts;
+

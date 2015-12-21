@@ -1,0 +1,78 @@
+
+\section{References and Data Structures}
+
+In ATLaS, the types of table columns and the types of parameters to
+User-Defined aggregates can be any of the following:
+
+\begin{itemize}
+\item {\bf INT}
+\item {\bf REAL}
+\item {\bf CHAR(n)}
+\item {\bf REF}
+\end{itemize}
+
+
+The reference type, denoted by {\sc ref}, is currently
+supported only for {\it in-memory} tables,
+which are declared with the {\sc memory} option, as in
+following example:
+
+\begin{verbatim}
+    TABLE faculty(name CHAR(20), dept CHAR(20)) MEMORY;
+\end{verbatim}
+
+In-memory tables can have columns of Reference types, which are
+essentially points to tuples in some other tables (or refer to
+themselves). For example, we can define the following tables:
+
+\begin{verbatim}
+    TABLE faculty(name CHAR(20), dept REF(department)) MEMORY;
+    TABLE department(name CHAR(20), chair REF(faculty)) MEMORY;
+\end{verbatim}
+
+We can find out the name of the chair of the CS department by using
+the following query:
+
+\begin{verbatim}
+    SELECT chair->name
+    FROM department
+    WHERE name = 'CS';
+\end{verbatim}
+\paragraph{Object ID and Path Expression}
+In ATLaS, each tuple in an in-memory table has its unique OID (object
+id). In SQL statements, we treat OID of a tuple as its pseudo column.
+The type of the OID column is {\tt REF(table)}, where table is the table the
+tuple is in.
+
+The following example demonstrates the use of OID and reference types.
+
+\begin{verbatim}
+        TABLE tree(name char(10), father REF(tree)) MEMORY;
+
+        INSERT INTO tree
+        SELECT 'mary', t.OID
+        FROM tree AS t
+        WHERE t.name = 'tom';
+\end{verbatim}
+
+In the above example, we define a table with a column that refers to a
+tuple in the same table. The subsequent INSERT statement creates a new
+tuple whose father is another tuple in the table with name 'tom'. The
+expression \verb|t.OID| retrieves the OID of the current tuple.
+
+With reference types and OID and we can use path expressions to
+navigate through the tables. The following query finds the name of
+Jane's grandfather. Note that if t is of reference type, then t and
+\verb|t->OID| are the same thing, which means \verb|father->name| is the same as
+\verb|father->OID->name|.
+
+\begin{verbatim}
+        SELECT father->father->name
+        FROM tree AS t
+        WHERE t.name = 'jane';
+\end{verbatim}
+
+A critical application of reference types and path expression is the
+implementation of in-memory data structures that are critical for
+the performance of many algorithms, including the Apriori algorithm
+discussed next.

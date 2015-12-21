@@ -1,0 +1,32 @@
+Table stock(date int, price int);
+
+AGGREGATE localmin(idate int, iprice int) : (date int, price int)
+
+{
+    TABLE tmp( date int, price int, dir int);
+
+    INITIALIZE:
+    {
+        INSERT INTO tmp VALUES(idate, iprice,2);
+    }
+    ITERATE:
+    {
+        INSERT INTO return SELECT date, price from tmp where 
+		tmp.price < iprice AND tmp.dir =0;
+	UPDATE tmp SET date=idate, price=iprice, dir=0 where
+		tmp.price > iprice;
+	UPDATE tmp SET date=idate, price=iprice, dir=1 where
+		tmp.price < iprice;
+    }
+    TERMINATE:
+    {
+    }                
+}
+
+insert into stock VALUES(1,6),(2,4),(3,2), (4,5), (5,7),
+(6,8),(7,5),(8,3),(9,6), (10,8), (11,9), (12,6), (13,3), (14,1),
+(15,5),(16,8) ;
+insert into stdout SELECT localmin(date,price)->date, 
+	localmin(date,price)->price FROM stock;
+
+

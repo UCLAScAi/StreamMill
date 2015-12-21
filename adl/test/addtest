@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+        echo "USAGE: addtest filename"
+        exit
+fi
+
+cat $1.adl
+adlc -f adlctmp.cc $1.adl
+
+if [$? -ne 0]; then
+echo adlc error!
+exit
+fi
+
+adlcc adlctmp.cc
+
+./adlctmp > src/$1.result
+
+cat src/$1.result
+
+cp $1.adl src/
+
+rm -f ./adlctmp ./adlctmp.cc ./adlctmp.o ./$1.adl

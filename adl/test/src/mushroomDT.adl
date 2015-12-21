@@ -1,0 +1,312 @@
+table mushroom
+ (
+ seqno int,
+ weight int,
+ c char(1),
+ capshape  char(1),
+ capsurface char(1),
+ capcolour char(1),
+ bruise char(1),
+ odor char(1),
+ attchmnt char(1),
+ spacing char(1),
+ size char(1),
+ colour char(1),
+ shape char(1),
+ root char(1),
+ sAbv char(1),
+ sBelw char(1),
+ cAbv char(1),
+ cBelw char(1),
+ vType char(1),
+ vColour char(1),
+ rNumber char(1),
+ rType char(1),
+ sColour char(1),
+ pop char(1),
+ habitat char(1) );
+ 
+table seq (seqno int);
+table result ( seqno int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+
+aggregate dissemble(seqno int, yorn char(1), v1 char(1), v2 char(1), v3 char(1), v4 char(1), 
+v5 char(1), v6 char(1), v7 char(1), v8 char(1), 
+v9 char(1), v10 char(1), v11 char(1), v12 char(1), 
+v13 char(1), v14 char(1), v15 char(1), v16 char(1), 
+v17 char(1), v18 char(1), v19 char(1), v20 char(1), 
+v21 char(1), v22 char(1) ) : (recid int, col int, val char(1), c char(1))
+ {
+ 	initialize:
+ 	iterate:
+ 	{
+ 		insert into return
+                 values (seqno, 1,v1, yorn), (seqno, 2,v2,yorn), (seqno, 3,v3,yorn), (seqno, 4,v4,yorn),
+                 (seqno, 5,v5, yorn), (seqno, 6,v6,yorn), (seqno, 7,v7,yorn), (seqno, 8,v8,yorn),
+                 (seqno, 9,v9, yorn), (seqno, 10,v10,yorn), (seqno, 11,v11,yorn), (seqno, 12,v12,yorn),
+                 (seqno, 13,v13, yorn), (seqno, 14,v14,yorn), (seqno, 15,v15,yorn), (seqno, 16,v16,yorn),
+                 (seqno, 17,v17, yorn), (seqno, 18,v18,yorn), (seqno, 19,v19,yorn), (seqno, 20,v20,yorn),
+                 (seqno, 21,v21, yorn), (seqno, 22,v22,yorn);
+        }
+ };
+
+AGGREGATE minpointvalue(iCol int, iValue real) : (point int, value real)
+ {
+     TABLE tmp(col int, value real);
+     INITIALIZE:
+     {
+ 	INSERT INTO tmp VALUES(iCol, iValue);
+     }
+     ITERATE:
+     {
+ 	UPDATE tmp SET col=iCol, value=iValue WHERE value > iValue;	
+     }
+     TERMINATE:
+     {
+ 	insert into return SELECT col, value FROM tmp;
+     }		     
+ };
+ 
+ aggregate mcount() : int
+  {
+    table tmp(i int);
+    initialize :
+     {
+ 	insert into tmp values(1); 
+ 	insert into return values(1);
+     }
+     iterate :
+     {
+ 	update tmp set i=i+1;
+ 	insert into return select i from tmp;
+    }
+ };
+
+
+AGGREGATE classify (iRecId int, iCol int,   iValue char(1), iYorN char(1), parent int, pval char(1)   ) : int
+    {
+ 	TABLE treenodes(RecId int, Col int, Val char(1), YorN char(1));
+        TABLE summary(Col int, Value char(1), Yc real, Nc real) btree (Col, Value);
+        TABLE mincol(Col int, MinGini real);
+	TABLE ginitable(Col int, Gini real);
+	TABLE num (number int, yorn char(1));
+	TABLE parentinfo (par int, pvalue char(1)) as values(0, '-');
+	
+	INITIALIZE: 
+	ITERATE: 
+	{ 
+		     INSERT INTO treenodes VALUES (iRecId,  iCol, iValue, iYorN);
+		     update parentinfo set par=parent;
+		     update parentinfo set pvalue=pval;
+		     
+		
+ 		     UPDATE summary 
+ 		     	SET Yc=Yc+1 WHERE Col=iCol AND Value=iValue AND iYorN='e';
+ 		     UPDATE summary 
+ 		     	SET Nc=Nc+1 WHERE SQLCODE=0 AND Col=iCol AND Value=iValue AND iYorN='p';
+ 		     
+ 		     
+ 		     INSERT INTO summary SELECT iCol, iValue, 1, 0 
+                     			 WHERE SQLCODE=0 AND iYorN='e' AND not exists
+                     			 (select s.Col, s.Value from summary s where
+                     			  s.Col=iCol AND s.Value=iValue); 
+                     INSERT INTO summary SELECT iCol, iValue, 0, 1 
+                     			 WHERE SQLCODE=0 AND iYorN='p' AND not exists
+                     			 (select s.Col, s.Value from summary s where
+                     			  s.Col=iCol AND s.Value=iValue); 
+        }
+ 	TERMINATE: 
+ 	{
+		INSERT INTO ginitable SELECT Col, sum((Yc*Nc)/(Yc+Nc))/sum(Yc+Nc)  
+                		      FROM summary 
+				      GROUP BY Col 
+				      HAVING count(Value)>1 AND sum(Yc)>0 AND sum(Nc)>0;	
+
+		INSERT INTO mincol SELECT minpointvalue(Col, Gini) FROM ginitable;
+                
+                insert into num select count(RecId), YorN
+	     	from treenodes
+	     	group by YorN;
+		
+		update seq set seqno=seqno+1;
+		
+		INSERT INTO result  SELECT  s.seqno,  m.Col, n.yorn, par , pvalue, n.number/22, n2.number/22
+	     	FROM mincol as m, num as n, num as n2, parentinfo, seq as s
+	     	where n.number=(select max(nn.number) from num nn) AND n.yorn<>n2.yorn;
+
+
+	
+		INSERT INTO result  SELECT   s.seqno,  0, n.yorn, par, pvalue, n.number/22, 0
+	     	FROM 	num as n, parentinfo, seq as s
+	     	where SQLCODE=0 AND n.number=(select max(nn.number) from num nn);
+	     	      
+	
+	     	
+		/* two cases for the previous SQLCODE to be 0, one is only 1 class left (Y or N), the other is 
+		   mincol table is empty, which means we have considered all columns, then returns class which 
+  		   has more count than the other one */
+
+		
+
+
+	    	SELECT classify(t.RecId,  t.Col,  t.Val, t.YorN, s.seqno, m.Value ) 
+	     	FROM treenodes as t, (SELECT tt.RecId as RecId, tt.Val as Value, tt.Col as Col  FROM treenodes tt, mincol mm                       				      
+				      WHERE tt.Col=mm.Col ) as m, seq as s
+		WHERE t.RecId = m.RecId	
+	     	GROUP BY  m.Value;         }
+  }; 
+
+
+ 
+/* aggregate classify (recid int, inode int, col int, val int, yorn int) : int
+ {
+ initialize:
+ iterate: {insert into result values (inode, col);}
+ }
+ */
+
+ /*insert into tennis values(1,1,1,1,0),(1,1,1,2,0), (2,1,1,1,1),(3,2,1,1,1), (3, 3, 2, 1, 1), (3, 3, 2, 2, 1), (2, 3, 2, 2, 0), (1, 2, 1, 1, 0), 
+  (1, 3, 2, 1, 1), (3, 2, 2, 1, 1), (1, 2, 2, 2, 1), (2, 2, 1, 2, 1), (2, 1, 2, 1, 1), (3, 2, 1, 2, 0); */
+/*insert into samplegini values (1, 0.3), (2, 0.2), (3, 0.1);*/
+/*insert into stdout select minpointvalue (iCol, iValue) from samplegini;*/
+ 
+  /* 
+insert into result values (0, 0);
+*/
+ /*insert into stdout select mcount() recid, dissemble(outlook, temp, humidity, wind, playtennis)
+ from tennis;
+*/
+
+  insert into mushroom values 
+(1,1,'p','f','y','n','f','y','f','c','n','b','t','?','s','s','w','w','p','w','o','e','w','v','p'),
+(2,1,'p','x','s','b','t','f','f','c','b','h','t','b','s','s','w','w','p','w','o','p','h','s','u'),
+(3,1,'e','x','y','n','t','a','f','','b','w','e','r','s','y','w','w','p','w','o','p','k','y','p'),
+(4,1,'e','x','y','n','t','n','f','c','b','w','t','b','s','s','g','g','p','w','o','p','k','v','d'),
+(5,1,'e','k','s','n','f','n','a','c','b','y','e','?','s','s','o','o','p','o','o','p','n','c','l'),
+(6,1,'p','k','y','e','f','s','f','c','n','b','t','?','k','s','w','p','p','w','o','e','w','v','p'),
+(7,1,'e','b','s','w','f','n','f','w','b','g','e','?','k','k','w','w','p','w','t','p','w','s','g'),
+(8,1,'p','f','s','w','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','v','g'),
+(9,1,'p','f','f','y','f','f','f','c','b','h','e','b','k','k','b','n','p','w','o','l','h','y','d'),
+(10,1,'e','f','f','n','t','n','f','c','b','n','t','b','s','s','w','g','p','w','o','p','n','y','d'),
+(11,1,'e','f','f','g','f','n','f','w','b','n','t','e','f','f','w','w','p','w','o','e','k','a','g'),
+(12,1,'e','f','f','w','f','n','f','w','b','n','t','e','f','s','w','w','p','w','o','e','n','s','g'),
+(13,1,'e','f','s','n','f','n','f','c','b','w','e','b','y','y','n','n','p','w','t','p','w','y','d'),
+(14,1,'e','f','f','n','t','n','f','c','b','w','t','b','s','s','g','w','p','w','o','p','k','v','d'),
+(15,1,'e','b','s','n','f','n','a','c','b','o','e','?','s','s','o','o','p','o','o','p','n','c','l'),
+(16,1,'p','k','y','e','f','y','f','c','n','b','t','?','k','k','p','w','p','w','o','e','w','v','d'),
+(17,1,'e','f','f','n','f','n','f','w','b','h','t','e','s','f','w','w','p','w','o','e','n','a','g'),
+(18,1,'p','x','y','n','f','s','f','c','n','b','t','?','k','s','p','w','p','w','o','e','w','v','l'),
+(19,1,'e','x','f','n','f','n','f','w','b','n','t','e','f','s','w','w','p','w','o','e','n','a','g'),
+(20,1,'e','f','f','n','t','n','f','c','b','w','t','b','s','s','w','g','p','w','o','p','n','v','d'),
+(21,1,'p','x','f','y','f','f','f','c','b','h','e','b','k','k','p','b','p','w','o','l','h','y','d'),
+(22,1,'p','f','s','w','t','f','f','c','b','w','t','b','f','f','w','w','p','w','o','p','h','v','g'),
+(23,1,'e','f','f','g','t','n','f','c','b','u','t','b','s','s','w','w','p','w','o','p','k','y','d'),
+(24,1,'e','f','y','n','t','n','f','c','b','p','t','b','s','s','g','g','p','w','o','p','k','y','d'),
+(25,1,'e','x','y','n','t','n','f','c','b','w','t','b','s','s','w','w','p','w','o','p','k','v','d'),
+(26,1,'p','f','s','b','t','f','f','c','b','h','t','b','f','s','w','w','p','w','o','p','h','s','g'),
+(27,1,'e','b','y','w','t','l','f','c','b','g','e','c','s','s','w','w','p','w','o','p','k','s','m'),
+(28,1,'e','f','s','y','t','l','f','w','n','p','t','b','s','s','w','w','p','w','o','p','n','v','d'),
+(29,1,'p','f','y','n','f','n','f','c','n','w','e','?','k','y','w','n','p','w','o','e','w','v','d'),
+(30,1,'e','f','y','n','t','n','f','c','b','w','t','b','s','s','g','w','p','w','o','p','k','y','d'),
+(31,1,'p','x','s','n','f','f','f','c','n','b','t','?','k','k','p','w','p','w','o','e','w','v','l'),
+(32,1,'e','x','f','n','t','n','f','c','b','p','t','b','s','s','p','w','p','w','o','p','k','v','d'),
+(33,1,'e','x','y','w','t','l','f','c','b','n','e','c','s','s','w','w','p','w','o','p','n','n','m'),
+(34,1,'e','x','s','n','f','n','f','w','b','n','t','e','s','s','w','w','p','w','o','e','k','a','g'),
+(35,1,'p','f','y','n','f','f','f','c','n','b','t','?','k','s','w','w','p','w','o','e','w','v','d'),
+(36,1,'p','x','y','g','f','f','f','c','b','h','e','b','k','k','n','n','p','w','o','l','h','v','d'),
+(37,1,'e','k','s','w','f','n','f','w','b','p','e','?','k','k','w','w','p','w','t','p','w','n','g'),
+(38,1,'e','x','f','n','f','n','f','c','n','p','e','e','s','s','w','w','p','w','o','p','k','v','u'),
+(39,1,'p','x','f','p','f','c','f','w','n','g','e','b','s','s','w','w','p','w','o','p','k','s','d'),
+(40,1,'e','x','f','w','t','l','f','w','n','p','t','b','s','s','w','w','p','w','o','p','n','v','d'),
+(41,1,'p','x','f','g','f','f','f','c','b','h','e','b','k','k','p','b','p','w','o','l','h','y','d'),
+(42,1,'e','f','f','e','t','n','f','c','b','n','t','b','s','s','g','w','p','w','o','p','n','y','d'),
+(43,1,'e','x','y','n','t','n','f','c','b','n','t','b','s','s','w','g','p','w','o','p','k','v','d'),
+(44,1,'p','f','y','b','t','n','f','c','b','r','e','b','s','s','w','w','p','w','t','p','r','v','g'),
+(45,1,'e','f','f','e','t','n','f','c','b','p','t','b','s','s','p','g','p','w','o','p','k','y','d'),
+(46,1,'e','x','s','n','f','n','f','w','b','h','t','e','s','s','w','w','p','w','o','e','n','a','g'),
+(47,1,'p','x','s','b','t','f','f','c','b','h','t','b','f','s','w','w','p','w','o','p','h','v','u'),
+(48,1,'p','x','y','g','f','f','f','c','b','h','e','b','k','k','p','p','p','w','o','l','h','y','p'),
+(49,1,'p','x','y','y','f','f','f','c','b','h','e','b','k','k','n','b','p','w','o','l','h','y','p'),
+(50,1,'e','f','s','n','f','n','a','c','b','o','e','?','s','s','o','o','p','n','o','p','b','v','l'),
+(51,1,'e','x','s','y','t','a','f','c','b','k','e','c','s','s','w','w','p','w','o','p','n','n','g'),
+(52,1,'p','x','y','y','f','f','f','c','b','h','e','b','k','k','b','p','p','w','o','l','h','v','g'),
+(53,1,'e','x','f','e','t','n','f','c','b','n','t','b','s','s','w','p','p','w','o','p','n','v','d'),
+(54,1,'p','f','f','g','f','f','f','c','b','g','e','b','k','k','n','n','p','w','o','l','h','y','p'),
+(55,1,'e','x','y','y','t','l','f','c','b','k','e','c','s','s','w','w','p','w','o','p','n','n','m'),
+(56,1,'p','k','s','n','f','y','f','c','n','b','t','?','s','k','w','p','p','w','o','e','w','v','d'),
+(57,1,'e','f','y','y','t','l','f','c','b','p','e','r','s','y','w','w','p','w','o','p','k','s','g'),
+(58,1,'e','b','y','y','t','l','f','c','b','k','e','c','s','s','w','w','p','w','o','p','k','n','m'),
+(59,1,'e','k','y','b','t','n','f','c','b','w','e','?','s','s','w','e','p','w','t','e','w','c','w'),
+(60,1,'e','x','s','n','f','n','a','c','b','o','e','?','s','s','o','o','p','n','o','p','b','v','l'),
+(61,1,'p','x','f','g','f','f','f','c','b','p','e','b','k','k','p','b','p','w','o','l','h','y','d'),
+(62,1,'p','k','s','n','f','y','f','c','n','b','t','?','k','k','p','w','p','w','o','e','w','v','p'),
+(63,1,'p','k','s','n','f','s','f','c','n','b','t','?','s','k','p','w','p','w','o','e','w','v','d'),
+(64,1,'p','x','s','w','f','c','f','w','n','u','e','b','s','s','w','w','p','w','o','p','n','s','d'),
+(65,1,'e','f','s','n','f','n','f','w','b','p','t','e','s','f','w','w','p','w','o','e','n','s','g'),
+(66,1,'e','x','y','r','f','n','f','c','n','p','e','?','s','f','w','w','p','w','o','f','h','v','d'),
+(67,1,'e','x','y','y','t','a','f','c','b','n','e','c','s','s','w','w','p','w','o','p','n','s','g'),
+(68,1,'e','k','f','w','f','n','f','w','b','p','e','?','s','k','w','w','p','w','t','p','w','s','g'),
+(69,1,'e','x','f','e','t','n','f','c','b','u','t','b','s','s','g','w','p','w','o','p','k','y','d'),
+(70,1,'e','x','y','w','t','a','f','c','b','k','e','c','s','s','w','w','p','w','o','p','n','n','g'),
+(71,1,'e','x','f','g','t','n','f','c','b','p','t','b','s','s','p','p','p','w','o','p','k','v','d'),
+(72,1,'p','x','y','n','f','s','f','c','n','b','t','?','k','k','w','p','p','w','o','e','w','v','p'),
+(73,1,'e','x','y','y','t','l','f','c','b','g','e','c','s','s','w','w','p','w','o','p','n','s','g'),
+(74,1,'e','f','y','e','t','n','f','c','b','u','t','b','s','s','w','p','p','w','o','p','k','y','d'),
+(75,1,'e','x','f','g','t','n','f','c','b','n','t','b','s','s','w','g','p','w','o','p','n','v','d'),
+(76,1,'p','f','s','g','t','f','f','c','b','h','t','b','s','s','w','w','p','w','o','p','h','s','u'),
+(77,1,'e','x','f','n','t','n','f','c','b','n','t','b','s','s','g','p','p','w','o','p','k','y','d'),
+(78,1,'e','f','f','n','t','n','f','c','b','u','t','b','s','s','w','w','p','w','o','p','n','v','d'),
+(79,1,'p','f','f','g','f','f','f','c','b','g','e','b','k','k','b','p','p','w','o','l','h','v','p'),
+(80,1,'e','x','f','e','t','n','f','c','b','w','t','b','s','s','p','w','p','w','o','p','n','y','d'),
+(81,1,'e','x','y','e','t','n','f','c','b','w','t','b','s','s','p','p','p','w','o','p','n','y','d'),
+(82,1,'e','f','f','g','t','n','f','c','b','u','t','b','s','s','g','p','p','w','o','p','k','y','d'),
+(83,1,'e','f','f','e','t','n','f','c','b','n','t','b','s','s','w','p','p','w','o','p','n','y','d'),
+(84,1,'p','b','s','w','t','n','f','c','b','g','e','b','s','s','w','w','p','w','t','p','r','v','m'),
+(85,1,'p','f','y','b','t','n','f','c','b','w','e','b','s','s','w','w','p','w','t','p','r','v','g'),
+(86,1,'p','f','y','w','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','n','v','g'),
+(87,1,'e','x','s','w','f','n','f','w','b','g','e','?','k','s','w','w','p','w','t','p','w','n','g'),
+(88,1,'e','f','s','n','f','n','f','w','b','k','t','e','f','s','w','w','p','w','o','e','k','s','g'),
+(89,1,'e','f','y','n','t','n','f','c','b','u','t','b','s','s','w','w','p','w','o','p','k','v','d'),
+(90,1,'p','x','s','p','f','c','f','w','n','g','e','b','s','s','w','w','p','w','o','p','k','s','d'),
+(91,1,'p','f','s','w','t','p','f','c','n','k','e','e','s','s','w','w','p','w','o','p','k','v','u'),
+(92,1,'p','x','y','g','f','f','f','c','b','p','e','b','k','k','p','b','p','w','o','l','h','y','g'),
+(93,1,'e','f','y','g','t','n','f','c','b','u','t','b','s','s','g','p','p','w','o','p','n','v','d'),
+(94,1,'p','x','f','y','f','f','f','c','b','g','e','b','k','k','b','b','p','w','o','l','h','v','g'),
+(95,1,'e','f','f','e','t','n','f','c','b','n','t','b','s','s','g','g','p','w','o','p','k','y','d'),
+(96,1,'p','x','s','n','f','y','f','c','n','b','t','?','s','k','p','p','p','w','o','e','w','v','p'),
+(97,1,'p','x','s','n','f','f','f','c','n','b','t','?','s','k','p','p','p','w','o','e','w','v','p'),
+(98,1,'p','f','y','n','f','f','f','c','n','b','t','?','s','s','p','w','p','w','o','e','w','v','p'),
+(99,1,'e','x','y','n','t','a','f','c','b','w','e','r','s','y','w','w','p','w','o','p','k','s','p'),
+(100,1,'e','f','s','g','t','n','f','c','b','w','e','b','s','s','w','w','p','w','t','p','w','y','p');
+
+
+insert into seq values (0); 
+ 
+
+ select classify (t.recid,  t.col, t.val, t.yorn, 0, '-'  )
+ from (select  dissemble(seqno, c ,
+capshape  ,
+capsurface ,
+capcolour ,
+bruise ,
+odor ,
+attchmnt ,
+spacing ,
+size ,
+colour ,
+shape ,
+root ,
+sAbv ,
+sBelw ,
+cAbv ,
+cBelw ,
+vType ,
+vColour ,
+rNumber ,
+rType ,
+sColour ,
+pop ,
+habitat )
+  as (recid, col, val, yorn) 
+from mushroom) as t;
+
+insert into stdout select  seqno, col, yorn, parent, pvalue, enumber, pnumber from result; 

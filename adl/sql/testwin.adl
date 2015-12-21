@@ -1,0 +1,33 @@
+aggregate mymin(i int): int{
+ table mSoFar(m int);
+ initialize: {
+   insert into mSoFar values(i);
+ }
+ iterate: {
+   update mSoFar set m = i where i < m;
+ }
+ terminate: {
+   insert into return select m from mSoFar;
+ }
+};
+
+window aggregate mymin(i int):int {
+
+  initialize: iterate:
+  {
+        delete from inwindow where inwindow.i > i;
+        insert into return values(oldest().i);
+  }
+  expire:
+  {
+
+  }
+};
+
+table t (a int, b int) memory;
+
+
+insert into t values(0, 1),(0, 2),(0, 3),(1, 7),(1, 6),(1, 8),(1, 9), (0, 7), (0, 8), (0, 2), (0, 4), (0, 6), (0, 7), (0, 3), (0, 8), (0, 7), (0, 4), (0, 5), (0, 6), (0, 8);
+
+select mymin(b) OVER (ROWS 3 preceding) AS b
+from t;

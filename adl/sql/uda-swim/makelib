@@ -1,0 +1,5 @@
+#!/bin/sh
+LIBDIR=${ATLAS_HOME}/lib
+INCDIR=${ATLAS_HOME}/include
+
+g++ -shared -o $1.so -fPIC -I${INCDIR} $1.cc ${LIBDIR}/libswimfis.a ${LIBDIR}/libatlas.a ${LIBDIR}/libdb.a ${LIBDIR}/libimdb.a ${LIBDIR}/libdbug.a -lmm

@@ -1,0 +1,29 @@
+AGGREGATE cat_avg(tuple_type int, auction_id int, initial_price int, category_id int, expire_date timestamp, b_auc_id int, bid_price int, in_time timestamp): (cat_id int, avg_price int)
+{
+    TABLE open_auctions(aid int, price int, cid int, expire timestamp) MEMORY;
+    TABLE cat_avg_tmp(category int, cur_total int, cur_count int) MEMORY;
+
+    INITIALIZE :
+    ITERATE :
+    {
+
+	insert into stdout values(tuple_type, auction_id, initial_price, category_id, expire_date, b_auc_id, bid_price, in_time);
+
+	insert into open_auctions values(auction_id, initial_price, category_id, expire_date) where tuple_type = 0;
+
+	insert into cat_avg_tmp values(category_id, 0, 0) where tuple_type = 0 and not exists (select category from cat_avg_tmp where category = category_id);
+
+	insert into stdout select 'category', category, 'has expire!' from cat_avg_tmp c where exists (select * from open_auctions where expire < in_time and cid = c.category);
+	insert into stdout select o.cid, 'sum:', sum(o.price) from open_auctions o where o.expire < in_time group by o.cid;
+	insert into stdout select o.cid, 'count:', count(o.price) from open_auctions o where o.expire < in_time group by o.cid;
+
+	update cat_avg_tmp set cur_total = cur_total + (select sum(o.price) from open_auctions o where cat_avg_tmp.category = o.cid), cur_count = cur_count + (select count(o2.price) from open_auctions o2 where cat_avg_tmp.category = o2.cid) where exists (select * from open_auctions where expire < in_time and cid = cat_avg_tmp.category);
+
+	insert into return select category, cur_total/cur_count from cat_avg_tmp where cur_count > 0 and exists (select * from open_auctions where expire < in_time);
+
+	delete from open_auctions where expire < in_time;
+
+	update open_auctions set price = bid_price where tuple_type = 1 and expire >= in_time and price < bid_price and aid = b_auc_id;
+	insert into stdout select 'update price!', aid, price from open_auctions where tuple_type = 1 and expire >= in_time and aid = b_auc_id;
+    }
+};

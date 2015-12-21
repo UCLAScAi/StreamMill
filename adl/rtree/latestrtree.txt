@@ -1,0 +1,207 @@
+RTree Implementation Documentation
+
+This RTree implementation is based on the original spatial data
+structure described in the paper by Antonin Guttman [1]. This
+document describes the data structures involved in implementing
+the RTree. In order to fulfill specifications to allow for spatial
+data storage on the R-Tree, we needed to make sure we had an
+efficient data structure that allowed for operational
+functionality, including insertion, deletion, searching. Both of
+our databases begin with a super-structure. In index.db we have a
+super block that specifies the number of free blocks, total
+blocks, and block length we have set in the database. The block
+length is easily adjustable. A larger block length allows for more
+nodes to be pointed to per level. In our sample case, we have a
+block length of 1024. In index.db we have a super block that
+specifies the number of free blocks, total blocks, and block
+length we have set in the database. The block length is easily
+adjustable. A larger block length allows for more nodes to be
+pointed to per level. In our sample case, we have a block length
+of 1024. In data.db we have a supertuple that specifies the same
+three variants.
+
+
+We use two databases to implement the structure; one as the RTree
+index, the other for record storage. The basic entry we use
+(represented by dp in the diagrams) consists of 5 integers (20
+bytes). Four integers are for the entry's rectangle coordinates
+(upper left corner (x1,y1) and lower right corner (x2,y2)) and one
+for the offset pointer (for non-leaf nodes this pointer points to
+another node inside index.db, or for leaf nodes this pointer
+points to a tuple inside data.db).  For a 1024 block size, we can
+have 50 entries per block (1 byte for ln, 12 bytes for ni, and
+50*20 bytes for the entries. In this paper we define M as the
+maximum and m as the minimum number of entries in a node.
+
+The tree is traversed through the pointers in the blocks. For index.db, the 
+root node's lp points to the next block. The super block's fb points to the 
+next free block. Each free block's first node is a pointer to the next free 
+block. If there are any free blocks inserted, we will take the next lowest 
+free block's fb and make that the new free block pointer. The next lowest 
+free block's fb will then point to the newest free block.
+
+
+Searching [Guttman: section 3.1]
+To search, we specify a rectangular coordinate, starting at a given root 
+node T. We return all nodes that overlap those coordinates within root T. If 
+T is not a leaf, we check each entry E to see if Ei overlaps S. For all 
+overlapping entries, we recursively search upon the  tree whose root node is 
+pointed to by E. If T is a leaf we check all entries E to see if they 
+overlap. If they do, E is a qualifying record and we return it.
+
+Insertion [Guttman: section 3.2]
+Insertion is similar to the common BTree implementation where new index 
+records are added to leaves and overflowed nodes are split resulting in node 
+propagation up the tree. To insert a node E, first invoke ChooseLeaf which 
+descends from the node until it finds the leaf with the least enlargement 
+result, and set N to be the root node. If it is a leaf node and isn't full, 
+we install E, otherwise we invoke SplitNode to get two new nodes L and LL 
+both containing E and the entries of the old node. We propagate the changes 
+by calling AdjustTree, which ascends from a leaf node L to the root, 
+adjusting covering rectangles and propagating node splits as necessary. If 
+the node propagation caused the root to split, we make a new root where the 
+children are the two resulting nodes.
+
+Deletion [Guttman: section 3.3]
+In deletion we specify index record E and root node T and invoke FindLeaf to 
+locate the leaf node L containing E. If T isn't a leaf node, it checks to 
+see if each entry F in T overlaps the specified E. For each entry, we 
+recursively call FindLeaf to parse the entries to find the node that points 
+to E, or until all overlapping entries have been checked. For each T that is 
+a leaf, we check for entries matching with E. If E is found we return T. We 
+stop if the record was not found. Otherwise, we remove E from L/T. 
+Afterwards we propagate the changes up with CondenseTree, passing L. 
+CondenseTree will eliminate the node L if it has too few entries and 
+propagate the node elimination upwards as needed. The sides of the nodes / 
+rectangles on the path of upward propagation to the root node are made 
+smaller if  possible. If the root node has only one child after the tree has 
+been adjusted make the child the new root.
+
+Node Splits [Guttman: section 3.5]
+In the scenario where we have to split a node because either we have N 
+(number of entries) < m or N > M. To split the tree we have three options: 
+an exhaustive algorithm, a quadratic cost algorithm, and a linear-cost 
+algorithm. The exhaustive algorithm is the most straightforward way, but not 
+surprisingly unfeasible for databases with many nodes. The number of 
+possibilities is approximately 2^M-1.
+
+The quadratic-cost algorithm attempts to find a small-area split for the 
+database. It is efficient, effective, but not complete in search space (not 
+guaranteed to find the smallest area possible). It works by picking two of 
+M+1 entries that would waste the most space if paired together. For each 
+step, we call PickNext and select the next entry that has the largest 
+difference between that new entry and the groups; ABS(MAX(d1-d2)) where d1 
+is the distance between the object and the first group and d2 the same for 
+the second group.
+
+The linear-cost algorithm, which is the one we use in our implementation) is 
+similar to the quadratic algorithm except in its pick seed algorithm. This 
+selects the entry pairs comprised of the rectangle with the highest low side 
+and the other one, the one with the lowest high side. This is done along all 
+dimensions. We then normalize the separations according the width of the set 
+along the corresponding dimension and select the pair with the greatest 
+normalized separation along any dimension. PickNext simply chooses any of 
+the remaining entries.
+
+Graphical Representation of the databases:
+
++--------------------+
+|fb|lfb|mn|mx|tb|bl|.| superblock
++--------------------+
+|ln|ni|dp|dp|.|.|.|  | root
++--------------------+
+|fb|                 |
++--------------------+
+|                 |lp| leaf1
++--------------------+
+|                 |lp| leaf2
++--------------------+
+|fb|                 |
++--------------------+
+|        .           |
+|        .           |
+|        .           |
+|        .           |
++--------------------+
+|                  |0| leafN
++--------------------+
+
+index.db
+
++---------------------------+
+|1|12|20|.|.|.|......    |20|  - size in bytes of each data segment
++---------------------------+    for each block.
+
+
+- Under superblock
+* fb means head of free block list. It points to the next free block.
+* lfb means tail of free block list. It points to the last free block.
+* tb means total number of blocks in current file
+* bl means block length (1024, 2048, etc.).
+* mn means minimum number of entries per node
+* mx means maximum number of entries per node
+
+- Under root
+* ln means if it is a leaf, non-leaf node block, or freeblock.
+* lp means leaf node pointer
+  the lp in the root node points to the first child leaf node
+  the lp in each child leaf node points to its own child leaf node(s)
+* ni means number of child or tuple node pointers in block.
+* dp means data structure or leaf/non-leaf node pointer. We can have
+multiple pointers per row which represent the nodes on the R-tree. If the 
+block
+you are currently on is a non-leaf node block, then dp will point to another
+block in index.db. If the block you are currently on is a leaf node block, 
+then
+dp will point to a block in data.db.
+
+The second block in index.db is always the root block. On the second block, 
+we have one byte
+
+that specifies whether or not the row is a leaf node or a non-leaf node. 
+Leaf nodes point to
+
+items in the data.db. Non-leaf nodes point to other non-leaf nodes or 
+leaf-nodes.
+
+The second item (three integers - 12 bytes) specifies how many pointers to
+leaf/non-leaf nodes or data records we have in that row.
+
+The third and onward items (five integers - 20 bytes) are the pointers to 
+data
+structures in data.db or other leaf/non-leaf nodes.
+
+
+
++--+--+--------------+
+|fb|tb|	             | supertuple
++--+--+--------------+
+|data                | data tuple1
++--------------------+
+|data                | data tuple2
++--------------------+
+|                    |
++--------------------+
+|                    |
++--------------------+
+|                    |
++--------------------+
+|        .           |
+|        .           |
+|        .           |
+|        .           |
++--------------------+
+|                    | data tuple
++--------------------+
+
+data.db
+
+- Under supertuple
+  * fb means head of free block list. It points to the next free block.
+  * tb means total number of blocks in current file
+
+- Under a free tuple
+  * The first integer is a pointer pointing to next free tuple in
+    the free-chain.  If the pointer is 0, it means the end of the
+    chain.  Then the next free tuple will be grabbed from the end
+    of the storage file which is recorded in tb.

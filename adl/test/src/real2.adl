@@ -1,0 +1,9 @@
+table test(a real, b real);
+
+insert into stdout values(1,2),(1.5,2),(2.5,3.5);
+insert into test values(1,2),(1.5,2),(2.5,3.5);
+
+insert into stdout
+SELECT a,b FROM test;
+
+

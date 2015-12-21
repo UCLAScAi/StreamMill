@@ -1,0 +1,24 @@
+table packets(pID int, src int, dest int, length int, time int) ;
+/*source 'packets.txt';*/
+Table plog(src int, dest int, count int, length int, lastTime int);
+aggregate flowLog(pSrc int, pDest int, pLength int, pTime int):int
+{
+initialize:iterate:{
+        update plog
+        set count = count + 1,
+            length = length +pLength,
+            lastTime=pTime
+        where pTime - lastTime < 2 *60 and src = pSrc and dest = pDest;
+        insert into plog values(pSrc, pDest, 1, pLength, pTime)
+        where SQLCODE > 0;
+}
+terminate:{
+	insert into stdout values( 'src', 'dest', 'count', 'length', 'Last Packet time');
+	select src, dest, count, length, lastTime
+	from plog;
+}
+};
+
+load from 'packets.txt' into packets;
+select flowLog(src, dest, length, time)
+from packets;

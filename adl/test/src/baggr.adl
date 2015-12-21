@@ -1,0 +1,9 @@
+table test(a int, b int);
+
+insert into test values(1,2),(2,3), (1,4),(2,3);
+
+insert into stdout
+select a from test;
+
+insert into stdout
+SELECT count(a), sum(a), min(a), max(a), avg(a*100) FROM test;

@@ -1,0 +1,17 @@
+AGGREGATE new_user(tuple_type int, seller_id int, initial_price int, person_id int, name char(50), in_time timestamp): (per_id int, per_name char(50), start_price int)
+{
+    TABLE person_tmp(pid int, pname char(50), rtime timestamp);
+    TABLE auction_tmp(sid int, price int, intime timestamp);
+
+    INITIALIZE :
+    ITERATE :
+    {
+	insert into person_tmp values(person_id, name, in_time) where tuple_type = 1;
+	insert into auction_tmp values(seller_id, initial_price, in_time) where tuple_type = 0;
+	
+	delete from person_tmp where (rtime + 12 hours) < in_time;
+	delete from auction_tmp where (intime + 12 hours) < in_time;
+
+	insert into return select p.pid, p.pname, a.price from person_tmp p, auction_tmp a where p.pid = a.sid;
+    }
+};

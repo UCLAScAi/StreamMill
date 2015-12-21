@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>IM_REL_cursor-&gt;c_get</TITLE>
+<META NAME="description" CONTENT="IM_REL_cursor-&gt;c_get">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html150"
+ HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html147"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html141"
+ HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html149"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html151"
+ HREF="node12.html">IM_REL_cursor-&gt;c_put</A>
+<B> Up:</B> <A NAME="tex2html148"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html142"
+ HREF="node10.html">IM_REL-&gt;cursor</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00038000000000000000">
+<FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get</A>
+</H2>
+<PRE>
+#include &lt;im_db.h&gt;
+int IM_REL_cursor-&gt;c_get(IM_RELC *cursor, DBT *key, DBT *data, u_int32_t flags);
+</PRE><DL>
+<DT><STRONG>Description</STRONG>
+<DD> <BR>
+<P>
+The flags parameter must be set to one of the following values: 
+  <DL>
+<DT><STRONG><FONT SIZE="-1"><I>DB_FIRST</I></FONT></STRONG>
+<DD> <BR>
+The cursor is set to reference the first tuple of the relation,
+    and that pair is returned.
+
+<P>
+If the database is empty, <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return
+    <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_NEXT</I></FONT></STRONG>
+<DD> <BR>
+If the cursor is not yet initialized, <FONT SIZE="-1"><I>DB_NEXT</I></FONT> is identical to
+    <FONT SIZE="-1"><I>DB_FIRST</I></FONT>.
+
+<P>
+Otherwise, the cursor is moved to the next tuple of the database,
+    and that pair is returned.
+
+<P>
+If the cursor is already on the last record in the database,
+    <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_LAST</I></FONT></STRONG>
+<DD> <BR>
+The cursor is set to reference the last tuple of the relation,
+    and that pair is returned.
+
+<P>
+If the database is empty, <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return
+    <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_PREV</I></FONT></STRONG>
+<DD> <BR>
+If the cursor is not yet initialized, <FONT SIZE="-1"><I>DB_PREV</I></FONT> is identical to
+    <FONT SIZE="-1"><I>DB_LAST</I></FONT>.
+
+<P>
+Otherwise, the cursor is moved to the previous tuple of the database,
+    and that pair is returned.
+
+<P>
+If the cursor is already on the first record in the database,
+    <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_CURRENT</I></FONT></STRONG>
+<DD> <BR>
+Return the tuple currently referenced by the cursor. 
+
+<P>
+If the cursor is not yet initialized, the <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get function
+    will return EINVAL.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_SET</I></FONT></STRONG>
+<DD> <BR>
+Move the cursor to the specified key/data pair of the database,
+    and return the datum associated with the given key. 
+
+<P>
+In the presence of duplicate key values, <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get
+    will return the first data item for the given key. 
+
+<P>
+If no matching keys are found, <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return
+    <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_GET_BOTH</I></FONT></STRONG>
+<DD> <BR>
+The <FONT SIZE="-1"><I>DB_GET_BOTH</I></FONT> flag is identical to the <FONT SIZE="-1"><I>DB_SET</I></FONT> flag, except
+    that both the key and the data arguments must be matched by the
+    key and data item in the database.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_NEXT_DUP</I></FONT></STRONG>
+<DD> <BR>
+Return the next tuple in the hash-chain, i.e., next tuple having
+    same hash key as current one, when hash index exists.  Hash-chain
+    is not maintained if hash index doesn't exist.
+    <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT> if hash-chain
+    reaches its end.
+
+<P>
+If the cursor is not yet initialized, the <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get
+    function will return EINVAL.
+
+<P>
+<DT><STRONG><FONT SIZE="-1"><I>DB_GET_OIDOFKEY</I></FONT></STRONG>
+<DD> <BR>
+Retrieve OID of the tuple currently referenced by the cursor.  The
+    returned OID is place in `data' argument.
+  </DL>
+<P>
+`Tombstoned' tuples are considered deleted and will be ignored
+  during cursor searching.
+<DT><STRONG>Return Value</STRONG>
+<DD> <BR>
+If no matching keys are found, <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get will return
+   <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.  Otherwise, the <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get function
+   returns a non-zero error value on failure and 0 on success.
+
+<P>
+If <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get fails for any reason, the state of the
+   cursor will be unchanged.
+
+<P>
+<DT><STRONG>Error</STRONG>
+<DD> <BR>
+The <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get function may fail and return a non-zero
+error for errors specified for other <FONT SIZE="-1"><I>IM_DB</I></FONT> and C library or system
+functions.
+
+<P>
+<DT><STRONG>Sample Call</STRONG>
+<DD> 
+<PRE>
+DBT key, data;
+
+if((ret = im_rel_cursor-&gt;c_get(relcp, &amp;key, &amp;data, DB_FIRST)) != 0)
+    return ERROR;
+</PRE></DL>
+<P>
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html150"
+ HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html147"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html141"
+ HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html149"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html151"
+ HREF="node12.html">IM_REL_cursor-&gt;c_put</A>
+<B> Up:</B> <A NAME="tex2html148"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html142"
+ HREF="node10.html">IM_REL-&gt;cursor</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

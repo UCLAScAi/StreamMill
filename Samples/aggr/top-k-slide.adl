@@ -1,0 +1,163 @@
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+
+/*
+ *	k = number of results
+ *	W = Window size
+ *	S = SlIDe size 
+ */
+AGGREGATE TopkNoOrder (k INT, W INT, S INT, Next REAL): (ID INT, Next REAL, cnt INT)
+{
+	TABLE state (maxID Int, sum real);
+	TABLE myWin (ID Int, val REAL, cnt int);
+	TABLE mySlide (ID Int, val REAL, cnt int);
+	TABLE resu (ID Int, val REAL);
+
+
+
+	AGGREGATE main (k INT, W INT,S INT, maxID INT, Next REAL): (ID INT, Next REAL, cnt INT)
+	{
+
+INITIALIZE:
+ITERATE:
+		{
+
+/*		INSERT INTO return values (11111111,1111,1111); 
+		INSERT INTO return SELECT  count(val),1111,1111 FROM mySlide; 
+		INSERT INTO return SELECT  ID, val, cnt FROM mySlide;
+*/		
+		/* moving top-k of current slide into inwindos */
+		INSERT INTO myWin SELECT ID, val, cnt FROM mySlide;
+		DELETE FROM mySlide;
+		
+		/* Reporting the results */
+/*	    INSERT INTO return   SELECT  count(val),2222,2222 FROM myWin;  
+		INSERT INTO return   SELECT  ID, val, cnt FROM myWin;
+		INSERT INTO return   values (33333333,3333,3333);
+		INSERT INTO return   SELECT  count(val),3333,3333 FROM resu; 
+		INSERT INTO return   SELECT  ID,val,0  FROM resu;
+		INSERT INTO return   values (44444444,4444,444444);
+		INSERT INTO return   SELECT  maxID, sum/(maxID-2*W), W FROM state;*/ /*average window size */
+
+		}
+TERMINATE: {
+
+}
+	};
+
+INITIALIZE:
+	{
+		INSERT INTO state VALUES (1, 1);
+		INSERT INTO mySlide VALUES (1, Next, 0);
+		INSERT INTO resu VALUES (1, Next);
+	}
+ITERATE:
+	{
+		UPDATE state SET maxID=maxID+1;
+		UPDATE state SET sum = sum + (SELECT count(val) FROM myWin)
+		WHERE maxID > 2*W; /* not considering first few results in average to get more realistic results */ 
+
+		/*INSERT INTO return SELECT maxID, sum, (SELECT count(val) FROM myWin) FROM state; */
+
+		/* Expiring the window once for each slide*/
+		DELETE FROM myWin 
+		WHERE  (SELECT maxID FROM state)% S = S-1 AND /* doing the operation every S times (sliding size) */
+			ID+W <= (SELECT maxID FROM state);
+		DELETE FROM resu 
+		WHERE (SELECT maxID FROM state)%S = S-1 AND 
+			ID+W <= (SELECT maxID FROM state);
+
+		/* keeping top k results for each slide */
+       	/* if we have duplicate values in top-k it might replace more than one item */
+		INSERT INTO mySlide Values ((SELECT maxID FROM state),Next, 0);
+		DELETE FROM mySlide 
+		WHERE
+			((SELECT count(val) FROM mySlide) > k) AND
+            (val = (SELECT min(val) FROM mySlide)); 
+
+
+		/* keeping top k results for each slide */
+		/* has problem with duplicate values */
+	/*	UPDATE mySlide SET ID=(SELECT maxID FROM state), val=Next, cnt=0
+			WHERE
+			((SELECT count(val) FROM mySlide) >= k) AND
+			(Next > (SELECT min(val) FROM mySlide)) AND
+			(val = (SELECT min(val) FROM mySlide)) AND
+			not exists (SELECT A.ID FROM mySlide AS A WHERE A.ID < mySlide.ID AND A.val=mySlide.val);
+		
+		INSERT INTO mySlide SELECT  (SELECT maxID FROM state), Next, 0
+		WHERE
+			(select count(ID) from mySlide) < k  AND
+			not exists (SELECT ID FROM mySlide WHERE mySlide.ID = (SELECT maxID FROM state));
+	*/
+		
+		/* keeping top k results */
+		/* Replacing the new tuple in topk result if its greater than the minimum*/
+		UPDATE resu SET ID=(SELECT maxID FROM state), val=Next
+			WHERE
+			(Next >= (SELECT min(val) FROM resu)) AND
+			(val = (SELECT min(val) FROM resu));
+
+
+		/* FIXME: you need a loop here 
+			not sure why the results are not distinct sometimes*/
+		/* Insert a new item from myWin into result table if it has less than k items */
+		INSERT INTO resu SELECT DISTINCT  myWin.ID, myWin.val FROM myWin
+		WHERE
+			(select count(ID) from resu) < k  AND
+			(SELECT count(val) FROM myWin
+                    WHERE
+                    not exists (SELECT ID FROM resu WHERE resu.ID = myWin.ID)) > 0 AND
+			myWin.val = (SELECT MAX(val) FROM myWin
+						 WHERE (not exists (SELECT ID FROM resu WHERE resu.ID = myWin.ID)));
+				
+		/* updating cnt in current slide  */
+		UPDATE mySlide  SET  cnt=cnt+1 
+		WHERE val <= Next and (ID <> (SELECT maxID FROM state));
+		
+		/* updating cnt in current window  */
+		UPDATE myWin  SET  cnt=cnt+1 
+		WHERE val <= Next and (ID <> (SELECT maxID FROM state));
+
+		/* pruning current window */
+		DELETE FROM   myWin  WHERE  cnt >= k;
+		
+		/* just a simple trick to use aggregate as a function since state table has exactly one raw */
+		SELECT main(k, W,S, maxID, Next) 
+			FROM state 
+			WHERE maxID % S = S-1;
+
+
+
+
+	}
+TERMINATE:
+	{
+	    INSERT INTO return   values (22222222,2222,2222); 
+	    INSERT INTO return   values (k,W,S); 
+		INSERT INTO return   SELECT  maxID, sum/(maxID-2*W), W FROM state; /*average window size */
+}
+};
+
+LOAD FROM './test' INTO traffic;
+
+
+select TopkNoOrder(30,  10000, 100, in1) from traffic;
+select TopkNoOrder(50,  10000, 100, in1) from traffic;
+select TopkNoOrder(100, 10000, 100, in1) from traffic;
+
+select TopkNoOrder(30,  10000, 200, in1) from traffic;
+select TopkNoOrder(50,  10000, 200, in1) from traffic;
+select TopkNoOrder(100, 10000, 200, in1) from traffic;
+
+select TopkNoOrder(30,  10000, 500, in1) from traffic;
+select TopkNoOrder(50,  10000, 500, in1) from traffic;
+select TopkNoOrder(100, 10000, 500, in1) from traffic;
+
+select TopkNoOrder(30,  10000, 1000, in1) from traffic;
+select TopkNoOrder(50,  10000, 1000, in1) from traffic;
+select TopkNoOrder(100, 10000, 1000, in1) from traffic;
+
+select TopkNoOrder(30,  10000, 2000, in1) from traffic;
+select TopkNoOrder(50,  10000, 2000, in1) from traffic;
+select TopkNoOrder(100, 10000, 2000, in1) from traffic;
+

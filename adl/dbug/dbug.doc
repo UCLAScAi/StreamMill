@@ -1,0 +1,104 @@
+
+
+DBUG_OFF
+
+if defined during compilation, removes all debugging from the program
+
+
+DBUG_ENTER(char *fname)
+
+marks entry to the function fname
+
+
+DBUG_RETURN(int value)
+
+DBUG_VOID_RETURN
+
+marks the return from the current function
+
+
+DBUG_PROCESS(char *pname)
+
+marks the beginning of the process pname
+
+
+DBUG_PUSH(char *state)
+
+sets up a new debugging state (see Debugging States below)
+
+
+DBUG_POP(void)
+
+restores the previous debugging state
+
+
+DBUG_FILE
+
+a file pointer which may be used to add output to the debugging trace
+
+
+DBUG_EXECUTE(char *key, C_code)
+
+if debugging is active for key, executes the C_code
+
+
+DBUG_PRINT(char *format, arg ...)
+
+if debugging is active for key, executes fprintf to DBUG_FILE using the format and args specified
+
+
+DBUG_SETJMP(setjmp_args)
+
+DBUG_LONGJMP(longjmp_args)
+
+replace setjmp() and longjmp(), allowing the debugging state to be restored properly
+
+
+
+
+d[,key...]
+
+enable debugging for the keys specified
+
+
+F[,time]
+
+delay for time tenths of a second after each output
+
+
+f[,function ...]
+
+limit debugging to the specified functions
+
+
+F mark debugger output with the source file name
+
+
+L mark debugger output with the source file line number
+
+
+n mark debugger output with the function nesting depth
+
+
+N number debugger output lines sequentially
+
+
+o[,file]
+
+write debugger output to file
+
+
+p[,processes ...]
+
+limit debugging to the specified processes
+
+
+P mark debugger output with the process name
+
+
+r reset indentation level to zero
+
+
+t[,N]
+
+enable function control flow tracing to a maximum depth of N

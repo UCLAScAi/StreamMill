@@ -1,0 +1,92 @@
+table t(id int, a1 int, a2 int, a3 int, a4 int, a5 int);
+table t1(id int, a1 int, a2 int, a3 int, a4 int, a5 int);
+
+FUNCTION dissemblet(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl); 
+}; 
+
+
+table classStat(classLbl int, cnt real) memory;
+table colStat(col int, val int, classLbl int, cnt real) memory;
+table temp(id int, cl int, cl1 int) memory;
+
+Aggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  initialize: iterate: {
+    update classStat set cnt = cnt + 1 where classLbl = classLbli and coli = numColsi;
+    /* if first instance of classLbl */
+    insert into classStat values (classLbli, 1) where SQLCODE <> 0 and coli = numColsi; 
+ 
+    update colStat set cnt = cnt + 1
+      where col = coli and val = vali and classLbl = classLbli;
+    /* if first instance of classLbl for this coli, vali combination */
+    insert into colStat values (coli, vali, classLbli, 1) where SQLCODE <> 0; 
+  }
+};
+
+Aggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  table classes(cls int, p real) memory;
+
+  Aggregate updateP(clsi int, coli int, vali int):(o real) {
+    initialize: iterate: {
+      update classes set p = p * (select cnt from colStat where col = coli and val = vali and classLbl = clsi)/(select cnt from classStat where classLbl = clsi) 
+         where exists (select cnt from colStat where col = coli and val = vali and classLbl = clsi) and cls = clsi;
+
+      /* if this combo of coli, vali, classLbli is not seen before then
+         not clear what to do? (options)
+         - set p = 0*
+         - devide p by total number of classes
+      */
+      update classes set p = 0 where cls = clsi and SQLCODE <> 0;
+    }
+  };
+
+  Aggregate mymax(a real):(b real) {
+    table t(m real) memory;
+    initialize: {
+      insert into t values(a);
+    }
+    iterate: {
+      update t set m = a where m < a;
+    }
+    terminate: {
+      insert into return select m from t;
+    }
+  }
+
+  initialize: iterate: {
+    insert into classes select distinct classLbl, 0 from classStat where coli = 1;
+    update classes set p = (select cnt from classStat where classLbl = classes.cls)
+                                /(select sum(cnt) from classStat)
+      where coli = 1;
+
+    select updateP(cls, coli, vali)
+    from classes;
+
+    insert into return select idi, classLbli, cls from classes where coli = numColsi and p = (select mymax(p) from classes) and p > 0;
+    insert into return values(idi, classLbli, -1) where coli = numColsi and SQLCODE <> 0;
+    
+    delete from classes where coli = numColsi;
+  }
+}
+
+load from '/home/hthakkar/adl/sql/train.txt' into t;
+load from '/home/hthakkar/adl/sql/test.txt' into t1;
+
+select learnClassifier(d.col, d.val, d.classLbl, 4)
+from  t, TABLE(dissemblet(a1, a2, a3, a4, a5)) AS d; 
+
+/*insert into stdout select 'clsStat', classLbl, cnt from classStat;
+insert into stdout select 'colStat', col, val, classLbl, cnt from colStat;*/
+
+insert into temp
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from  t1, TABLE(dissemblet(a1, a2, a3, a4, a5)) AS d; 
+
+/*select id, cl, cl1 from temp;*/
+
+insert into stdout values('--true classification--');
+select count(1) from temp where cl = cl1 and id > 100;
+
+insert into stdout values('--false classification--');
+select count(1) from temp where cl <> cl1 and id > 100;

@@ -1,0 +1,47 @@
+table treenodes (seqno int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+table classification (seqno int, c char(1));
+
+aggregate classify(iRecId int, iCol int,   iValue char(1)) : int
+
+ {
+  table tmp (RecId int, Col int,   Value char(1));
+  table treeid (id int);
+  initialize: 
+  iterate: 
+  {
+      insert into tmp values (iRecId, iCol, iValue) 
+      where not exists (select Col from tmp where Col=iCol);
+      
+      insert into treeid values (0) where not exists (select id from treeid where id=0);
+      
+      insert into classification select yorn from treenodes, treeid where parent=id and iCol=22;
+      
+      update treeid set id=(select col from treenodes, treeid where parent=id and iCol=22);
+      
+      update classification 
+      set c=(select t1.yorn from treenodes t1, treenodes t2, treeid t, tmp 
+      	     where t.id<>0 and t1.parent=t.id and t1.parent=t2.seqno and t2.col=Col and t1.pvalue=Value)
+      where seqno=iRecId and iValue=22;
+      
+      update treeid 
+      set id=(select t1.col from treenodes t1, treenodes t2, treeid t, tmp 
+      	     where t.id<>0 and t1.parent=t.id and t1.parent=t2.seqno and t2.col=Col and t1.pvalue=Value)
+      where  iValue=22;
+      
+  }
+  terminate: {insert into return select s from tmp;}
+ };
+
+ 
+ 
+ 
+ 
+ 
+ insert into treenodes values (1, 2, 3, 4, 5), (2, 2, 3, 5, 5);
+ insert into mincol values (3, 0.000000);
+ insert into stdout   SELECT classify(t.RecId, t.Node*3+m.Value+1, t.Col, t.Val, t.YorN) 
+ 		     FROM treenodes t, 
+                                 (SELECT tt.RecId RecId, tt.Val Value FROM treenodes tt, mincol m
+                                  WHERE tt.Col=m.Col AND m.MinGini>0 ) as m
+ 		     WHERE t.RecId = m.RecId
+ 		     GROUP BY m.Value;  

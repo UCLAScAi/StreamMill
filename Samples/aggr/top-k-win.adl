@@ -1,0 +1,76 @@
+
+
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+
+
+
+
+WINDOW AGGREGATE TopkNoOrder (Next INT): REAL
+{
+	TABLE state (max Int, sum Real);
+	TABLE myWin (id Int, val Real, cnt int);
+	TABLE resu (id Int, val Real);
+INITIALIZE:
+	{
+		INSERT INTO state VALUES (1, 1);
+		INSERT INTO myWin VALUES (1, Next, 0);
+		INSERT INTO resu VALUES (1, Next);
+	}
+ITERATE:
+	{
+		UPDATE     state   SET    max=max+1, sum=sum+(SELECT count(val) FROM myWin);
+
+		/* Expiring the window */
+		DELETE FROM  myWin  WHERE  id+10000 = (SELECT max FROM state);
+		DELETE FROM  resu    WHERE  id+10000 = (SELECT max FROM state);
+
+		/* Inserting the new value in to the window */
+		INSERT INTO       myWin  VALUES  ((SELECT max FROM state), Next, 0);
+
+		/* Replacing the new tuple in topk result if its greater than the minimum*/
+		UPDATE    resu SET id=(SELECT max FROM state), val=Next
+			WHERE
+			(Next > (SELECT min(val) FROM resu)) AND
+			(val = (SELECT min(val) FROM resu));
+
+		
+		/* Insert a new item from myWin into result table if it has less than k items */
+		INSERT INTO       resu   SELECT  myWin.id, myWin.val FROM myWin
+			WHERE
+			(select count(id) from resu) < 30  AND
+			myWin.val = (SELECT MAX(val) FROM myWin
+					WHERE
+					not exists (SELECT id FROM resu WHERE resu.id = myWin.id));
+
+		/* pruning the window */
+		UPDATE                myWin  SET  cnt=cnt+1 WHERE val <= Next and (id <> (SELECT max FROM state));
+		DELETE FROM   myWin  WHERE  cnt >= 30;
+
+
+		/* Reporting the results */
+		/*  INSERT INTO     return   values (11111.111111); */
+		/*  INSERT INTO     return   SELECT  count(val) FROM myWin;  */ /*window size */
+		/*  INSERT INTO     return   SELECT  count(val) FROM resu; */
+		/*  INSERT INTO     return   values (11111.111111);*/
+		/*  INSERT INTO     return   SELECT  val FROM resu; */
+		INSERT INTO       return   SELECT  sum/max FROM state; /*average window size */
+	}
+EXPIRE:
+	{}
+};
+
+/* load data into Points table */
+LOAD FROM './test1' INTO traffic;
+
+select TopkNoOrder(in1)
+OVER (ROWS 16 PRECEDING)
+from traffic;
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,9 @@
+DBT shared memory created!
+db: fruit: key stored.
+db: fruit: key retrieved: data was apple.
+db: fruit: key was deleted.
+DBT shared memory destroyed!
+DBT shared memory created!
+db: fruit: key stored.
+db: fruit: key retrieved: data was apple.
+db: fruit: key was deleted.

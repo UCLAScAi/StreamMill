@@ -1,0 +1,57 @@
+#!/bin/sh
+
+echo "prefix="$ATLAS_HOME>Makefile.eslc_aggr
+touch $1
+if test "$#" -eq 0
+then
+  echo 'Usage: eslc_aggr filename'
+  exit 1
+fi
+#
+# See if the filename exists:
+
+if [ ! -f "$1" ] 
+then
+    echo "Cannot find $1"
+    exit 1
+else # We found $1.
+    BASE_NAME=`echo $1`
+    FULL_NAME=$1
+fi
+
+    if [ "$WINDIR" = "" ]
+    then 
+	extralib="-ldl"
+    else 
+        extralib=""
+    fi
+
+#
+echo "AXLDIR=\$(prefix)" >> Makefile.eslc_aggr
+echo "LIBDIR=\$(AXLDIR)/lib/">>Makefile.eslc_aggr
+echo "BERKELEY_INC=\${prefix}/include" >> Makefile.eslc_aggr
+echo "BERKELEY_LIB=\${prefix}/lib/libdb.a" >> Makefile.eslc_aggr
+echo "ADL_INC=\${AXLDIR}/include" >> Makefile.eslc_aggr
+echo "ADL_LIB=\$(LIBDIR)/libatlas.a" >> Makefile.eslc_aggr
+echo "IMDB_LIB=\$(LIBDIR)/libimdb.a" >> Makefile.eslc_aggr
+echo "RTREE_LIB=\$(LIBDIR)/librtree.a" >> Makefile.eslc_aggr
+#############################
+
+echo "CXX=g++ -g" >> Makefile.eslc_aggr
+#
+#
+#echo "${BASE_NAME}: ${BASE_NAME}.so" >> Makefile.eslc_aggr
+echo "${BASE_NAME}.so: " >> Makefile.eslc_aggr
+echo "	adlc ${BASE_NAME}.aggr" >> Makefile.eslc_aggr
+echo "	\${CXX} -g -shared -fPIC -Iesl -I../rtree -I../im_db -I. -I.. -o ${BASE_NAME}.so ${BASE_NAME}.cc \${ADL_LIB} -ldl -lmm ../sql/libatlas.a \${BERKELEY_LIB} \${IMDB_LIB} ../dbug/libdbug.a $extralib" >> Makefile.eslc_aggr
+echo "	cp ${BASE_NAME}.so ../exe/" >> Makefile.eslc_aggr
+
+echo "">> Makefile.eslc_aggr
+
+
+make -f Makefile.eslc_aggr
+
+exit 0
+
+
+

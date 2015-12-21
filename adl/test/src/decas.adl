@@ -1,0 +1,5 @@
+table test(a int,b int) as values(0,0);
+table test2(a int, b int) as SELECT a,b FROM test;
+
+insert into stdout SELECT a,b FROM test;
+insert into stdout SELECT a,b FROM test2;

@@ -1,0 +1,52 @@
+table stations(id int, speed int) memory;
+table stavg(sid int, totspeed int, totreads int) memory;
+table params(a char(10), b char(10)) memory;
+
+aggregate computeavg(id int, speed int):(a int, tsp int, treads int) {
+ table a as dynamic stavg;
+ initialize: iterate: {
+   update a
+   set totspeed = totspeed + speed, totreads = totreads + 1
+   where sid = id;
+  
+   /* Assuming SQLCODE=0, when above stmt does nothing */
+   insert into a values (id, speed, 1) where SQLCODE <> 0;
+ }
+};
+
+aggregate tmp_test(a int, b int): (x int, y int) {
+ initialize: iterate: {
+  select a, b;
+ }
+};
+
+modeltype naivebayesian {
+  sharedtables(stavg),
+  computeavg (uda computeavg,
+         window false,
+         partables(params),
+         parameters(a int, b int, c timestamp, d real)
+        ),
+  test (uda computeavg,
+        window false,
+        partables(params),
+        parameters(a int)
+       ),
+  flow xyz (
+         create stream lmn as (run computeavg on INSTREAM);
+         run computeavg on INSTREAM;
+         insert into OUTSTREAM run computeavg on INSTREAM;
+         insert into OUTSTREAM select a, tsp, treads from lmn;
+       )
+};
+
+/*
+insert into stations values (1, 2), (3, 4), (2, 5), (1, 18), (3, 12);
+run naivebayesian.computeavg on stations using(a=5, b=18.2, c='abc', d=timeofday());
+select sid, totspeed, totreads
+from stavg;
+select 'he', sid, totspeed, totreads
+from naivebayesian_stavg;
+*/
+
+run naivebayesian.xyz on stations;

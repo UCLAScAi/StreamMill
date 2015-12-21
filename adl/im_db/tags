@@ -1,0 +1,461 @@
+
+ansidecl.h,995
+#define	_ANSIDECL_H	89,3042
+#define	PTR	102,3474
+#define	PTRCONST	103,3494
+#define	LONG_DOUBLE	104,3523
+#define	AND	106,3556
+#define	NOARGS	107,3571
+#define	VOLATILE	108,3592
+#define	SIGNED	109,3618
+#define PARAMS(PARAMS111,3642
+#define ANSI_PROTOTYPES	112,3679
+#define VPARAMS(VPARAMS114,3708
+#define VA_START(VA_START115,3737
+#define CONST	118,3831
+#define DOTS	119,3854
+#define PROTO(PROTO120,3876
+#define EXFUN(EXFUN121,3929
+#define DEFUN(DEFUN122,3968
+#define DEFUN_VOID(DEFUN_VOID123,4014
+#define	PTR	127,4078
+#define	PTRCONST	128,4098
+#define	LONG_DOUBLE	129,4119
+#define	AND	131,4147
+#define	NOARGS132,4162
+#define	const134,4254
+#define	VOLATILE136,4275
+#define	SIGNED137,4292
+#define PARAMS(PARAMS139,4308
+#define VPARAMS(VPARAMS141,4339
+#define VA_START(VA_START142,4381
+#define CONST145,4471
+#define DOTS146,4485
+#define PROTO(PROTO147,4498
+#define EXFUN(EXFUN148,4546
+#define DEFUN(DEFUN149,4581
+#define DEFUN_VOID(DEFUN_VOID150,4635
+
+db.h,10043
+#define	_DB_H_11,212
+#define	__P(__P40,943
+#define	const42,1001
+#define	__P(__P43,1015
+#define	__BIT_TYPES_DEFINED__60,1523
+#define	DB_VERSION_MAJOR	74,1572
+#define	DB_VERSION_MINOR	75,1599
+#define	DB_VERSION_PATCH	76,1626
+#define	DB_VERSION_STRING	77,1654
+typedef	u_int32_t	db_pgno_t;db_pgno_t79,1743
+typedef	u_int16_t	db_indx_t;db_indx_t80,1796
+#define	DB_MAX_PAGES	81,1849
+typedef	u_int32_t	db_recno_t;db_recno_t83,1912
+#define	DB_MAX_RECORDS	84,1968
+struct __db;		typedef struct __db DB;DB87,2108
+			typedef struct __db DBM;DBM89,2168
+struct __db_bt_stat;	typedef struct __db_bt_stat DB_BTREE_STAT;DB_BTREE_STAT91,2203
+struct __db_dbt;	typedef struct __db_dbt DBT;DBT92,2267
+struct __db_env;	typedef struct __db_env DB_ENV;DB_ENV93,2313
+struct __db_h_stat;	typedef struct __db_h_stat DB_HASH_STAT;DB_HASH_STAT94,2362
+struct __db_ilock;	typedef struct __db_ilock DB_LOCK_ILOCK;DB_LOCK_ILOCK95,2423
+struct __db_lock_stat;	typedef struct __db_lock_stat DB_LOCK_STAT;DB_LOCK_STAT96,2483
+struct __db_lock_u;	typedef struct __db_lock_u DB_LOCK;DB_LOCK97,2550
+struct __db_lockreq;	typedef struct __db_lockreq DB_LOCKREQ;DB_LOCKREQ98,2606
+struct __db_log_stat;	typedef struct __db_log_stat DB_LOG_STAT;DB_LOG_STAT99,2667
+struct __db_lsn;	typedef struct __db_lsn DB_LSN;DB_LSN100,2731
+struct __db_mpool_finfo;typedef struct __db_mpool_finfo DB_MPOOL_FINFO;DB_MPOOL_FINFO101,2780
+struct __db_mpool_fstat;typedef struct __db_mpool_fstat DB_MPOOL_FSTAT;DB_MPOOL_FSTAT102,2852
+struct __db_mpool_stat;	typedef struct __db_mpool_stat DB_MPOOL_STAT;DB_MPOOL_STAT103,2924
+struct __db_mpoolfile;	typedef struct __db_mpoolfile DB_MPOOLFILE;DB_MPOOLFILE104,2994
+struct __db_qam_stat;	typedef struct __db_qam_stat DB_QUEUE_STAT;DB_QUEUE_STAT105,3061
+struct __db_txn;	typedef struct __db_txn DB_TXN;DB_TXN106,3127
+struct __db_txn_active;	typedef struct __db_txn_active DB_TXN_ACTIVE;DB_TXN_ACTIVE107,3176
+struct __db_txn_stat;	typedef struct __db_txn_stat DB_TXN_STAT;DB_TXN_STAT108,3246
+struct __dbc;		typedef struct __dbc DBC;DBC109,3310
+struct __fh_t;		typedef struct __fh_t DB_FH;DB_FH110,3351
+struct __db_dbt __db_dbt113,3444
+#define	DB_DBT_INTERNAL	120,3691
+#define	DB_DBT_MALLOC	121,3761
+#define	DB_DBT_PARTIAL	122,3823
+#define	DB_DBT_REALLOC	123,3876
+#define	DB_DBT_USERMEM	124,3940
+#define	DB_CXX_NO_EXCEPTIONS 131,4087
+#define	DB_XA_CREATE	136,4205
+#define	DB_CREATE	141,4336
+#define	DB_NOMMAP	142,4401
+#define	DB_THREAD	143,4468
+#define	DB_FORCE	148,4601
+#define	DB_INIT_CDB	149,4657
+#define	DB_INIT_LOCK	150,4725
+#define	DB_INIT_LOG	151,4787
+#define	DB_INIT_MPOOL	152,4848
+#define	DB_INIT_TXN	153,4909
+#define	DB_RECOVER	154,4975
+#define	DB_RECOVER_FATAL 155,5036
+#define	DB_SYSTEM_MEM	156,5108
+#define	DB_TXN_NOSYNC	157,5177
+#define	DB_USE_ENVIRON	158,5247
+#define	DB_USE_ENVIRON_ROOT 159,5312
+#define	DB_LOCKDOWN	164,5435
+#define	DB_PRIVATE	165,5508
+#define	DB_TXN_SYNC	171,5687
+#define	DB_TXN_NOWAIT	172,5755
+#define	DB_EXCL	177,5879
+#define	DB_RDONLY	178,5942
+#define	DB_TRUNCATE	179,6003
+#define	DB_FCNTL_LOCKING 180,6075
+#define	DB_UPGRADE	186,6270
+#define	DB_LOCK_NORUN	192,6424
+#define	DB_LOCK_DEFAULT	193,6449
+#define	DB_LOCK_OLDEST	194,6498
+#define	DB_LOCK_RANDOM	195,6556
+#define	DB_LOCK_YOUNGEST	196,6614
+#define	DB_DUP	201,6726
+#define	DB_DUPSORT	202,6785
+#define	DB_RECNUM	203,6847
+#define	DB_RENUMBER	204,6902
+#define	DB_REVSPLITOFF	205,6970
+#define	DB_SNAPSHOT	206,7039
+struct __db_env __db_env208,7101
+#define	DB_VERB_CHKPOINT	225,7788
+#define	DB_VERB_DEADLOCK	226,7844
+#define	DB_VERB_RECOVERY	227,7914
+#define	DB_VERB_WAITSFOR	228,7974
+#define	DB_TEST_PREOPEN	362,13135
+#define	DB_TEST_POSTOPEN	363,13186
+#define	DB_TEST_POSTLOGMETA	364,13236
+#define	DB_TEST_POSTLOG	365,13301
+#define	DB_TEST_POSTSYNC	366,13359
+#define	DB_TEST_PRERENAME	367,13415
+#define	DB_TEST_POSTRENAME	368,13469
+#define	DB_ENV_CDB	373,13629
+#define	DB_ENV_CREATE	374,13676
+#define	DB_ENV_DBLOCAL	375,13728
+#define	DB_ENV_LOCKDOWN	376,13799
+#define	DB_ENV_LOCKING	377,13855
+#define	DB_ENV_LOGGING	378,13914
+#define	DB_ENV_NOMMAP	379,13973
+#define	DB_ENV_OPEN_CALLED	380,14025
+#define	DB_ENV_PRIVATE	381,14100
+#define	DB_ENV_STANDALONE	382,14154
+#define	DB_ENV_SYSTEM_MEM	383,14226
+#define	DB_ENV_THREAD	384,14285
+#define	DB_ENV_TXN	385,14337
+#define	DB_ENV_TXN_NOSYNC	386,14390
+#define	DB_ENV_USER_ALLOC	387,14449
+} DBTYPE;DBTYPE404,14879
+#define	DB_BTREEVERSION	406,14890
+#define	DB_BTREEOLDVER	407,14946
+#define	DB_BTREEMAGIC	408,15010
+#define	DB_HASHVERSION	410,15042
+#define	DB_HASHOLDVER	411,15096
+#define	DB_HASHMAGIC	412,15158
+#define	DB_QAMVERSION	414,15189
+#define	DB_QAMOLDVER	415,15243
+#define	DB_QAMMAGIC	416,15305
+#define	DB_LOGVERSION	418,15335
+#define	DB_LOGOLDVER	419,15387
+#define	DB_LOGMAGIC	420,15447
+#define	DB_AFTER	426,15610
+#define	DB_APPEND	427,15645
+#define	DB_BEFORE	428,15679
+#define	DB_CHECKPOINT	429,15715
+#define	DB_CONSUME	430,15768
+#define	DB_CURLSN	431,15805
+#define	DB_CURRENT	432,15843
+#define	DB_DUPCURSOR	433,15900
+#define	DB_FIRST	434,15951
+#define	DB_FLUSH	435,15997
+#define	DB_GET_BOTH	436,16034
+#define	DB_GET_RECNO	437,16079
+#define	DB_JOIN_ITEM	438,16118
+#define	DB_KEYFIRST	439,16183
+#define	DB_KEYLAST	440,16221
+#define	DB_LAST	441,16258
+#define	DB_NEXT	442,16304
+#define	DB_NEXT_DUP	443,16350
+#define	DB_NEXT_NODUP	444,16388
+#define	DB_NOOVERWRITE	445,16428
+#define	DB_NOSYNC	446,16467
+#define	DB_POSITION	447,16503
+#define	DB_POSITIONI	448,16541
+#define	DB_PREV	449,16591
+#define	DB_RECORDCOUNT	450,16637
+#define	DB_SET	451,16677
+#define	DB_SET_RANGE	452,16722
+#define	DB_SET_RECNO	453,16761
+#define	DB_WRITECURSOR	454,16807
+#define	DB_WRITELOCK	455,16849
+#define	DB_OPFLAGS_MASK	458,16961
+#define	DB_RMW	459,17029
+#define	DB_INCOMPLETE	478,17576
+#define	DB_KEYEMPTY	479,17633
+#define	DB_KEYEXIST	480,17703
+#define	DB_LOCK_DEADLOCK	481,17772
+#define	DB_LOCK_NOTGRANTED	482,17821
+#define	DB_NOTFOUND	483,17880
+#define	DB_OLD_VERSION	484,17946
+#define	DB_RUNRECOVERY	485,18005
+#define	DB_DELETED	488,18097
+#define	DB_NEEDSPLIT	489,18161
+#define	DB_SWAPBYTES	490,18221
+#define	DB_TXN_CKP	491,18287
+#define	DB_FILE_ID_LEN	493,18353
+struct __db __db496,18452
+#define	DB_LOGFILEID_INVALID	521,19286
+#define	DB_OK_BTREE	610,22860
+#define	DB_OK_HASH	611,22885
+#define	DB_OK_QUEUE	612,22909
+#define	DB_OK_RECNO	613,22934
+#define	DB_AM_DISCARD	616,23003
+#define	DB_AM_DUP	617,23066
+#define	DB_AM_INMEM	618,23107
+#define	DB_AM_PGDEF	619,23171
+#define	DB_AM_RDONLY	620,23231
+#define	DB_AM_SUBDB	621,23289
+#define	DB_AM_SWAP	622,23348
+#define	DB_BT_RECNUM	623,23413
+#define	DB_BT_REVSPLIT	624,23460
+#define	DB_DBM_ERROR	625,23514
+#define	DB_OPEN_CALLED	626,23578
+#define	DB_RE_DELIMITER	627,23633
+#define	DB_RE_FIXEDLEN	628,23704
+#define	DB_RE_PAD	629,23764
+#define	DB_RE_RENUMBER	630,23822
+#define	DB_RE_SNAPSHOT	631,23873
+struct __db_ilock __db_ilock639,24008
+#define DB_RECORD_LOCK	642,24120
+#define DB_PAGE_LOCK	643,24145
+struct __db_lock_u __db_lock_u652,24353
+struct __dbc __dbc660,24617
+#define	DBC_CONTINUE	695,25640
+#define	DBC_RECOVER	696,25706
+#define	DBC_RMW	697,25773
+#define	DBC_WRITECURSOR	698,25834
+#define	DBC_WRITER	699,25906
+struct __db_bt_stat __db_bt_stat704,26034
+struct __db_qam_stat __db_qam_stat727,27035
+struct __db_h_stat __db_h_stat743,27689
+#define	DB_LOCKVERSION	777,28972
+#define	DB_LOCK_NOWAIT	780,29044
+#define	DB_LOCK_RECORD	781,29111
+#define	DB_LOCK_UPGRADE	782,29169
+#define	DB_LOCK_CONFLICT	785,29276
+} db_lockop_t;db_lockop_t800,29729
+} db_lockmode_t;db_lockmode_t820,30350
+} db_status_t;db_status_t835,30833
+struct __db_lockreq __db_lockreq838,30879
+#define	DB_LOCK_RW_N	851,31206
+extern const u_int8_t db_rw_conflicts[852,31229
+#define	DB_LOCK_RIW_N	855,31304
+extern const u_int8_t db_riw_conflicts[856,31328
+struct __db_lock_stat __db_lock_stat858,31371
+#define	DB_ARCH_ABS	892,32734
+#define	DB_ARCH_DATA	893,32787
+#define	DB_ARCH_LOG	894,32833
+struct __db_lsn __db_lsn905,33369
+struct __db_log_stat __db_log_stat911,33495
+#define	DB_MPOOL_CREATE	951,35226
+#define	DB_MPOOL_LAST	952,35278
+#define	DB_MPOOL_NEW	953,35335
+#define	DB_MPOOL_NEW_GROUP	954,35388
+#define	DB_MPOOL_CLEAN	957,35501
+#define	DB_MPOOL_DIRTY	958,35559
+#define	DB_MPOOL_DISCARD	959,35613
+struct __db_mpool_stat __db_mpool_stat962,35707
+struct __db_mpool_finfo __db_mpool_finfo986,36907
+struct __db_mpool_fstat __db_mpool_fstat995,37225
+#define	DB_TXNVERSION	1030,38537
+#define	DB_TXN_BACKWARD_ROLL	1033,38616
+#define	DB_TXN_FORWARD_ROLL	1034,38677
+#define	DB_TXN_OPENFILES	1035,38736
+#define	DB_TXN_REDO	1036,38790
+#define	DB_TXN_UNDO	1037,38839
+struct __db_txn_active __db_txn_active1042,38972
+struct __db_txn_stat __db_txn_stat1048,39138
+#define	DB_DBM_HSEARCH	1081,40444
+#define	DBM_INSERT	1087,40690
+#define	DBM_REPLACE	1088,40740
+#define	DBM_SUFFIX	1094,40898
+} datum;datum1100,40990
+} datum;datum1105,41047
+#define	dbminit(dbminit1115,41316
+#define	dbmclose	1116,41352
+#define	delete(delete1118,41410
+#define	fetch(fetch1120,41454
+#define	firstkey	1121,41489
+#define	nextkey(nextkey1122,41524
+#define	store(store1123,41563
+#define	dbm_clearerr(dbm_clearerr1147,42175
+#define	dbm_close(dbm_close1148,42222
+#define	dbm_delete(dbm_delete1149,42263
+#define	dbm_dirfno(dbm_dirfno1150,42311
+#define	dbm_error(dbm_error1151,42354
+#define	dbm_fetch(dbm_fetch1152,42395
+#define	dbm_firstkey(dbm_firstkey1153,42442
+#define	dbm_nextkey(dbm_nextkey1154,42489
+#define	dbm_open(dbm_open1155,42534
+#define	dbm_pagfno(dbm_pagfno1156,42584
+#define	dbm_rdonly(dbm_rdonly1157,42627
+#define	dbm_store(dbm_store1158,42670
+} ACTION;ACTION1185,43501
+typedef struct entry entry1187,43512
+} ENTRY;ENTRY1190,43560
+#define	hcreate(hcreate1196,43678
+#define	hdestroy	1197,43713
+#define	hsearch(hsearch1198,43744
+ENTRY	*__db_hsearch 1206,43927
+ENTRY	*__db_hsearch __P((ENTRY, ACTION)1206,43927
+
+hash-arbitrary.c,1586
+#define FALSE	133,5463
+#define TRUE	134,5481
+#define min(min138,5549
+static char _deleted_[145,5663
+#define DELETED 146,5689
+#define START_POWER 147,5758
+#define islive(islive150,5873
+enum stat_enum stat_enum152,5936
+    STAT_SIZE 155,6072
+    STAT_ACCESS,157,6128
+    STAT_ACCESS_w,158,6145
+    STAT_COLLIDE,161,6279
+    STAT_COLLIDE_w,162,6297
+    STAT_USED,164,6350
+    STAT_STRCMP,166,6402
+    STAT_STRCMP_w,167,6419
+    STATLENGTH169,6496
+#define STAT__READ 171,6514
+#define STAT__WRITE 172,6555
+#define GROW_FACTOR 175,6671
+#define FULL_VALUE(FULL_VALUE177,6724
+#define START_POWER 185,6918
+#define START_SIZE 187,6961
+#define START_FULL 189,7004
+struct hash_entryhash_entry192,7037
+struct hash_controlhash_control211,7565
+static char hash_found;285,10732
+hash_new 298,11170
+hash_die 341,12572
+hash_say 363,13253
+hash_delete 395,14008
+hash_replace 432,14762
+hash_insert 464,15390
+hash_jam 511,16502
+hash_grow 551,17432
+hash_apply 663,21440
+hash_find 688,21963
+hash_ask 712,22576
+hash_code 802,24844
+hash_print_statistics 846,25707
+#define P(P863,26073
+#define TABLES 881,26511
+#define STATBUFSIZE 883,26602
+int statbuf[885,26660
+char answer[886,26716
+char *hashtable[887,26758
+struct hash_control *h;888,26822
+char **pp;889,26883
+char *p;890,26894
+char *name;891,26903
+char *value;892,26915
+int size;893,26928
+int used;894,26938
+char command;895,26948
+int number;896,26962
+int numerics[899,27038
+int num_idx=900,27057
+main 902,27073
+what 1074,31153
+destroy 1093,31488
+applicatee 1104,31605
+whattable 1115,31783
+
+hash-arbitrary.h,21
+#define hashH21,836
+
+im_cursor.c,132
+im_rel_cursor(12,280
+im_rel_cursor_close(33,678
+im_rel_cursor_get(39,736
+im_rel_cursor_put(406,8516
+im_rel_cursor_del(411,8595
+
+im_db.c,376
+int debug=8,98
+IM_DB im_db;9,111
+freepage_list_insert(14,237
+freepage_list_delete(28,489
+freepage_list_length(59,1099
+system_init(70,1266
+system_close(101,2027
+#define RELATION_SPACE_GROW_FACTOR 132,2688
+page_physical_new(134,2729
+page_physical_delete(170,3629
+mycompare(186,4023
+mycompare_reverse(196,4175
+inline swap(210,4544
+quicksort(218,4644
+main(244,5027
+
+im_db.h,753
+#define	_IN_MEM_DB_H_2,22
+typedef struct hash_control *HashTable;HashTable22,309
+struct __tll; typedef struct __tll TLL;TLL28,408
+struct __tll__tll29,448
+#define TUPLE_TOMBSTONE 39,555
+#define TUPLE_DELETED(TUPLE_DELETED40,581
+typedef enum {IM_LINKEDLIST=1} IM_DBTYPE;IM_DBTYPE52,957
+struct __im_db_env; typedef struct __im_db_env IM_DB_ENV;IM_DB_ENV54,1000
+struct __im_relc; typedef struct __im_relc IM_RELC;IM_RELC55,1058
+struct __im_rel; typedef struct __im_rel IM_REL;IM_REL56,1110
+struct __im_db_env__im_db_env57,1159
+struct __im_relc__im_relc68,1533
+struct __im_rel__im_rel81,1881
+#define IM_OID 89,2016
+#define IM_REL_INDEXED 90,2033
+#define IS_OID_REL(IS_OID_REL91,2058
+#define IS_INDEXED_REL(IS_INDEXED_REL92,2107
+
+im_db_env_method.c,164
+im_db_env_create(16,368
+__im_dbenv_init(54,1019
+__im_dbenv_err(72,1358
+__im_dbenv_errx(99,1775
+__im_dbenv_set_errfile(120,2101
+__im_dbenv_set_errpfx(128,2223
+
+im_db_err.c,97
+im_db_strerror(26,386
+__im_db_err(78,1637
+__im_db_real_err(106,2130
+__im_db_errfile(120,2399
+
+im_debug.c,245
+time_t current_time;11,141
+struct tm *tm;12,162
+cursor_print(18,342
+tuple_print(31,600
+im_rel_print(41,823
+DBT dbt1,65,1377
+DBT dbt1, dbt2,65,1377
+DBT dbt1, dbt2, dbt3;65,1377
+im_rel_test(69,1417
+im_cursor_test(161,4313
+main(303,8688
+
+im_rel.c,128
+im_rel_create(13,215
+im_rel_open(68,1283
+im_rel_close(83,1515
+im_rel_get(116,2120
+im_rel_put(290,6190
+im_rel_del(376,8401
+
+mylib.c,131
+__my_get_errno(17,369
+__my_set_errno(30,590
+__my_strdup(46,950
+__my_calloc(73,1365
+__my_malloc(97,1719
+__my_realloc(131,2316

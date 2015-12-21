@@ -1,0 +1,47 @@
+table decisiontree (id int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+
+
+aggregate fac (num real):real
+{
+
+table tmp (n real);
+table result (n real);
+initialize:
+iterate:
+  {
+    insert into tmp values (num-1);
+    insert into result values (num) ;
+    insert into result select max(r.n)*fac(t.n) from result r, tmp t where num>1;
+    insert into return select max(n) from result;
+  }
+};
+
+aggregate computecost (currentid int):real
+{
+table rec (id int, col int, yorn char(1), parent int, pvalue char(1), enumber real, pnumber rea);
+table leafcost(c real);
+table newcost(c real);
+table cost(c real);
+table children (id int);
+table tmp (c real);
+initialize:
+iterate:
+  {
+    insert into rec select id, col, yorn, parent, pvalue, enumber, pnumber from decisiontree where id=currentid;  
+    insert into leafcost select 1+log(20)+log(10) from red where pnumber=0 ;
+    insert into leafcost select 1+log(20)+log(10)+log(1+enumber+pnumber)+log(fac(enumber+pnumber)/fac(enumber)*fac(pnumber)) 
+    from rec where pnumber<>0 ;
+    /* 20 is total nodes in decisiontree, 10 is total values of any attribute */
+    insert into tmp values (0);
+    insert into children select id from decisiontree where parent=currentid;
+    insett into tmp select computecost (id) from children;
+    insert into newcost select 1+log(20)+log(10)+log(22)+sum(t.c) from tmp t;
+    insert into cost select l.c from leafcost l, newcost n where l.c<=n.c;
+    insert into cost select n.c from leafcost l, newcost n where l.c>n.c;
+    delete from decisiontree d where d.id=(select c.id from children c) and (select l.c from leafcost l)=(select c from cost);
+    
+    insert into return select c from cost;    
+    
+  }
+};
+

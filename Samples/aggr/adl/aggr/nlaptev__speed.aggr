@@ -1,0 +1,2 @@
+select nlaptev$speed  from traffic where avg(speed)=3;
+

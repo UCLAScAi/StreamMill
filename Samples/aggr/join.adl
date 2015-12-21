@@ -1,0 +1,32 @@
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+table traffic_2     (in1 INT, time1 TIMESTAMP) memory;
+table traffic_3     (in1 INT, time1 TIMESTAMP) memory;
+
+AGGREGATE myavg_online  (Next INT):
+ REAL
+{
+
+TABLE inwindow (Next INT);
+TABLE state (sum INT, cnt INT);
+
+INITIALIZE:
+{
+INSERT INTO state VALUES (Next, 1);
+}
+
+ITERATE:
+{
+UPDATE state SET sum=sum+Next, cnt=cnt+1;
+}
+
+TERMINATE:
+{
+INSERT INTO return SELECT sum/cnt FROM state;
+}
+
+};
+
+
+LOAD FROM './test1' INTO traffic;
+
+select  a.in1,b.in1,c.in1 from traffic as a, traffic_2 as b, traffic_3 as c;

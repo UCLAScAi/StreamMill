@@ -1,0 +1,14 @@
+rm dbscan.input
+cp $1 dbscan.input
+start=$(date "+%s")
+start_date=$(date "+%Y%m%d")
+filename=$1.btree.$start_date.out;
+
+echo DBSCAN B+TREE starting at $(date)
+
+./dbscan_btree>>$filename
+end=$(date "+%s")
+echo "B+TREE Running Time(sec):">>$filename
+expr $end - $start>>$filename
+
+tail $filename

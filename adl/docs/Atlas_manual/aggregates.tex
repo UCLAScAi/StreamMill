@@ -1,0 +1,324 @@
+\chapter{User-Defined Aggregates}
+ATLaS supports the standard five aggregates {\tt count, sum,
+avg, min}, and {\tt max} without the {\tt DISTINCT} option.
+But the real power of ATLaS follows from its User-Defined Aggregates
+(UDAs) discussed next.
+As a first example, we define an aggregate equivalent to the standard
+{\bw avg} aggregate in SQL.
+\paragraph{Standard Average} The first
+line of this aggregate function declares a local table, {\tt
+state}, to keep the sum and count of the values processed so far.
+While, for this particular example, {\bw state} contains only one
+tuple, it is in fact a table that can be queried and updated using
+SQL statements and can contain any number of tuples (see later
+examples). These SQL statements are grouped into the three blocks
+labelled respectively {\cw INITIALIZE}, {\cw ITERATE}, and {\cw
+TERMINATE}. To compute the average, the SQL statement in
+{\cw INITIALIZE} inserts the value taken from
+the input stream and sets the count to $1$. The {\cw ITERATE}
+statement updates the table by adding the new input value to the
+sum and $1$ to the count. The {\cw TERMINATE} statement returns
+the final result(s) of computation by {\cw INSERT INTO RETURN} (to
+conform to SQL syntax, {\cw RETURN} is treated as a virtual table;
+however, it is not a stored table and cannot be
+used in any other role): \\
+
+\begin{codedisplay}
+\tt
+\> AGGREGATE myavg(Next \kw{Int}) : Real\\
+\>\{\> {TABLE} state(sum \kw{Int}, cnt \kw{Int}); \\
+\>\> {INITIALIZE} : \{\\
+\>\>\>INSERT INTO state {VALUES} (Next, 1);\\
+\>\>\}\\
+\>\>\ {ITERATE} : \{\\
+\>\>\>{UPDATE} state {SET} sum=sum+Next, cnt=cnt+1;\\
+%\>\>\kw{INSERT} \kw{INTO} \kw{RETURN} \\
+%\>\>\>\kw{SELECT} sum/cnt \kw{FROM} state\\
+%\>\>\>\kw{WHERE} cnt \% 100 = 0;\\
+\>\>\}\\
+\>\>{TERMINATE} : \{\\
+\>\>\>{INSERT} {INTO} {RETURN} {SELECT} sum/cnt {FROM} state;\\
+\>\>\}\> \\
+\>\}\\
+\end{codedisplay}
+
+The basic initialize-iterate-terminate template used to define the
+average aggregate of SQL-2, can now be used to defined powerful
+new aggregates required by new database applications.
+
+\paragraph{OnLine Average}For instance, there is much current interest in online
+aggregates~\cite{hellerstein}. Since averages converge toward the correct
+value well before all the tuples in the set have been visited, we
+can have an online aggregate that returns the average-so-far
+every, say, 200 input tuples. (In this way, the user or the
+calling application can stop the computation as soon as
+convergence is detected.) Online averages can be expressed in
+ATLaS as follows:
+
+\begin{codedisplay}
+\>\kw{AGGREGATE} online\_avg(Next \kw{Int}) : \kw{Real}\\
+\>\{\>\kw{TABLE} state(sum \kw{Int}, cnt \kw{Int}); \\
+\>\> \kw{INITIALIZE} : \{ \\
+\>\>\> \kw{INSERT INTO} state \kw{VALUES} (Next, 1);\\
+\> \> \} \\
+\>\> \kw{ITERATE}: \{ \\
+\>\>\> \kw{UPDATE} state \kw{SET} sum=sum+Next, cnt=cnt+1;\\
+\>\>\>\kw{INSERT} \kw {INTO} \kw{RETURN} \\
+\>\> \> \kw{SELECT} sum/cnt \kw{FROM} state \kw{WHERE} cnt \% 200 = 0; \\
+\>\>\}\\
+\>\>\kw{TERMINATE} : \{  \ \}\\
+\>\}\\
+\end{codedisplay}
+
+Therefore, the online average program has been obtained from the
+traditional average program by removing the statements from
+{\cw{TERMINATE}} and adding a {\cw{RETURN}} statement to
+{\cw{ITERATE}}.  Our UDA {\bw {online\_avg}} takes a
+stream of values as input and returns a stream of values as output
+(one every 200 tuples). In this example only one tuple is
+added to output by the  the {\small
+{INSER INTO RETURN}} statement; in general, however, such statement can produce
+(a stream of) several tuples. Thus ATLaS UDAs operate as
+general stream transformers.
+
+ATLaS uses the same basic framework to define both traditional
+aggregates and non-blocking aggregates. ATLaS UDAs are non-blocking
+when their {\cw{TERMINATE}} clause is either empty or absent.
+
+The typical default
+semantics for SQL aggregates is that the data is first sorted
+according to the {\cw GROUP-BY} attributes; this is
+a blocking operation.  However, ATLaS's default
+semantics for UDAs is that the data is pipelined through the
+{\cw INITIALIZE} and {\cw ITERATE} clauses where the input stream is transformed
+into the output stream: the only blocking operations (if any) are
+those specified in {\cw TERMINATE}, and only take place at the end of the
+computation.
+
+
+\paragraph{Calling User-Defined Aggregates (UDAs)} UDAs are called as any other builtin aggregate.  For instance,
+given a database table {\tt {employee(Eno, Name, Sex, Dept,
+Sal)}}, the following statement computes the average salary of
+employees in department 1024 by their gender:
+
+
+\begin{codedisplay}
+\>\>\>\>\>\>\kw{SELECT} Sex, online\_avg(Sal)\\
+\>\>\>\>\>\>\kw{FROM} employee \kw{WHERE} Dept=1024 \kw{GROUP BY}
+Sex;\\
+\end{codedisplay}
+
+
+Thus the results of the selection, defined by {\bw Dept= 1024}, are pipelined to
+the aggregate in a stream-like fashion.
+
+\paragraph{SQLCODE}
+This a convenient labor-saving device found in most
+SQL systems, that comes very
+handy for the ATLaS programmer who
+wants to correlate a statement with
+the next. SQLCODE is set to a positive value when the last
+statement had a null effect, and to zero otherwise.
+Thus to tell the user that no
+employee was found in department $\tt 1024$, we can modify the previous
+program as follows:
+
+
+\begin{codedisplay}
+\tt
+\>\>\>\>\>\>\kw{SELECT} Sex, online\_avg(Sal)\\
+\>\>\>\>\>\>\kw{FROM} employee \kw{WHERE} Dept=1024 \kw{GROUP BY}
+Sex;\\
+\>\>\>\>\>\>select 'Nobody found in that department'\\
+\> \> \> \> \>  \> \> \> \> \>where SQLCODE $>$0;\\
+\end{codedisplay}
+In the last statement, the predicates in the $\tt WHERE$ clause controls its
+conditional execution, in a fashion similar to that of the $\tt IF$ clauses in
+a procedural programming language. In fact, the  ATLaS compiler recognizes,
+and optimizes execution of, such conditional predicates.
+
+\paragraph{Minima: Points and Values.} In the next Example, we have
+a sequence of point-value pairs, and
+we  define a {\bw minpair} aggregate
+that returns the point where a minimum occurs
+along with its value at the minimum.
+
+
+\begin{codedisplay}
+\kw{AGGREGATE} minpair(iPoint \kw{Int}, iValue \kw{Int}): (mPoint \kw{Int}, mValue \kw{Int})\\
+ \{ \>  \kw{TABLE} mvalue(value \kw{Int}) MEMORY;
+ \kw{TABLE} mpoints(point \kw{Int}) MEMORY; \\
+\>\kw{INITIALIZE}: \{ \\
+\>\> \kw{INSERT} \kw{INTO} mvalue \kw{VALUES} (iValue);\\
+\>\> \kw{INSERT} \kw{INTO} mpoints \kw{VALUES}(iPoint);\\
+\> \} \\
+\>\kw{ITERATE}: \{\\
+\>\> \kw{UPDATE} mvalue \kw{SET} value = iValue \kw{WHERE} iValue $<$ value;\\
+\>\> \kw{DELETE FROM} mpoints \kw{WHERE} SQLCODE = 0;\\
+% \>\>\kw{INSERT} \kw{INTO} mpoints \\
+% \>\>\>\> \kw{SELECT} iPoint \kw{FROM} mvalue\\
+% \>\>\>\> \kw{WHERE}  iValue $=$mvalue.value;\\
+ \>\>\kw{INSERT} \kw{INTO} mpoints \kw{SELECT} iPoint \kw{FROM} mvalue\\
+ \>\>\> \>\>\>\>\>\>\>\>\kw{WHERE}  iValue $=$mvalue.value;\\
+\> \} \>\>\>\>\>\>\>\>\\
+%
+\>\kw{TERMINATE}: \{ \\
+\>\>\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} point, value \kw{FROM} mpoints, mvalue;\\
+\> \}  \\
+\}\\
+\end{codedisplay}
+
+Here have used two internal tables: the {\bw mvalue} table holds, as its only entry,
+the current min value, while {\bw points} holds all the points where this
+value occurs.
+In the {\small \kw{ITERATE}} statement we have used {\cw {SQLCODE}}
+to `remember' if the previous statement updated {\bw mvalue}; this is the situation in which
+the old value was larger than the new one and the old points
+must be discarded.
+
+Then, the last statement in {\cw ITERATE}
+adds the new {\bw iPoint} to {\bw mpoints} if the
+input value is equal to the current min value. In the UDA
+definition the formal parameters of the UDA function are treated
+as constants in the SQL statements. Thus, this third
+{\cw INSERT} statement adds the constant value of {\bw iPoint}
+to the {\bw mpoints} relation, provided that {\bw iValue} is the
+same as the value
+in {\bw mvalue}---thus the {\cw FROM} and {\cw WHERE} clauses
+operate here as conditionals.
+The {\cw RETURN} statement returns the final list of min pairs as a stream.
+
+For instance, say that we have a time series containing the daily  closing
+prices of certain stocks arranged in temporal sequence (i.e. the table {\tt stock\_prices},
+below). Then the following program computes the local minima for each stock:
+
+\begin{codedisplay}
+\> /* The declaration of {AGGREGATE} minpair  should go here*/\\
+\> TABLE stock\_prices(Day Int, Stock char(4), Cprice Real)\\
+\hspace{6cm}source  'D:$\backslash$mydabase$\backslash$stock\_prices'\\
+
+%\>\>insert into stdout\\
+\>\>select Stock, minpair(Day, Stock) $\rightarrow$ iPoint, minpair(Day, Stock)$\rightarrow$  iValue \\
+\>\>from stock\_prices\\
+\>\>group by Stock  ordered by Stock, minpair(Day, Stock) $\rightarrow$ iPoint\\
+\end{codedisplay}
+
+Observe the use of  ``$\tt \rightarrow$" to identify the different
+components in the two-column tuples returned by the aggregate $\tt minpair$.
+Since temporal data types are not yet supported
+in the current ATLaS version,
+we are using integers to represent dates:
+thus May, 27, 1999 is represented as {\tt 19990527}.
+
+The next table summarizes the syntax for declaring new aggregates.
+
+\begin{figure}[!htp]
+\centering
+\framebox{
+\begin{tabular}{rll}
+    \bnf{UDA-dcl} &$\rightarrow$& `AGGREGATE` \bnf{id} `(` \bnf{column-list} `)` `:`
+             \bnf{return-type} \bnf{aggr-body}\\
+    \bnf{aggr-body} &$\rightarrow$& `\{` \bnf{ATLaS-dcl*} \\
+      && \ \ \ `INITIALIZE` \ `:` \{  \bnf{SQL-statement*} `;`\}` \\
+      && \ \ \ `ITERATE` \ `:` \{ \bnf{SQL-statement*} `;`  `\}` \\
+      && \ \ \ `TERMINATE` \ `:` \{ \bnf{SQL-statement*} `;`\}` \\
+    && `\}` \\
+    \bnf{return-type} &$\rightarrow$& \bnf{type} $|$ `(` \bnf{column-list} `)`\\
+\end{tabular}
+}
+\caption{The declaration of UDAs}
+\end{figure}
+
+
+\paragraph{Initializing Tables and Combining Blocks.}
+Let us now introduce  the following two syntactic variations of
+convenience supported in ATLaS:
+\begin{itemize}
+\inv \item Tables declared in UDAs can be initialized as part of their declaration,
+via an SQL statement. This executes at the time when the first tuple is
+processed, thus the result is the same as if the initialization had
+been executed in the {\small INITIALIZE} block.
+
+\inv \item Different blocks can be merged together when they perform the
+same function. In the next example the {\small INITIALIZE}
+and {\small ITERATE} blocks are merged together.
+\end{itemize}
+Our  Online Averages UDA could also have been written as follows:
+\begin{codedisplay}
+\>\kw{AGGREGATE} online\_avg(Next \kw{Int}) : \kw{Real}\\
+\>\{\>\kw{TABLE} state(sum \kw{Int}, cnt \kw{Int}) AS VALUES(0, 0); \\
+\>\> \kw{INITIALIZE}:\kw{ITERATE}:  \{ \\
+\>\>\> \kw{UPDATE} state \kw{SET} sum=sum+Next, cnt=cnt+1;\\
+\>\>\>\kw{INSERT} \kw {INTO} \kw{RETURN} \\
+\>\> \> \kw{SELECT} sum/cnt \kw{FROM} state \kw{WHERE} cnt \% 200 = 0; \\
+\>\>\}\\
+\>\}
+\end{codedisplay}
+
+In the previous example,
+the  statement has been
+omitted: this is equivalent to writing
+ `{\cw{TERMINATE: \{ \} }}'. An empty {\kw{INITIALIZE}}
+statement can also be omitted in a similar fashion.
+
+The results produced by online averages depend
+on the order in which the data is streamed through the UDA.
+This illustrate a common situation in stream processing:
+the  abstract semantics of the aggregate used is
+order-independent, but approximations must be used
+because of efficiency and real-time requirements (e.g., nonblocking
+computations); often, the approximate UDA is order-dependent.
+
+In other situations, no approximation is involved, and the
+dependence on order follows from the very semantics of the UDA.
+For instance, this is the case of the {\tt rising aggregate} described below.
+\paragraph{Rising.} In addition to temporal extensions of standard
+aggregates (suggested homework: write them in ATLaS),
+TSQL2~\cite{ads}
+proposes this new aggregate to return the maximal time periods during
+which a certain attribute values has been increasing monotonically.
+We can apply this aggregate to our
+{\cdf stock\_prices(Day Int, Stock char(4), Cprice Real)} table to find
+the periods during which different stocks have been rising, as follows:
+
+\begin{codedisplay}
+%\>\>insert into stdout\\
+\>\>select Stock, rising(Day, Cprice) $\rightarrow$ Start,
+rising(Day, Cprice)$\rightarrow$ End\\
+\>\>from stock\_prices\\
+\>\>group by Stock \\
+\end{codedisplay}
+where {\tt rising} is defined as follows:
+
+
+\begin{codedisplay}
+\>AGGREGATE rising(iPoint Int, iValue Real) : (Start Int, End Int)\\
+\> \{ TABLE rperiod(First Int, Last Int, Value Real) MEMORY;\\
+ \>\> INITIALIZE: \{ \\
+\>\> \>\>  INSERT INTO rperiod VALUES (iPoint, iPoint, iValue);\\
+ \>\>\> \}\\
+\>\>ITERATE: \{ \\
+\>\> \>\>            INSERT INTO return SELECT First, Last\\
+\>\> \>\>   \>\>          FROM rperiod\\
+\>\> \>\>   \>\>         WHERE  iValue $<$= Value AND First $<$ Last;\\
+\>\> \>\>        UPDATE rperiod SET Last=iPoint, Value=iValue\\
+\>\> \>\>   \>\>           WHERE iValue $>$  Value; \\
+\>\> \>\> UPDATE rperiod SET First=iPoint, Last=iPoint, Value=iValue\\
+ \>\> \>\>    \>\>              WHERE SQLCODE $>$ 0;\\
+  \>\>\> \} \\
+
+ \>\>TERMINATE:\{ INSERT INTO return SELECT First, Last \\
+   \>\> \>\>   \>\>           FROM rperiod \\
+     \>\> \>\>   \>\>             WHERE   First $<$ Last; \}\\
+  \>\>\> \}\\
+\> \}
+\end{codedisplay}
+
+Therefore we have a sequence of time-value ordered by increasing
+time. We store a zero length period {\tt iPoint, iPoint} whenever
+the new {\tt iValue} is not increasing (also at
+{\tt INITIALIZE}). Also a non-zero length period is currently
+held in {\tt rperiod} we  return it.
+When the new {\tt iValue} is larger than the
+previous stored value, we advance the {\tt End} of the current
+period to the current point.

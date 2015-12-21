@@ -1,0 +1,5 @@
+SELECT p.person_id, p.name FROM bid AS b, TABLE(person over (RANGE 12 HOUR PRECEDING b)) AS p WHERE b.bidder_id = p.person_id;
+
+select bidder_id, price from bid where price > 20
+union
+select bidder_id, price from bid where price < 15;

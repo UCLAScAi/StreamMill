@@ -1,0 +1,419 @@
+\documentclass[10pt]{report}
+%\usepackage{html}
+\usepackage{graphicx}
+\usepackage{algorithm,algorithmic}
+\usepackage{amsmath, amssymb, latexsym}
+\usepackage{verbatim}
+\usepackage{subfigure}
+\renewcommand{\algorithmiccomment}[1]{{\it /* #1 */}}
+\newcommand{\alglabel}[1]{\newcounter{#1}\setcounter{#1}{\value{ALC@line}}}
+\newcommand{\algref}[1]{\arabic{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\textheight}{8in}
+\setlength{\textwidth}{5.2in}
+\setlength{\topmargin}{-.15in}
+%\addtolength{\oddsidemargin}{+0.2in}
+\pagestyle{plain}
+%\addtolength{\textheight}{+0.95in}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Haixun's packages
+%\newcommand\bnf[1]{$\langle$#1$\rangle$}
+\newcommand\bnf[1]{#1}
+\newcommand\exa[1]{\nopagebreak \begin{flushleft}\smallskip \nopagebreak
+                \begin{minipage}[t]{#1}\sloppy}
+\newcommand\exb[1]{\end{minipage}\kern 1cm\begin{minipage}[t]{#1}\sloppy }
+\newcommand\exc{\end{minipage}\kern -3cm \smallskip\end{flushleft}}
+\newcommand\oben[1]{\begin{center}\begin{minipage}{#1}\hrule\medskip}
+\newcommand\unten  {\vspace{-.4cm}\hrule \end{minipage}\end{center}}
+\newcommand\share[1]{\raisebox{1.5ex}[0pt]{#1}}
+%%%%%%%%%%%%%%%%%%%from KDD%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem} \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+\def\inv{\vspace*{-0.2cm}} %\def\back{\hspace*{-2cm}}
+\def\pinv{\vspace*{0.2cm}}
+\def\newdef#1{\emph{#1}}
+%---------------------------------------------------------
+\def\cdf{\sf} %Note: < and > are not in this font; use $<$ and $>$
+\def\kw#1{\tt #1}
+\def\cw{\small \tt }
+\def\bw{\small \tt}
+%
+\newenvironment{codedisplay}
+%{\renewcommand{\baselinestretch}{1}
+{\vspace{-\partopsep}\cdf\addtolength{\baselineskip}{-1pt}
+\samepage  \begin{tabbing} \quad
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+%\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=\ \ \ \ \ \ \ \ \=
+\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \
+\=\ \ \ \ \=\ \ \ \ \= \ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\kill}
+{\end{tabbing}\vspace{-\partopsep}\vspace{-\topsep}%\vspace{-\parsep}
+}
+
+\title{\Huge \bf The Data Stream Mill User Manual \\}
+\author{\Large Chang Luo \\[0.1cm]\Large Hetal Thakkar\\[0.1cm]\Large Yijian Bai \\[0.1cm] \Large Haixun Wang\\[0.1cm] \Large Carlo Zaniolo}
+
+\begin{document}
+\maketitle
+
+%\renewcommand{\baselinestretch}{1.1}
+\tableofcontents
+\chapter{Introduction}
+\chapter{Client GUI}
+To start the client, you need to download the java directory to your local machine, then run ``java AXL'' under the java directory.
+
+This should start the GUI. Now, we
+will demonstrate how to register a complete simple continuous queries through the GUI.
+
+First thing is to add an I/O module, which pushes or pulls data to a
+stream from external data sources.
+\begin{itemize}
+  \item Under the Stream Menu, click on {\em Add IO Module}
+  \item This will popup an open screen, select a {\em.cc} file that has the
+I/O module\footnote{We only tested I/O modules written in C/C++.  If you want to use other languages such as Java or Perl, please contact us for further instructions.}
+  \item An example is provided in ``iomod1.cc''
+  \item Click {\em Open} and the I/O Module will be added.
+  \item To verify that the I/O Module added successfully, click on {\em View IO Modules} under the Stream Menu.
+\end{itemize}
+
+Second, we decalre a stream
+\begin{itemize}
+  \item Under the Stream Menu, click on {\em Register Declares}
+  \item This will popup an open screen, select a declaration file.
+  \item An example is provided in ``testdcl.dcl''\\
+    NOTE: The file can have multiple declarations seperated by semicolon ``;''.
+Remember to include semicolon ``;'' at the end of the file.
+  \item Click {\em Open} and all the declarations will be added.
+  \item To verify, use {\em View Registerd Delcarations} under Stream Menu.
+  \item There is not much validation on the delcarations, so make sure that
+they are correct.
+%  \item Even if, you exit "esl_start" the delcarations are saved in
+%"atlas/dcl/system.dcl", but you will not be able to view them using the
+%command above, after restarting esl.
+\end{itemize}
+
+Third, we declare a continuous query on the stream
+\begin{itemize}
+  \item Under the Stream Menu, click on "Register Queries"
+  \item This will popup an open screen, select a query file.
+  \item An example is provided in ``query2.cq''\\
+    NOTE: The file can have multiple queries seperated by ";". Remember
+to include ";" at the end of the file.
+  \item Click {\em Open} and all the queries will be added.
+  \item To verify, use {\em View Registered Queries} under Stream Menu.
+\end{itemize}
+
+At this point, you have created a stream and a query on the stream. To
+save the system resources, we don't activate the IO Modules automatically,
+therefore next step is to activate the I/O Module and starting to feed data.
+
+Fourth, Activating the IO Modules
+\begin{itemize}
+  \item Under the Stream Menu, click on {View IO Modules}
+  \item You should see the defined I/O modules in a sub window. For the running
+example, the name of the module is ``iomod1.so''
+  \item Click on the {\em Activate} button. The Status will change to ``Active''
+  \item Now exit this window.
+
+\end{itemize}
+At this point, I/O module is feeding data to the stream and the continuos
+query is running. If the query returns results to the "stdout" then you
+can view the results as follows:
+
+For evey query that returns results to stdout a special buffer is created,
+namely ``stdout\_queryId''. The user has to monitor this buffer to view the
+results.
+
+Fifth, Viewing Buffers
+\begin{itemize}
+  \item Under the Stream Menu, click on {\em View Buffers}
+  \item You should see all special ``stdout'' buffers.
+  \item For the running example there should be one buffer.
+  \item Click on the {\em Monitor} button to monitor the buffer. The status will
+change to ``Monitoring''
+  \item You can close this window.
+  \item The results of the continuous query will be seen on the ``stdout'', from
+where the GUI was started.
+\end{itemize}
+
+% You can change the Server and the Port in the GUI. 
+% The main is in the AXL.java file. You have to change the "StreamServer"
+% variable to the name of the server.
+
+
+\chapter{Server}
+To start the server under linux:
+\begin{verbatim}
+cd atlas/bin
+./esl_start -p 5433
+\end{verbatim}
+5433 is the port number.
+
+
+\chapter{Timestamp}
+Time stamps are important in stream applications.  A stream can have 
+\begin{itemize}
+\item external timestamp, or
+\item internal timestamp, or
+\item no timestamp.
+\end{itemize}
+For the first two types of stream
+processed by DSM there may be a special temporal column on which the stream is sorted. This column is defined in the
+very declaration of the stream. 
+
+To define external timestamp, for instance, a stream declaration could be
+as follows:
+
+\begin{verbatim}
+STREAM calls(customer id Int, type Char(6), minutes Int,
+Call_start: Timestamp, Call_end: Timestamp, Current_Time:Timestamp)
+SOURCE 'iomodule.so' ORDER BY Call_end;
+\end{verbatim}
+
+
+Out of the three columns of type timestamp contained in this
+stream, the user tells the system that the data is sorted on {\tt
+Call\_end}, as he/she know that tuples are in fact arriving in
+that order. As DSM process this stream, it checks that each new
+tuple has a {\tt Call\_end} value $\geq$ the last tuple
+\footnote{If that is not the case, the tuple is removed from the
+stream and placed in a special stream called {\tt
+late\_calls}---perhaps the wrapper. Processing of late
+streams is responsibility of the user.  We will postpone this feature to the next release.}
+
+For the stream {\tt calls},  {\tt Call\_start} and {\tt Current\_time}
+are treated as any other column, i.e., they can be freely read and changed by the user
+in the query statements.
+However, {\tt Call\_end} is managed by the system: thus it can
+be read, but not changed by the user.
+
+
+Having introduced declaration of {\em external timestamp}, we can declare {\em internal timestamp} in a similar fashion.  For instance, 
+\begin{verbatim}
+STREAM calls(customer id Int, type Char(6), minutes Int,
+Call_start: Timestamp, Call_end: Timestamp, Current_Time:Timestamp)
+SOURCE 'iomodule.so' ORDER BY INTERNAL [AS mytime];
+\end{verbatim}
+The above declaration creates a stream with an internal timestamp named {\em mytime}.  {\em AS mytime} is optional.
+
+
+In order to create streams with {\em no timestamp}, we can omit {\tt ORDER BY} when declaring a stream. Tuples are ordered by their arrival order.  In that case logical window is disallowed since the stream does not actually have any timestamp.
+
+
+% DSM uses an {\em internal timestamp} that is not visible to users\footnote{Tuple timestamps could be approximated by recording the time in which the last tuple was added to the buffer, and the average arrival rate}.  Only row-based windows will be supported for streams with internal timestamps. Both row-based and range-based windows are supported on a stream using an external timestamp (e.g., {\tt Call\_emd} the external timestamp for {\tt calls}).
+
+Queries  applied to a stream (including project, select, join
+with tables, aggregates) return a stream. If the external timestamp
+is part of the attributes listed in the select clause of such
+queries, this will  also become the external timestamp of the resulting stream.
+%(and e.g., range-based windows can be specified on it).
+
+Union operators are applicable only to streams of the same type:
+so,  the streams must be (i) all with timestampe, or (ii)
+all without timestampe. In case (i) they are sort-merged. In
+case (ii) the system goes round-robbin on the buffers taking the
+tuples currently there.
+
+\begin{comment}
+
+\section{Derived Streams}
+
+Derived streams can be treated as named views. We can support two
+basic variations of the same syntax. Find all the call of type
+'local':
+
+\begin{verbatim}
+STREAM local-calls AS
+SELECT  *
+FROM calls
+WHERE type='local
+\end{verbatim}
+
+or equivalently
+
+\begin{verbatim}
+CREATE STREAM
+SELECT  *
+FROM calls
+WHERE type='local
+AS local-calls
+\end{verbatim}
+
+Export Streams. These are streams that can visible both
+outside and inside the module. This module writes into
+the stream. For instance.
+
+\begin{verbatim}
+EXPORT STREAM  callstream(customer id Int, type Char(6), minutes Int,
+Call_start: Timestamp, Call_end: Timestamp, Current_Time:Timestamp)
+
+INSERT INTO callstream
+SELECT  *
+FROM local-calls
+\end{verbatim}
+
+Both internal and external queries can use callstream.
+We can also write data to {\tt stdout}.
+
+\begin{verbatim}
+INSERT INTO STDOUT
+SELECT  *
+FROM local-calls
+\end{verbatim}
+
+
+
+\section{Aggregates}
+
+We should support the
+the construct  {\tt OVER(PARTITION  ...)} from SQL:1999
+is used as an aggregate modifier, as shown in the following
+query.
+
+\begin{verbatim}
+CREATE STREAM example1 AS
+SELECT Sh.Region, Sh.Month, Sh.Sales, AVG(Sh.Sales)
+      OVER (PARTITION BY Sh.Region  ASC ROWS 2 PRECEDING)
+      AS Moving_average
+FROM Sales_history AS example2
+\end{verbatim}
+Let can assume that the  ORDER BY columns is always
+omitted, since it is always that of timestamp, implicit
+or explicit. Logical windows such as the one below
+are supported only on streams with explicit timestamps.
+\begin{verbatim}
+CREATE STREAM example3 AS
+SELECT Sh.Region, Sh.Month, Sh.Sales,
+      AVG(Sh.Sales) OVER( Sh.Region RANGE 6 MINUTES PRECEDING)
+FROM Sales_history AS Sh
+\end{verbatim}
+\end{comment}
+\chapter{Windows}
+In the alpha version, we will not support windows. Most types of windows, however, can be replaced by User-Defined Aggregates (UDAs).
+\begin{example}{Average on a Tumbling Window of 200 Tuples} \label{tumble}
+{\small
+\begin{codedisplay}
+\kw{AGGREGATE} tumble\_avg(Next \kw{Int}) : \kw{Real}\\
+\{\>\kw{TABLE} state(tsum \kw{Int}, cnt \kw{Int}); \\
+\> \kw{INITIALIZE} : \{ \\
+\>\> \kw{INSERT INTO} state \kw{VALUES} (Next, 1);\\
+\> \} \\
+\> \kw{ITERATE}: \{ \\
+\>\>\kw{UPDATE} state \\
+\>\>\>\kw{SET} tsum=tsum+Next, cnt=cnt+1;\\
+\>\>\kw{INSERT} \kw {INTO} \kw{RETURN} \\
+\>\>\>\kw{SELECT} tsum/cnt \kw{FROM} state\\
+\>\>\>\kw{WHERE} cnt \% 200 = 0; \\
+\>\> \kw{INSERT INTO} state \kw{VALUES} (0,0)\\
+\>\>\>\kw{WHERE} cnt \% 200 = 0 \\
+\>\}\\
+\>\kw{TERMINATE} : \{ \ \}\\
+\}
+\end{codedisplay}
+}
+\label{exe:tumbleavg}
+\end{example}
+
+% We can pick one example from the two:
+Two more complex examples, taken from NEXMark~\cite{NEXMark}, are shown next:
+\begin{example}{Hot Items}
+\begin{verbatim}
+
+Streams: 
+Person(id, name, emailaddress, creditcard, city, state)
+Auction(id, itemname, description, initialbid, reserve, expires, seller, category)
+Bid(auction, bidder, price, datetime)
+
+CQL:
+SELECT Rstream(auction)
+FROM (SELECT B1.auction, count(*) AS num
+      FROM Bid [RANGE 60 MINUTE SLIDE 1 MINUTE] B1
+      GROUP BY B1.auction)
+WHERE num >= ALL (SELECT count(*)
+                  FROM Bid [RANGE 60 MINUTE SLIDE 1 MINUTE] B2
+GROUP BY B2.auction);
+
+ESL:
+AGGREGATE hot_items(auction_id int, bid_time timestamp) : int
+{
+    TABLE window_tmp(aid int, btime timestamp);
+    TABLE bid_counts(id int, bcount int);
+
+    INITIALIZE :
+    ITERATE :
+    {
+        insert into window_tmp values(auction_id, bid_time);
+
+        delete from window_tmp where (btime+60 minutes) < bid_time;
+
+        insert into bid_counts select aid, count(aid) from window_tmp
+group by aid;
+        insert into return select id from bid_counts group by id having
+bcount = max(bcount);
+        delete from bid_counts;
+    }
+};
+
+\end{verbatim}
+\end{example}
+
+
+
+\begin{example}{Monitor New Users}\\
+\begin{verbatim}
+CQL:
+SELECT Rstream(P.id, P.name, A.reserve)
+FROM Person [RANGE 12 HOUR] P, Auction [RANGE 12 HOUR] A
+WHERE P.id = A.seller;
+
+
+insert into query3
+select 0, auction_id, seller_id, initial_price, -1, '', '', '', input_time
+from auction
+union
+select 1, -1, -1, -1.0, person_id, name, city, state, reg_time from
+person;
+
+insert into stdout
+select new_user(tuple_type, seller_id, initial_price, person_id, name,
+in_time) from query3;
+
+
+AGGREGATE new_user(tuple_type int, seller_id int, initial_price real,
+person_id int, name char(50), in_time timestamp): (per_id int, per_name char(50), start_price real)
+{
+    TABLE person_tmp(pid int, pname char(50), rtime timestamp);
+    TABLE auction_tmp(sid int, price real, intime timestamp);
+
+    INITIALIZE :
+    ITERATE :
+    {
+        insert into person_tmp values(person_id, name, in_time) where
+tuple_type = 1;
+        insert into auction_tmp values(seller_id, initial_price, in_time)
+where tuple_type = 0;
+
+        delete from person_tmp where (rtime + 12 hours) < in_time;
+        delete from auction_tmp where (intime + 12 hours) < in_time;
+
+        insert into return select p.pid, p.pname, a.price from person_tmp
+p, auction_tmp a where p.pid = a.sid;
+    }
+};
+
+\end{verbatim}
+\end{example}
+\chapter{UNION}
+
+%\input{issues}
+{\renewcommand{\baselinestretch}{1.01}
+  \small
+  \bibliographystyle{plain} \bibliography{atlas} 
+}
+
+
+\end{document}

@@ -1,0 +1,135 @@
+
+\documentclass[110pt]{report}
+\RequirePackage{bnf}
+\usepackage{html}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+%\usepackage{times}
+
+%-------------------- HYPHENATIONS ------------------------
+\hyphenation{PAGED-ARRAY LINKED-LIST}
+
+%-------------------- DEFINITIONS ------------------------
+
+\newcommand{\phsp}{\hspace*{1cm}}
+\newcommand{\nhsp}{\hspace*{-1cm}}
+\newcommand{\inv}{\vspace*{-0.2cm}}
+
+\newcommand{\LDL}{\mbox{$\cal LDL$}}
+\newcommand{\gl}{\gamma_{L}}
+%---------------------------------------------------------
+\newcommand{\bldl}{\smallskip\[\begin{array}{ll}\small}
+\newcommand{\cldl}{\vspace*{-0.5cm}\[\begin{array}{ll}\small}
+\newcommand{\eldl}{\end{array}\]\rm}
+\newcommand{\prule}[2]{\tt #1 \leftarrow & \tt #2 \\}
+\newcommand{\lrule}[2]{\tt #1 \leftarrow & \tt #2 \ \ \ \ \ \ \Box\\}
+\newcommand{\pfact}[2]{\tt #1 & \tt #2 \\}
+\newcommand{\pbody}[2]{\tt #1 & \tt #2 \\}
+\newcommand{\lbody}[2]{\tt #1 & \tt #2 \ \ \ \ \ \Box\\}
+%---------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%from KDD%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+
+\def\newdef#1{\emph{#1}}
+%SQL displays
+%\def\cdf{\sffamily}
+\def\cdf{\sf }
+\def\cdf{\sf }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\AXL}{$\cal AXL$}
+\newcommand{\IMDB}{{\small{\cdf IM\_DB}}}
+\newcommand{\IMREL}{{\small{\cdf IM\_REL}}}
+\newcommand{\IMRELcursor}{{\small{\cdf IM\_REL\_cursor}}}
+\newcommand{\DBNOTFOUND}{{\small{\cdf DB\_NOTFOUND}}}
+\newcommand{\DBKEYEMPTY}{{\small{\cdf DB\_KEYEMPTY}}}
+\newcommand{\DBGETBOTH}{{\small{\cdf DB\_GET\_BOTH}}}
+\newcommand{\DBSETRECNO}{{\small{\cdf DB\_SET\_RECNO}}}
+\newcommand{\DBGETOIDOFKEY}{{\small{\cdf DB\_GET\_OIDOFKEY}}}
+\newcommand{\DBGETOID}{{\small{\cdf DB\_GET\_OID}}}
+\newcommand{\DBFIRST}{{\small{\cdf DB\_FIRST}}}
+\newcommand{\DBNEXT}{{\small{\cdf DB\_NEXT}}}
+\newcommand{\DBLAST}{{\small{\cdf DB\_LAST}}}
+\newcommand{\DBPREV}{{\small{\cdf DB\_PREV}}}
+\newcommand{\DBCURRENT}{{\small{\cdf DB\_CURRENT}}}
+\newcommand{\DBNEXTDUP}{{\small{\cdf DB\_NEXT\_DUP}}}
+\newcommand{\DBSET}{{\small{\cdf DB\_SET}}}
+\newcommand{\DBAPPEND}{{\small{\cdf DB\_APPEND}}}
+\newcommand{\dbrecnot}{{\small{\cdf db\_recno\_t}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\brack#1{\langle{#1}\rangle}
+\def\newdef#1{\emph{#1}}
+\def\codefont{\sffamily} %Note: < and > are not in this font; use $<$ and $>$
+\def\inv{\vspace*{-0.16cm}}
+\def\smb{\hspace*{-0.16cm}}
+\def\kw#1{\bf{\cdf #1}}
+\def\mysize#1{\normalsize{#1}}
+\newenvironment{codedisplay}
+{\begin{tabbing}
+\ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\ \ \=\ \ \ \ \=\ \ \ \ \=\ \ \ \ \=
+\end{tabbing}
+}
+
+\newenvironment{codeexample}[1]{\begin{example}{#1}\begin{codedisplay}}{\end{codedisplay}\end{example}}
+
+%\markright{Paper id 249}
+\pagestyle{plain}
+
+\addtolength{\topmargin}{-0in}
+%\addtolength{\textheight}{+0.95in}
+\addtolength{\oddsidemargin}{+0.4in}
+\addtolength{\textwidth}{-0.6in}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\thispagestyle{empty}
+\begin{document}
+
+%\newpage
+\setcounter{page}{1}
+
+
+\title{
+AXL Version 1.2 Documentation}
+
+\maketitle
+\begin{abstract}
+  AXL (Aggregate eXtension Language) is based on User-Defined
+  Aggregates (UDAs) expressed in an SQL-like language.  The AXL
+  compiler transforms AXL programs into C++ code. AXL uses database
+  access methods, including B+Tree and Extended Linear Hashing,
+  provided by the Berkeley DB. \\ \\
+
+  The ability of introducing and manipulating new tables is one of the
+  first cornerstones of AXL's power. The second is the ability of one
+  aggregate calling another, or calling itself recursively. It also
+  achieves compatibility of data types and programming paradigms and
+  inherits the well-known benefits of database query languages, such
+  as scalability, data independence and parallelizability. We
+  demonstrate the power of AXL by coding data mining functions and
+  other advanced applications that, previously, had been a major
+  problem for SQL databases.\\
+
+
+  {\bf To read the documents in one html file, click \htmladdnormallink{here}{one.html}}.
+\end{abstract}
+
+
+\include{usage}
+\include{feature}
+\include{examples}
+\include{imdb}
+\include{syntax}
+%\include{implementation}
+\end{document}

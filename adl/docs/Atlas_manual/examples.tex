@@ -1,0 +1,463 @@
+\chapter{Programming in ATLaS}
+\section{Recursion}
+Example \ref{exe:trc} illustrates the typical structure of an ATLaS
+program. The declaration of the table {\bw dgraph(start, end)} is followed
+by that of the UDA {{\bw reachable}}; the table and the UDA are then used
+in an SQL statement that calls for the computation of all nodes reachable from
+node {\bw '000'}. The clause {\cw SOURCE({\bw mydb})} denotes that
+{\bw dgraph} is a table from a database that is known to
+the systems by the name {\bw 'mydb'}. (Without the {\kw{SOURCE}} clause
+{\bw dgraph} is local to the program and discarded once its execution
+ completes).
+
+The program of Example~\ref{exe:trc}
+shows one way in which the transitive closure
+of  a graph can be expressed in
+ATLaS. We use the recursive UDA {{\bw reachable}}
+that perform a depth-first traversal of the graph
+by recursively calling itself.  Upon receiving a node,
+{{\bw reachable}} returns the node
+to the calling query along with all the nodes reachable from it.
+(We assume that the graph contains no directed cycle;
+otherwise a table will be needed to memorize
+previous results and avoid
+infinite loops.)
+Observe that the {\cw INITIALIZE} and {\cw ITERATE} routine in
+Example~\ref{exe:trc} share the same block of code.
+
+
+\begin{example}{Computation of Transitive Closure\label{exe:trc} \pinv}
+
+\begin{codedisplay}
+\>\>\kw{TABLE} dgraph(start \kw{Char}(10), end \kw{Char}(10))  \kw{SOURCE} (mydb); \\[0.2CM]
+
+\>\>\kw{AGGREGATE} reachable(Rnode \kw{Char}(10)) : \kw{Char}(10) \\
+\>\>\{\> \kw{INITIALIZE}: \ \kw{ITERATE}: \{ \\
+\>\>\>\> \kw{INSERT} \kw{INTO} \kw{RETURN} \kw{VALUES} (Rnode) \\
+\>\>\>\>\kw{INSERT} \kw{INTO} \kw{RETURN} \\
+\>\>\>\>\> \kw{SELECT} reachable(end) \kw{FROM} dgraph\\
+\>\>\>\>\> \kw{WHERE}  start=Rnode;  \\
+\>\>\>\}\\
+\>\>\}\\
+\>\>\kw{SELECT} reachable(dgraph.end) \kw{FROM} dgraph \\
+\>\>\kw{WHERE} dgraph.start='000';
+\end{codedisplay}
+
+\end{example}
+
+Besides the  Prolog-like top-down
+computation of Example \ref{exe:trc}, we can also express easily the
+bottom-up computation used in  Datalog,
+and a stream-oriented computation will be discussed in the next section.
+
+Recursive queries can
+be supported in  ATLaS without any
+new construct since UDAs can call other
+aggregates or call themselves recursively. Examples of
+application of recursive UDAs in data mining will be discussed
+later.
+
+Along with recursive aggregates, table functions defined in SQL play a
+critical role in expressing data mining applications in ATLaS.  For
+instance, let us consider the table function {\bw dissemble} that will
+be used to express decision tree classifiers.  Take for instance
+the well-known Play-Tennis example of Figure \ref{tab:newtennis}; here we
+want to classify the value of {\bw Play} as a `Yes' or a `No' given a
+training set such as that shown in Table~\ref{tab:newtennis}.
+
+{\renewcommand{\baselinestretch}{1}
+\normalsize
+\begin{figure}[htb]
+\begin{center}
+{\footnotesize
+\begin{tabular}{|c|l|l|l|l|c|} \hline
+{\bf RID}&{\bf Outlook}&{\bf Temp}&{\bf Humidity}&{\bf Wind}&{\bf Play}\\
+\hline
+1&Sunny&Hot&High&Weak&No\\
+2&Sunny&Hot&High&Strong&No\\
+3&Overcast&Hot&High&Weak&Yes\\
+4&Rain&Mild&High&Weak&Yes\\
+5&Rain&Cool&Normal&Weak&Yes\\
+6&Rain&Cool&Normal&Strong&Yes\\
+7&Overcast&Cool&Normal&Strong&No\\
+8&Sunny&Mild&High&Weak&No\\
+9&Sunny&Cool&Normal&Weak&Yes\\
+10&Rain&Mild&Normal&Weak&Yes\\
+11&Sunny&Mild&Normal&Strong&Yes\\
+12&Overcast&Mild&High&Strong&Yes\\
+13&Overcast&Hot&Normal&Weak&Yes\\
+14&Rain&Mild&High&Strong&No\\ \hline
+\end{tabular}
+}
+\caption{The relation \bf PlayTennis\inv \inv} \label{tab:newtennis}
+\end{center}
+\end{figure}
+}
+
+The first step for most scalable classifiers~\cite{sprint} is to
+convert the training set into column/value pairs. This conversion,
+although conceptually simple, is hard to express succinctly in SQL.
+Consider the {\bw PlayTennis} relation as shown in Figure \ref{tab:newtennis}. We want to convert {\bw PlayTennis} into a new
+stream of three columns {\bw (Col, Value, YorN)} by breaking down each
+tuple into four records, each record representing one column in the
+original tuple, including the column number, column value and the
+class label {\bw YorN}.  We can define the table function
+{\bw dissemble} of Example \ref{exe:revert} to solve the problem.
+Then, using this table function and the recursive aggregate {\bw
+classify}, Algorithm~\ref{alg:sprint} implements a
+scalable decision tree classifier using
+merely 15 statements.
+%\begin{figure}[b]
+\begin{example}{Dissemble a relation into column/value pairs.}
+
+\begin{codedisplay}
+\kw{FUNCTION} dissemble (v1 \kw{Int}, v2 \kw{Int}, v3 \kw{Int},
+v4 \kw{Int}, YorN \kw{Int}):\\
+\>\>\>\>\>\>\>\>(col \kw{Int}, val \kw{Int}, YorN \kw{Int}); \\[0.2cm]
+%\> \>  \> \>\kw{}: (col \kw{Int}, val \kw{Int}, YorN \kw{Int}); \\
+ \{\>\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{VALUES} \\
+ \>\>\>(1, v1, YorN), (2, v2, YorN), \kw{}(3, v3, YorN), (4, v4, YorN);
+\}
+\end{codedisplay}
+ \vspace*{-0.2cm}
+\label{exe:revert}
+\end{example}
+
+{\renewcommand{\baselinestretch}{1}
+\normalsize
+
+\begin{algorithm}[!htb]
+\begin{algorithmic}[1]
+\STATE\kw{AGGREGATE} classify(iNode \kw{Int}, RecId \kw{Int}, iCol \kw{Int}, \kw{}iValue \kw{Int}, iYorN \kw{Int})\\
+\STATE\{\hspace{.2cm}\kw{TABLE} treenodes(RecId \kw{Int}, Node \kw{Int}, Col \kw{Int}, \kw{}Value \kw{Int}, YorN \kw{Int});\\
+\STATE\hspace{.3cm}\kw{TABLE} mincol(Col \kw{Int});\\
+%\STATE\hspace{.3cm}\kw{TABLE} summary(Col \kw{Int}, Value \kw{Int}, Yc \kw{Int}, Nc \kw{Int},\\
+%\hspace{2.5cm}\kw{INDEX} \{Col,Value\});\\
+\STATE\hspace{.3cm}\kw{TABLE} summary(Col \kw{Int}, Value \kw{Int}, Yc \kw{Int}, Nc \kw{Int})
+\kw{BTree}(Col,Value);\\
+\STATE\hspace{.3cm}\kw{TABLE} ginitable(Col \kw{Int}, Gini \kw{Int});\\
+\STATE\hspace{.3cm}\kw{INITIALIZE} : \kw{ITERATE} : \{\\
+\STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} treenodes \kw{VALUES}(RecId, iNode, iCol, iValue, iYorN);\\
+\STATE\hspace{.6cm}\kw{UPDATE} summary\\
+\hspace{.9cm}\kw{SET} Yc=Yc+iYorN, Nc=Nc+1-iYorN\\
+\hspace{.9cm}\kw{WHERE} Col = iCol \kw{AND} Value = iValue;\\
+\STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} summary \\
+\hspace{.9cm}\kw{SELECT} iCol, iValue, iYorN, 1-iYorN \\
+\hspace{.9cm}\kw{WHERE} SQLCODE > 0;\\
+\hspace{.3cm}\}\\
+\STATE\hspace{.3cm}\kw{TERMINATE} : \{\\
+\STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} ginitable\\
+\hspace{.9cm}\kw{SELECT} Col, sum((Yc*Nc)/(Yc+Nc))/sum(Yc+Nc) \kw{FROM} summary\\
+\hspace{.9cm}\kw{GROUP BY} Col \kw{HAVING} count(Value)$>$1 \kw{AND} sum(Yc)$>$0 \kw{AND} sum(Nc)$>$0;\\
+\STATE\alglabel{sprintmincolumn}\hspace{.6cm}\kw{INSERT} \kw{INTO} mincol \kw{SELECT} minpair(Col, Gini)$\rightarrow$mPoint \kw{FROM} ginitable;\\
+\STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} result \kw{SELECT} iNode, Col \kw{FROM} mincol;\\
+\hspace{.6cm}\COMMENT{Call classify() recusively to partition each of its subnodes unless it is pure.}\\
+\STATE\hspace{.6cm}\kw{SELECT} classify(t.Node*MAXVALUE+m.Value+1, t.RecId, t.Col, t.Value, t.YorN)\\
+\hspace{.9cm}\kw{FROM}\ \ \ treenodes \kw{AS} t,\\
+\hspace{1.2cm}( \kw{SELECT} tt.RecId RecId, tt.Value Value\\
+\hspace{1.3cm}  \kw{FROM} treenodes \kw{AS} tt, mincol \kw{AS} m\\
+\hspace{1.3cm}  \kw{WHERE} tt.Col=m.Col; \\
+\hspace{1.2cm}\kw{}) \kw{AS} m\\
+\hspace{.9cm}\kw{WHERE} t.RecId = m.RecId AND\\
+\hspace{2.1cm}t.col \kw{NOT IN} (\kw{SELECT} col \kw{FROM} mincol)\\
+% \hspace{1.3cm}\kw{AND EXIST} (\kw{SELECT} Col \kw{FROM} summary\\
+% \hspace{2.9cm}\kw{GROUP BY} Col\\
+% \hspace{2.9cm}\kw{HAVING} count(Value)$>$1 \\
+% \hspace{3.4cm}\kw{AND} sum(Yc) $>$ 0\\
+% \hspace{3.4cm}\kw{AND} sum(Nc) $>$ 0) \\
+\alglabel{sprintgroup}\hspace{.9cm}\kw{GROUP BY} m.Value;\\
+\hspace{.3cm}\}\\
+\STATE\}
+\end{algorithmic}
+\caption{A Scalable Decision Tree Classifier}
+\label{alg:sprint}
+\end{algorithm}
+
+
+In the {\cw INITIALIZE} and {\cw ITERATE} statements of {\bw classify}
+in Algorithm \ref{alg:sprint}, we update the class histogram kept in
+the {\bw summary} table for each column/value pair.  The {\cw
+  TERMINATE} routine first computes the gini index for each column
+using the histogram.  However, if a column has a single value ({\small
+  \bf count(Value)$\le$ 1}), or tuples in the partition belongs to one
+class ({\small \bf{sum(Yc)=0}} or {\small \bf{sum(Nc)=0}}), then the
+column is not splittable and hence, not inserted into {\bw ginitable}.
+On line~\algref{sprintmincolumn}, we select the splitting column which
+has the minimal gini index. A new sub-branch is generated for each
+value in the column.  The UDA {\bw minpair} previously defined
+ returns the minimal gini index as well
+as the column where the minimum value occurred. After recording the
+current split into the {\bw result} table, we call the classifier
+recursively to further classify the sub nodes.  On
+line~\algref{sprintgroup}, {\cw GROUP BY} {\bw m.Value} partitions the
+records in {\bw treenodes} into {\bw MAXVALUE} subnodes, where {\bw
+  MAXVALUE} is the largest number of different values in any of the
+table columns (three for Figure \ref{tab:newtennis}).
+% The {\cw EXIST} subquery in the {\cw WHERE} clause checks the
+% termination condition.
+The recursion terminates if table {\bw mincol} is empty, that is,
+there is no valid column to further split the partition.
+
+To classify the PlayTennis dataset shown in Table~\ref{tab:newtennis}, we
+use the program:
+\begin{codedisplay}
+\>\>\kw{SELECT} classify(0, p.RID, d.Col, d.Val, d.YorN)\\
+\>\>\kw{FROM} PlayTennis \kw{AS} p, \\
+\>\>\>\>\kw{TABLE}(dissemble(Outlook,Temp, Humidity, Wind, Play)) \kw{AS} d;\\
+\end{codedisplay}
+%where {\bw dissemble} is the table function of Example~\ref{exe:revert})
+%that converts the PlayTennis table into column/value pairs.
+% and p.RID is the (pseudo) ROWID column of the PlayTennis table.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Recursion}
+
+Table functions and recursion are also supported in SQL 1999, but, at
+the best of our knowledge, there is no simple way to express
+decision-tree classifiers in SQL (or for that matter in Datalog).
+The fact that a concise expression for this algorithm is now
+possible suggests the stream-oriented
+computation model of UDAs adds to the expressive power of ATLaS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{ROLAPs}
+
+Powerful aggregate extensions based on modifications and
+generalization of group-by constructs have recently been proposed by
+researchers, OLAP vendors, and standard committees. New operators,
+such as % {\bw GROUPING SETS}
+{\cw ROLLUP} and {\cw CUBE}, have been included in SQL-3 and
+implemented in major
+commercial DBMSs.
+We will now express these extensions
+in ATLaS.
+
+The purpose of {\cw ROLLUP} is to create subtotals at multiple
+detail levels from the most detailed one, up to the grand total. This
+functionality could  be expressed in basic SQL
+by combining several {\cw SELECT}
+statements with {\cw UNION}s. For instance, to roll up a sales table
+along dimensions such as Time, Region, and Department, we can use the
+query of Example \ref{exe:sqlrollup}.
+
+% {\renewcommand{\baselinestretch}{1}
+% \normalsize
+% \footnotesize
+% \begin{codedisplay}
+% \>\>\kw{SELECT} Time, Region, Dept, sum(Sales) \kw{AS} Sales \\
+% \>\>\kw{FROM} data\\
+% \>\>\kw{GROUP BY ROLLUP}(Time, Region, Dept)\\
+% \end{codedisplay}
+% }
+%\begin{figure} [t]
+{\small
+\begin{example}{Using Basic SQL to express ROLLUP}
+\begin{codedisplay}
+\kw{SELECT} Time, Region, Dept, SUM(Sales) \kw{FROM} Sales \kw{GROUP BY} Time, Region, Dept\\
+\>\>\>\>\kw{UNION ALL}\\
+\kw{SELECT} Time, Region, `all' , SUM(Sales) \kw{FROM} Sales \kw{GROUP BY} Time, Region\\
+\>\>\>\>\kw{UNION ALL}\\
+ \kw{SELECT} Time, `all', `all', SUM(Sales) \kw{FROM} Sales \kw{GROUP BY} Time\\
+\>\>\>\>\kw{UNION ALL}\\
+\kw{SELECT} `all', `all', `all', SUM(Sales) \kw{FROM} Sales;
+\end{codedisplay}
+\label{exe:sqlrollup}
+\end{example}
+}
+%\end{figure}
+
+The problem with the approach in Example~\ref{exe:sqlrollup}, above, is
+that each of the four {\cw SELECT} statements could result in a new scan
+of the table, even though all needed subtotals can be gathered in a
+single pass. Thus, a new {\cw ROLLUP} construct was introduced in SQL.
+
+No ad hoc operator is needed in ATLaS to express rollup queries.
+For instance, in ATLaS the above query can be expressed succinctly as
+follows:
+%\footnote{We assume the dataset is ordered by Time, Region, and Dept.}:
+%\newpage
+{
+\begin{codedisplay}
+\> \> \kw{SELECT} rollup(Time, Region, Dept, Sales) \kw{FROM} data;\\
+\end{codedisplay}
+}
+Indeed, the rollup functionality can be expressed by ATLaS in several
+different ways. Algorithm~\ref{alg:rollup} shows an implementation of
+the {\bw rollup} aggregate used in the above query, where the dataset
+is assumed ordered by Time, Region, and Dept.
+{
+  \renewcommand{\baselinestretch}{1}
+  \normalsize
+
+  \begin{algorithm}[!htb]
+    \begin{algorithmic}[1]
+      \footnotesize
+      \STATE\kw{AGGEGATE} rollup(T \kw{Char}(20), R \kw{Char}(20), \kw{}D \kw{Char}(20), Sales \kw{Real}): (T \kw{Char}(20), R \kw{Char}(20), D \kw{Char}(20), Sales \kw{Real})\\
+      \STATE\{\hspace{.15cm}\kw{TABLE} memo(j \kw{Int}, Time \kw{Char}(20), Region \kw{Char}(20), \kw{}Dept \kw{Char}(20), Sum \kw{Real}) \kw{MEMORY};\\
+      \STATE\hspace{.3cm}\kw{FUNCTION} onestep(L \kw{Int}, T \kw{Char}(20), R \kw{Char}(20), \kw{}D \kw{Char}(20), S \kw{Real})\\
+      \hspace{.8cm}: (T \kw{Char}(20), R \kw{Char}(20), D \kw{Char}(20), Sales \kw{Real})\\
+      \STATE\hspace{.3cm}\{\hspace{.2cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \\
+                                %\STATE\hspace{1cm}\kw{SELECT} TY, TM, TD \kw{FROM} memo\\
+      \hspace{.8cm}\kw{SELECT} Time, Region, Dept, Sum \kw{FROM} memo\\
+      \hspace{.8cm}\kw{WHERE} L=j \kw{AND} (T$\neq$Time \kw{OR} R$\neq$Region \kw{OR} D$\neq$Dept);\\
+                                %\hspace{1cm}\\
+      \STATE\hspace{.6cm}\kw{UPDATE} memo \kw{SET} Sum = Sum + (\kw{SELECT} m.Sum \kw{FROM} memo \kw{AS} m \kw{WHERE} m.j=L)\\
+      \hspace{.8cm}\kw{WHERE} SQLCODE=0 \kw{AND} j=L+1;\\
+                                %\hspace{1cm}\\
+      \STATE\hspace{.6cm}\kw{UPDATE} memo\\
+      \hspace{.8cm}\kw{SET} Time=T, Region=R, Dept=D, Sum=S\\
+      \hspace{.8cm}\kw{WHERE} SQLCODE=10 \kw{AND} j=L;\\
+      \hspace{.3cm}\} \\
+      \STATE\hspace{.3cm}\kw{INITIALIZE}: \{ \\
+      \STATE\alglabel{rollupinit}\hspace{.6cm}\kw{INSERT} \kw{INTO} memo \\
+      \hspace{.8cm}\kw{VALUES} (1, T, R, D, Sales), (2, T, R, `all', 0), (3, T, `all', `all', 0), (4, `all', `all', `all', 0);\\
+      \hspace{.3cm}\}\\
+      \STATE\hspace{.3cm}\kw{ITERATE}: \{\ % if there is no change in the input\\
+      \STATE\alglabel{rollupadd}\hspace{.6cm}\kw{UPDATE} memo \kw{SET} Sum = Sum + Sales \kw{WHERE} Time=T \kw{AND} Region=R \kw{AND} Dept=D;\\
+                                %\STATE\hspace{1cm}\ \ \ \  %otherwise\\
+      \STATE\alglabel{rollupstep}\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(1, T, R, D, Sales)) \kw{AS} os\\
+      \hspace{.8cm}\kw{WHERE} SQLCODE>0;\\
+                                %\STATE\hspace{1cm}\ \ \ \ \ \  %and if the previous is true\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(2, T, R, `all', 0)) \kw{AS} os\\
+      \hspace{.8cm}\kw{WHERE} SQLCODE>0;\\
+                                %\STATE\hspace{1cm}\ \ \ \ \ \  %and if the previous is true\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(3, T, `all', `all', 0)) \kw{AS} os\\
+      \hspace{.8cm}\kw{WHERE} SQLCODE=1;\\
+      \hspace{.3cm}\}\\
+      \STATE\hspace{.3cm}\kw{TERMINATE}: \{\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(1, `all', `all', `all', 0)) \kw{AS} os;\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(2, `all', `all', `all', 0)) \kw{AS} os;\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} os.* \kw{FROM} \kw{TABLE}(onestep(3, `all', `all', `all', 0)) \kw{AS} os;\\
+      \STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} Time, Region, Dept, Sum \kw{FROM} memo \kw{WHERE} j=4;\\
+      \hspace{.3cm}\}\\
+      \STATE\}\\
+    \end{algorithmic}
+    \caption{Roll-up  sales on Time, Region, Dept\label{alg:rollup}}
+  \end{algorithm}
+  }
+% {\renewcommand{\baselinestretch}{1}
+% \normalsize
+% \begin{algorithm}[htb]
+% \begin{algorithmic}[1]
+% \footnotesize
+% \STATE\kw{FUNCTION} onestep(L \kw{Int}, T \kw{Char}(20), R \kw{Char}(20), D \kw{Char}(20), S \kw{Real}) : \\
+% \hspace{2.5cm}(T \kw{Char}(20), R \kw{Char}(20), D \kw{Char}(20), Sales \kw{Real})\\
+% \STATE\{\\
+% \STATE\hspace{.5cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \\
+% %\STATE\hspace{1cm}\kw{SELECT} TY, TM, TD \kw{FROM} memo\\
+% \hspace{.5cm}\kw{SELECT} Time, Region, Dept \kw{FROM} memo\\
+% \hspace{.5cm}\kw{WHERE} L=level \kw{AND} (T$<>$Time \kw{OR} R$<>$Region \kw{OR} D$<>$Dept);\\
+% %\hspace{1cm}\\
+% \STATE\hspace{.5cm}\kw{UPDATE} memo \kw{SET} Sum= Sum + (\kw{SELECT} m.Sum \kw{FROM} memo \kw{AS} m \kw{WHERE} m.level=L)\\
+% \hspace{.5cm}\kw{WHERE} SQLCODE=1 \kw{AND} level=L+1;\\
+% %\hspace{1cm}\\
+% \STATE\hspace{.5cm}\kw{UPDATE} memo \kw{SET} Time=T, Region=R, Dept=D, Sum=S\\
+% \hspace{.5cm}\kw{WHERE} SQLCODE=1 \kw{AND} level=L;\\
+% \STATE\} \\
+% \end{algorithmic}
+% \caption{Update table {\bw memo} starting from a certain level}
+% \label{alg:onestep}
+% \end{algorithm}
+% }
+Algorithm~\ref{alg:rollup} combines UDAs and table functions to
+implement {\bw rollup}.
+
+We use a  in-memory table to keep track of the
+subtotals at each rollup level $j$ ($j$ = 1, ..., 4, with level 4
+corresponding to the grand total). The table is as follows:
+
+{\small \begin{codedisplay}
+\kw{}TABLE memo(j \kw{Int}, Time \kw{Char}(20), Region \kw{Char}(20), Dept \kw{Char}(20), Sum \kw{Real})\\
+  \> MEMORY
+\end{codedisplay}}
+
+At the core of the algorithm, we have the four entries added to {\bw
+  memo} by the {\cw INITIALIZE} statement (line~\algref{rollupinit}).
+The first entry has rollup level one and its subtotal (last column) is
+initialized to the sales amount of the first record.  The subtotals
+for the other three entries are set to zero.  Let  $memo_j$ denote
+the memo tuple at level $j$; then, $memo_j$ contains $j-1$ occurrences of {\bw
+  `all'}.
+
+The four SQL statements in the {\cw ITERATE} group (i) determine the
+rollup levels to which the next tuple in the input will contribute,
+and (ii) for each such level, return values, and update the memo
+table.  For instance, if the three leftmost columns of the new input
+tuple match those of $memo_1$, then the new input value is also of
+level one. If this is not the case, but the two leftmost columns match
+those of $memo_2$, then the new tuple is of level two, and so on.  If
+one (none) of the columns matches, then the new tuple is considered to be of
+level 3 (level 4).  For incoming tuples at level 1, we update the subtotal for
+$memo_1$ but return no result. For tuples of level 2 (level 3), we return the
+current subtotal from $memo_1$ (and $memo_2$), reset this subtotal using the input
+value, and then update the subtotal at $memo_2$($memo_3$).  For tuples belonging
+to level $4$, we return the subtotals from $memo_j, j=1,2,3$ and reset
+them to new input value.  The {\cw TERMINATE} statement returns the
+subtotals from $memo_j, j=1,2,3,4$ where $memo_4$ now contains the sum
+of all sales.
+
+This computation is implemented by Algorithm~\ref{alg:rollup} with the
+help of a special variable of SQL, {\cw SQLCODE}.  If no updates are made on
+line~\algref{rollupadd}, i.e., if {\cw SQLCODE>0}, we need to use {\bw
+  onestep()} to ``roll up'' the subtotals from level 1 to level 2
+(line~\algref{rollupstep}). If the roll-up is successful, then we need
+to check if further roll-ups from level 2 to level 3, and then from
+level 3 to level 4 are necessary.
+
+% In the {\bw TERMINATE} routine, we force a final roll-up on each level
+% of aggregation and returns all the remaining subtotals as well as the
+% grand total.
+
+The table function {\bw onestep} is rather simple. We first test if
+the level of the record being passed is different from the entry
+$memo_j$ (to simplify this test some of its columns are conveniently
+set to {\bw all}).  If they are different, then the subtotal for
+stored in $memo_j$ must be returned.  This subtotal must also be
+passed ('rolled-up') to the next level: i.e., to level $j+1$.
+Finally, the subtotal at $memo_j$ must be reset from current input
+record to restart aggregation on a new set of group-by columns.
+
+
+In Algorithm~\ref{alg:rollup}, we assumed that the data is already
+sorted on the rollup columns. When this is not the case, then
+we use the  UDA $\bw sort\_and\_roll$, of Algorithm \ref{alg:sortandroll},
+which first sort the data and then calls the UDA  {\cdf rollup}.
+Furthermore, the {\cw CUBE} operator is
+easily implemented  by a sequence of three sort-and-roll.
+
+In Algorithm~\ref{alg:rollup},  {\cdf sort\_temp}
+applies the standard SQL clause {\cw ORDER BY} to the output
+tuples. Clearly, an SQL statement that contains an
+ {\cw ORDER BY} clause is blocking, since it requires sorting.
+Therefore, the table function {\bw sort\_temp} is also blocking since it
+contains this statement. Thus, table functions can become blocking
+because they contain SQL-statements with {\cw ORDER BY}, or
+blocking aggregates or blocking table functions; but, except for those
+situations, table functions are nonblocking.
+
+{\renewcommand{\baselinestretch}{1}
+\normalsize
+\begin{algorithm}[tb]
+%\begin{algorithm}[!htb]
+\begin{algorithmic}[1]
+\STATE\kw{AGGREGATE} sort\_and\_roll(T \kw{Char}(20), R \kw{Char}(20), \kw{}D \kw{Char}(20), Sales \kw{Real})\\
+\hspace{.6cm}: (T \kw{Char}(20), R \kw{Char}(20), D \kw{Char}(20), Sales \kw{Real})\\
+%
+\STATE\{\hspace{.05cm}\kw{TABLE} temp(A1 \kw{Char}(20),
+A2 \kw{Char}(20), A3 \kw{Char}(20),\kw{}V \kw{Real}) \kw{MEMORY};\\
+\STATE\hspace{.2cm}\kw{FUNCTION} sort\_temp(): (A1 \kw{Char}(20), A2 \kw{Char}(20), A3 \kw{Char}(20), V \kw{Real})\\
+\STATE\hspace{.2cm}\{\hspace{.2cm}\kw{INSERT INTO RETURN}\\
+\hspace{.9cm}\kw{SELECT} * \kw{FROM} temp \kw{ORDER BY} A1, A2, A3;\\
+\hspace{.2cm}\}
+\STATE\hspace{.2cm}\kw{INITIALIZE}: \kw{ITERATE}: \{\\
+\hspace{.6cm}\kw{INSERT} \kw{INTO} temp \kw{VALUES} (T, R, D, Sales);\\
+\hspace{.2cm}\} \\
+\STATE\hspace{.2cm}\kw{TERMINATE}: \{\\
+\STATE\hspace{.6cm}\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{SELECT} rollup(t.A1, t.A2, t.A3, t.V) \kw{FROM} \kw{TABLE} (sort\_temp()) \kw{AS} t;\\
+\hspace{.2cm}\}\\
+\STATE\}\\
+\end{algorithmic}
+\caption{Sorting and then rolling-up sales on Time, Region, Dept}
+\label{alg:sortandroll}
+\end{algorithm}
+}

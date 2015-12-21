@@ -1,0 +1,9 @@
+EXTRA_DIST = adlcc test*.adl
+
+dist: test.tgz
+
+test.tgz: $(EXTRA_DIST)
+	tar cf - $(EXTRA_DIST) | gzip > test.tgz
+
+clean: 
+	rm -f *.cc *~ *.core test*.exe test*.o

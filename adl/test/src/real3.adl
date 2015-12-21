@@ -1,0 +1,5 @@
+table test (a real);
+table tt (b int);
+insert into tt values (4);
+insert into test select b*1 from tt;
+insert into stdout select a from test;

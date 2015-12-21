@@ -1,0 +1,211 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+ABS	rtree.h	66;"	d
+AND	ansidecl.h	106;"	d
+AND	ansidecl.h	131;"	d
+ANSI_PROTOTYPES	ansidecl.h	112;"	d
+BLOCKSZ	rtree.h	41;"	d
+CONST	ansidecl.h	118;"	d
+CONST	ansidecl.h	145;"	d
+CONTAINMENT	rtree.h	16;"	d
+DBL_MAX	rtree.h	33;"	d
+DB_NEXT_RANGE	rtree.h	21;"	d
+DEFUN	ansidecl.h	122;"	d
+DEFUN	ansidecl.h	149;"	d
+DEFUN_VOID	ansidecl.h	123;"	d
+DEFUN_VOID	ansidecl.h	150;"	d
+DEF_RTREE	rtree.h	4;"	d
+DOTS	ansidecl.h	119;"	d
+DOTS	ansidecl.h	146;"	d
+ENTRYSZ	rtree.h	48;"	d
+EQUALITY	rtree.h	15;"	d
+EXFUN	ansidecl.h	121;"	d
+EXFUN	ansidecl.h	148;"	d
+GET_COUNTER	rtree.h	89;"	d
+GET_CURITEM	rtree.h	95;"	d
+GET_DEL	rtree.h	96;"	d
+GET_FIRSTITEM	rtree.h	92;"	d
+GET_ITEM	rtree.h	93;"	d
+GET_NEXTLPTR	rtree.h	90;"	d
+GET_NODETYPE	rtree.h	88;"	d
+GET_PREVLPTR	rtree.h	91;"	d
+IndexEntry	rtree.h	/^} IndexEntry;$/;"	t	typeref:struct:index_entry
+KEYSZ	rtree.h	46;"	d
+LONG_DOUBLE	ansidecl.h	104;"	d
+LONG_DOUBLE	ansidecl.h	129;"	d
+M	rtree.h	/^  unsigned m, M;	\/* m: minimum; M: maximum; m <= M\/2 *\/$/;"	m	struct:rtree
+MAX	rtree.h	64;"	d
+MAX_ENTRIES	rtree.h	56;"	d
+MIN	rtree.h	61;"	d
+NEW_RTREE	rtree.h	38;"	d
+NOARGS	ansidecl.h	107;"	d
+NOARGS	ansidecl.h	132;"	d
+OLD_RTREE	rtree.h	37;"	d
+OVERHEAD	rtree.h	53;"	d
+PAGESZ	rtree.h	43;"	d
+PARAMS	ansidecl.h	111;"	d
+PARAMS	ansidecl.h	139;"	d
+PROTO	ansidecl.h	120;"	d
+PROTO	ansidecl.h	147;"	d
+PTR	ansidecl.h	102;"	d
+PTR	ansidecl.h	127;"	d
+PTRCONST	ansidecl.h	103;"	d
+PTRCONST	ansidecl.h	128;"	d
+PathType	rtree.h	/^}PathType;$/;"	t	typeref:struct:pathtype
+RTree	rtree.h	/^typedef struct rtree RTree;$/;"	t	typeref:struct:rtree
+RTreeCursor	rtree.h	/^typedef struct rtree_cursor RTreeCursor;$/;"	t	typeref:struct:rtree_cursor
+R_MAXINT	rtree.h	26;"	d
+R_MININT	rtree.h	27;"	d
+Rect	rtree.h	/^} Rect;$/;"	t	typeref:struct:rectangle
+SET_COUNTER	rtree.h	84;"	d
+SET_DEL	rtree.h	87;"	d
+SET_NEXTLPTR	rtree.h	85;"	d
+SET_NODETYPE	rtree.h	83;"	d
+SET_PREVLPTR	rtree.h	86;"	d
+SIGNED	ansidecl.h	109;"	d
+SIGNED	ansidecl.h	137;"	d
+VA_START	ansidecl.h	115;"	d
+VA_START	ansidecl.h	142;"	d
+VOLATILE	ansidecl.h	108;"	d
+VOLATILE	ansidecl.h	136;"	d
+VPARAMS	ansidecl.h	114;"	d
+VPARAMS	ansidecl.h	141;"	d
+_ANSIDECL_H	ansidecl.h	89;"	d
+adjust_tree_with_split	rtree.cc	/^adjust_tree_with_split(RTree *rtree, pageno_t curblk, stack<pageno_t> &anc)$/;"	f
+adjust_tree_without_split	rtree.cc	/^adjust_tree_without_split(RTree *rtree, pageno_t curblk, Rect *mbr, stack<pageno_t> &anc)$/;"	f
+area	rectangle.cc	/^area(Rect *r)$/;"	f
+blkno0	rtree.cc	/^static pageno_t blkno0, blkno1;$/;"	v	file:
+blkno1	rtree.cc	/^static pageno_t blkno0, blkno1;$/;"	v	file:
+blkno_t	rtree.h	/^typedef pageno_t blkno_t;	$/;"	t
+blkptr	rtree.h	/^  pageno_t blkptr;\/\/ block ptr in index$/;"	m	struct:cbuffertype
+blkptr	rtree.h	/^typedef pageno_t blkptr;$/;"	t
+buf	rtree.h	/^  char buf[BLOCKSZ];$/;"	m	struct:pathtype
+buffer	rtree.cc	/^char buffer[BLOCKSZ];			 \/*one for read\/write index *\/$/;"	v
+cBufferType	rtree.h	/^}cBufferType;$/;"	t	typeref:struct:cbuffertype
+c_close	rtree.h	/^  int (*c_close)(RTreeCursor *);$/;"	m	struct:rtree_cursor
+c_del	rtree.h	/^  int (*c_del)(RTreeCursor *, int);$/;"	m	struct:rtree_cursor
+c_get	rtree.h	/^  int (*c_get)(RTreeCursor *, DBT *, DBT *, int);$/;"	m	struct:rtree_cursor
+c_put	rtree.h	/^  int (*c_put)(RTreeCursor *, DBT *, DBT *, int);$/;"	m	struct:rtree_cursor
+cbuffertype	rtree.h	/^typedef struct cbuffertype{$/;"	s
+choose_leaf	rtree.cc	/^choose_leaf(RTree *rtree, Rect *mbr, stack<pageno_t> &anc)$/;"	f
+close	rtree.h	/^  int (*close)(RTree *, int);$/;"	m	struct:rtree
+close_rtree	rtree.cc	/^close_rtree(RTree *rtree)$/;"	f
+cmp_highside	rectangle.cc	/^cmp_highside(Rect *r1, Rect *r2)$/;"	f
+cmp_lowside	rectangle.cc	/^cmp_lowside(Rect *r1, Rect *r2)$/;"	f
+compose	rectangle.cc	/^compose(Rect *r1, Rect *r2)$/;"	f
+condense_tree	rtree.cc	/^condense_tree(RTree *rtree, pageno_t blkno)$/;"	f
+const	ansidecl.h	134;"	d
+containedIn	rectangle.cc	/^containedIn(Rect *r1, Rect *r2)$/;"	f
+coverr0	rtree.cc	/^static Rect coverr0, coverr1;$/;"	v	file:
+coverr1	rtree.cc	/^static Rect coverr0, coverr1;$/;"	v	file:
+curBlkPtr	rtree.h	/^  pageno_t curBlkPtr;	   \/* pointers to index file (index.db) *\/$/;"	m	struct:rtree_cursor
+curitem	rtree.h	/^  unsigned curitem;$/;"	m	struct:rtree_cursor
+curnode	rtree.h	/^  char curnode[BLOCKSZ];$/;"	m	struct:rtree_cursor
+current_tuple	rtree.h	/^  void *current_tuple;\/*Richard 2002\/5, used for get() and c_get(), to avoid dynamically allocating memory, assuming there is no multiple accesses to database*\/$/;"	m	struct:rtree
+cursor	rtree.h	/^  int (*cursor)(RTree *, RTreeCursor **, int);$/;"	m	struct:rtree
+curtpl	rtree.h	/^  tupleno_t curtpl;        \/*tuple number *\/$/;"	m	struct:rtree_cursor
+db	rtree.h	/^  DB *db;$/;"	m	struct:rtree
+dbc	rtree.h	/^  DBC *dbc;                 \/\/ Underlying BerkeleyDB's Cursor$/;"	m	struct:rtree_cursor
+dbg	rtree.h	1;"	d
+debug	rtree.cc	/^int debug = 1;$/;"	v
+del	rtree.h	/^  int (*del)(RTree *, Rect *, int);$/;"	m	struct:rtree
+delete_rtree	rtree.cc	/^delete_rtree(RTree *rtree, Rect *mbr)\/\/ header modified by Richard 2002\/4$/;"	f
+dfsStack	rtree.h	/^  stack<cBufferType> *dfsStack; \/* stack for DFS, NOTE: MUST INIT in rtree_cursor *\/$/;"	m	struct:rtree_cursor
+dfsType	rtree.h	/^  int dfsType;              \/\/ DFS search type, EQUALITY OR CONTAINMENT$/;"	m	struct:rtree_cursor
+ent	rtree.h	/^  unsigned ent;\/\/ entry no.in index$/;"	m	struct:cbuffertype
+entry	rtree.h	/^    Rect entry;$/;"	m	struct:index_entry
+fb_ind	rtree.h	/^  pageno_t fb_ind, tb_ind;$/;"	m	struct:rtree
+fillin_q	block.cc	/^fillin_q(RTree *rtree, pageno_t blkno)$/;"	f
+free_block	block.cc	/^free_block(RTree *rtree, pageno_t blkno, int flag)$/;"	f
+get	rtree.h	/^  int (*get)(RTree *, DBT *, DBT *, int);$/;"	m	struct:rtree
+get_newblock	rtree.cc	/^get_newblock(RTree *rtree)$/;"	f
+get_parent_block	block.cc	/^get_parent_block(RTree *rtree, pageno_t blkno, pageno_t curblk)$/;"	f
+iItem	rtree.h	/^  int iItem;                   \/\/last item no. that found$/;"	m	struct:pathtype
+index	rtree.h	/^  FILE *index;$/;"	m	struct:rtree
+indexSbSz	rtree.h	170;"	d
+index_entry	rtree.h	/^typedef struct index_entry$/;"	s
+index_fname	rtree.h	/^  char index_fname[255];$/;"	m	struct:rtree
+init_rtree	rtree.cc	/^int init_rtree(RTree *rtree){$/;"	f
+insert_rtree	rtree.cc	/^insert_rtree(RTree *rtree, Rect *mbr, DBT *dbt)$/;"	f
+insert_rtree_aux	rtree.cc	/^insert_rtree_aux(RTree *rtree, Rect *mbr, tupleno_t tplno)$/;"	f
+itembuf	rtree.cc	/^static char itembuf[(MAX_ENTRIES+1)*ENTRYSZ];	\/* M+1 entries *\/$/;"	v	file:
+lptr	rtree.h	/^  long lptr;		\/* leaf pointer, lptr\/BLOCKSZ = leaf block *\/$/;"	m	struct:rtree
+m	rtree.h	/^  unsigned m, M;	\/* m: minimum; M: maximum; m <= M\/2 *\/$/;"	m	struct:rtree
+make_root	block.cc	/^make_root(RTree *rtree, pageno_t blkptr)$/;"	f
+mem2rect	rectangle.cc	/^mem2rect(Rect *dst, char *src)$/;"	f
+moveToNextNonDel	interface.cc	/^int moveToNextNonDel(RTreeCursor *rtc){$/;"	f
+myerr	rtree.cc	/^void myerr(char *s){$/;"	f
+next	rtree.h	/^  struct pathtype *next;$/;"	m	struct:pathtype	typeref:struct:pathtype::pathtype
+open	rtree.h	/^  int (*open)(RTree **, char *, char *, int);$/;"	m	struct:rtree
+open_rtree	rtree.cc	/^open_rtree(char *indexFileName, char *recordFileName, int mode)$/;"	f
+overlap	rectangle.cc	/^overlap(Rect *r1, Rect *r2)$/;"	f
+pageno	rtree.h	/^    pageno_t  pageno;$/;"	m	struct:index_entry
+pageno_t	rtree.h	/^typedef unsigned long pageno_t;$/;"	t
+pathHead	rtree.h	/^  PathType *pathHead;      \/\/head of path list, used in cursor range get (DB_SET_RANGE)$/;"	m	struct:rtree_cursor
+pathTail	rtree.h	/^  PathType *pathTail;      \/\/tail of path list used in cursor range get $/;"	m	struct:rtree_cursor
+pathtype	rtree.h	/^typedef struct pathtype{$/;"	s
+pick_next	rtree.cc	/^pick_next(Rect *coverr0, Rect *coverr1,$/;"	f
+pick_seeds	rtree.cc	/^pick_seeds(unsigned res[2], char *items, unsigned num_items)$/;"	f
+prev	rtree.h	/^  struct pathtype *prev;$/;"	m	struct:pathtype	typeref:struct:pathtype::pathtype
+print	rtree.h	/^  void (*print)(RTree *, int);$/;"	m	struct:rtree
+print_node	rtree.cc	/^print_node(RTree *rtree, long node_offset)$/;"	f
+print_one_node	rtree.cc	/^int print_one_node(RTree *rtree, pageno_t blkno){$/;"	f
+print_superblk	rtree.cc	/^int print_superblk(RTree *rtree){$/;"	f
+put	rtree.h	/^  int (*put)(RTree *, DBT *, DBT *, int);$/;"	m	struct:rtree
+qbuf	rtree.cc	/^char *qbuf;$/;"	v
+qbufsz	rtree.cc	/^unsigned qbufsz;$/;"	v
+read_blk	block.cc	/^int read_blk(FILE *f, pageno_t blkno, void* buffer){$/;"	f
+read_blk_by_ptr	block.cc	/^int read_blk_by_ptr(FILE *f, pageno_t ptr, void* buffer){$/;"	f
+recordSbSz	rtree.h	181;"	d
+record_fname	rtree.h	/^  char record_fname[255];$/;"	m	struct:rtree
+rect2mem	rectangle.cc	/^rect2mem(char *dst, Rect *src)$/;"	f
+rectPrint	rectangle.cc	/^void rectPrint(Rect *mbr, int crlf = 0){$/;"	f
+rectangle	rtree.h	/^typedef struct rectangle$/;"	s
+remove	rtree.h	/^  int (*remove)(RTree *);	\/\/ empty the rtree$/;"	m	struct:rtree
+rtree	rtree.h	/^  RTree *rtree;            \/* Related rtree *\/$/;"	m	struct:rtree_cursor
+rtree	rtree.h	/^struct rtree$/;"	s
+rtree_close	interface.cc	/^rtree_close(RTree *rtree, int flags)$/;"	f
+rtree_create	interface.cc	/^rtree_create(RTree **rtree, char *indexFileName, char *recordFileName,int flags)$/;"	f
+rtree_cursor	interface.cc	/^rtree_cursor(RTree *rtree, RTreeCursor **rtcp, int flags)$/;"	f
+rtree_cursor	rtree.h	/^struct rtree_cursor$/;"	s
+rtree_cursor_close	interface.cc	/^rtree_cursor_close(RTreeCursor *rtc)$/;"	f
+rtree_cursor_del	interface.cc	/^rtree_cursor_del(RTreeCursor *rtc, int flags)$/;"	f
+rtree_cursor_get	interface.cc	/^rtree_cursor_get(RTreeCursor *rtc, $/;"	f
+rtree_cursor_next_item	interface.cc	/^int rtree_cursor_next_item(RTreeCursor *rtc, char &deleted)\/\/cursor move to next item$/;"	f
+rtree_cursor_put	interface.cc	/^rtree_cursor_put(RTreeCursor *rtc, $/;"	f
+rtree_del	interface.cc	/^rtree_del(RTree *rtree, Rect *mbr, int flags)$/;"	f
+rtree_dfs	rtree.cc	/^int rtree_dfs(RTree *rtree, $/;"	f
+rtree_get	interface.cc	/^rtree_get(RTree *rtree,$/;"	f
+rtree_get_one	rtree.cc	/^rtree_get_one(pageno_t *blk, unsigned *ent, tupleno_t *tpl,$/;"	f
+rtree_open	interface.cc	/^rtree_open(RTree **rtree, char *indexFileName, char *recordFileName,$/;"	f
+rtree_print	interface.cc	/^rtree_print(RTree *rtree, int flags)$/;"	f
+rtree_put	interface.cc	/^rtree_put(RTree *rtree,$/;"	f
+rtree_remove	rtree.cc	/^int rtree_remove(RTree* rtree){$/;"	f
+sequential_search_rtree	rtree.cc	/^sequential_search_rtree(pageno_t *blk, unsigned *ent, tupleno_t *tpl,$/;"	f
+split0	rtree.cc	/^static char split0[BLOCKSZ];$/;"	v	file:
+split1	rtree.cc	/^static char split1[BLOCKSZ];$/;"	v	file:
+split_node	rtree.cc	/^split_node(RTree *rtree, pageno_t curblk, Rect *mbr, long tupleptr,$/;"	f
+tb_ind	rtree.h	/^  pageno_t fb_ind, tb_ind;$/;"	m	struct:rtree
+tplsz	rtree.h	/^  u_int32_t tplsz; $/;"	m	struct:rtree
+tuple_close	tupledb.cc	/^int tuple_close(RTree *rtree){$/;"	f
+tuple_cursor_close	tupledb.cc	/^int tuple_cursor_close(RTreeCursor *rtc){$/;"	f
+tuple_cursor_get	tupledb.cc	/^int tuple_cursor_get(RTreeCursor *rtc, $/;"	f
+tuple_cursor_init	tupledb.cc	/^int tuple_cursor_init(RTreeCursor *rtc){$/;"	f
+tuple_cursor_put	tupledb.cc	/^int tuple_cursor_put(RTreeCursor *rtc, $/;"	f
+tuple_del	tupledb.cc	/^int tuple_del(RTree *rtree, tupleno_t *tplno){$/;"	f
+tuple_get	tupledb.cc	/^int tuple_get(RTree *rtree, void* tuple, tupleno_t *tplno){$/;"	f
+tuple_init	tupledb.cc	/^int tuple_init(RTree *rtree, int flags){$/;"	f
+tuple_put	tupledb.cc	/^int tuple_put(RTree *rtree, void* tuple, tupleno_t *tplno){$/;"	f
+tupleno_t	rtree.h	/^typedef db_recno_t tupleno_t;$/;"	t
+update_block_entry	block.cc	/^update_block_entry(RTree *rtree, pageno_t blkno, unsigned num,$/;"	f
+update_block_type	block.cc	/^update_block_type(RTree *rtree, pageno_t blkno, char node_type)$/;"	f
+write_blk	block.cc	/^int write_blk(FILE *f, pageno_t blkno, void* buffer){$/;"	f
+write_blk_by_ptr	block.cc	/^int write_blk_by_ptr(FILE *f, pageno_t ptr, void* buffer){$/;"	f
+x_lr	rtree.h	/^    long x_ul,y_ul,x_lr,y_lr;$/;"	m	struct:rectangle
+x_ul	rtree.h	/^    long x_ul,y_ul,x_lr,y_lr;$/;"	m	struct:rectangle
+y_lr	rtree.h	/^    long x_ul,y_ul,x_lr,y_lr;$/;"	m	struct:rectangle
+y_ul	rtree.h	/^    long x_ul,y_ul,x_lr,y_lr;$/;"	m	struct:rectangle

@@ -1,0 +1,31 @@
+AXL - Aggregate eXtension Language
+=====================================
+
+Assume the AXL package is untared in the AXL/ directory and you have
+installed the Berkeley DB system from http://www.sleepycat.com
+
+1. configure
+
+   ./configure 
+
+   or
+
+   ./configure --enable-debug
+
+   create a symbolic link "BerkeleyDB" that points to the installed
+BerkeleyDB package (preferably version 3.1.17) under the AXL/ diretory
+
+2.
+    make
+
+3.
+    make install
+
+    this will install AXL into /usr/local
+
+4.  run the test cases in in AXL/test 
+
+    cd test
+    ./testsuit | grep TEST
+
+        

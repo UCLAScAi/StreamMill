@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>IM_REL-&gt;cursor</TITLE>
+<META NAME="description" CONTENT="IM_REL-&gt;cursor">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html139"
+ HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html136"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html130"
+ HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html138"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html140"
+ HREF="node11.html">IM_REL_cursor-&gt;c_get</A>
+<B> Up:</B> <A NAME="tex2html137"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html131"
+ HREF="node9.html">IM_REL-&gt;put</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00037000000000000000">
+<FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;cursor</A>
+</H2>
+<PRE>
+#include &lt;im_db.h&gt;
+int IM_REL-&gt;cursor(IM_REL *relp, IM_RELC **cursorp, u_int32_t flags);
+</PRE><DL>
+<DT><STRONG>Description</STRONG>
+<DD> <BR>
+<P>
+The IM_REL-&gt;cursor function creates a cursor and copies a pointer
+  to it into the memory referenced by ``cursorp''.
+
+<P>
+A cursor is a structure used to provide sequential access through a
+  database.
+  
+  Currently the flags value must be set to 0.
+
+<P>
+<DT><STRONG>Return Value</STRONG>
+<DD> <BR>
+The IM_REL-&gt;cursor function returns a non-zero error value on
+  failure and 0 on success.
+</DL>
+<P>
+
+<BR><HR>
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

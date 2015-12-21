@@ -1,0 +1,12 @@
+table test(a int);
+
+insert into test values(1),(2),(3);
+
+insert into stdout SELECT a FROM test;
+
+delete FROM test;
+
+insert into test values (3),(4),(5);
+
+
+insert into stdout SELECT a FROM test;

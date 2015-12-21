@@ -1,0 +1,16 @@
+table temp(a int, b int);
+
+insert into temp values(1,100),(3,200),(4,300);
+
+/* this update will USE a temporary table, since KEY is modified */
+update temp set a=2;
+
+insert into stdout
+SELECT a,b FROM temp;
+
+/* this update will NOT USE a temporary table, since KEY is NOT
+modified */
+update temp set b=0;
+    
+insert into stdout
+SELECT a,b FROM temp;

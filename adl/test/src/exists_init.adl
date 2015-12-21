@@ -1,0 +1,9 @@
+table a(t int) memory;
+table b(t int) memory;
+
+insert into a values(1),(2);
+insert into b values(2),(1);
+
+insert into stdout
+select a.t from a 
+where exists (select 1 from b where a.t=b.t);

@@ -1,0 +1,107 @@
+window CAggregate nlaptev$nc   (a rEXT):
+(a real) {
+        @
+        @
+
+
+        @
+
+        @
+
+        initialize:
+ {
+        @
+        
+        // moved from being global
+rExtC tmpInit;
+        int windowid, classid, tCount, tmpLoop;
+        double x;
+        double y;
+        clusterReturn tmp;
+        
+          // set dimensionality  of our data
+          tmpInit.length = a.length;
+          // default configs
+          WINDOW_SIZE=400;
+          SLIDE_SIZE=200;
+          CLUSTER_THR=12;
+          DENSE_THR=10;
+          NUMBER_OF_CELLS_=16;
+          // init a tuple
+          tmpInit.pt = (float*)malloc(3*sizeof(float));
+          tmp.myWindowid = (int*)malloc(WINDOW_SIZE*sizeof(int));
+          tmp.myClassid = (int*)malloc(WINDOW_SIZE*sizeof(int));
+          tmp.myx = (double*)malloc(WINDOW_SIZE*sizeof(double));
+          tmp.myy = (double*)malloc(WINDOW_SIZE*sizeof(double));
+          // allocate memory and init variables
+          initCluster(tmpInit);
+          // init tmp result which we will print out
+          // tmp = (char*)malloc(WINDOW_SIZE*sizeof(char));
+          // insert and iterate the first point in the file
+          for (int i=0; i<tmpInit.length; ++i){
+                        //printf("%i ",tmpInit.pt[i]);
+                        tmpInit.pt[i] = a.pt[i];
+          }
+          // iterateESL(tmpInit);
+        @
+ }
+
+        iterate:
+ {
+        @
+        // moved from being global
+        rExtC tmpInit;
+        int windowid, classid, tCount, tmpLoop;
+        double x;
+        double y;
+        clusterReturn tmp;
+        
+          // verify a tuple
+          for (int i=0; i<tmpInit.length; ++i){
+                        //printf("%f ",tmpInit.pt[i]);
+                        tmpInit.pt[i] = a.pt[i];
+          }
+          iterateESL(tmpInit, &tmp);
+          tCount++;
+          if (tCount > WINDOW_SIZE) {
+             tCount = 0;
+             tmp.mySize = 0;
+             print_clustersESL(&tmp);
+             for (tmpLoop = 0; tmpLoop < tmp.mySize; tmpLoop++) {   
+                windowid = tmp.myWindowid[tmpLoop];
+                classid = tmp.myClassid[tmpLoop];
+                x = tmp.myx[tmpLoop];
+                y = tmp.myy[tmpLoop];
+                memset(&key, 0, sizeof(key));
+     	        memset(&data, 0, sizeof(data));
+     	        data.data = datadata;
+	        key.data = keydata;
+  	        memcpy((char*)data.data, &windowid, sizeof(int));
+                memcpy((char*)data.data + sizeof(int), &classid, sizeof(int));
+  	        memcpy((char*)data.data + sizeof(int) + sizeof(int), &x, sizeof(double));
+                memcpy((char*)data.data + sizeof(int) + sizeof(int) + sizeof(double), &y, sizeof(double));
+   	        data.size = sizeof(int) + sizeof(int) + sizeof(double) + sizeof(double);
+                memcpy((char*)data.data , &x, sizeof(double));
+                memcpy((char*)data.data + sizeof(double) , &y, sizeof(double));
+                memcpy((char*)data.data + sizeof(double)*2, &classid, sizeof(int));
+	        memcpy((char*)data.data + sizeof(double)*2 + sizeof(int), &windowid, sizeof(int));
+                data.size = sizeof(double)*2 + sizeof(int) + sizeof(int);
+                key.size = 0;
+  	        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+                   adlabort(rc, "IM_REL->put()");
+                }
+             } /* if */
+          } /* for */
+          //printf("%s\n",tmp);
+        @
+        }
+
+        terminate:
+ {
+        @
+        
+        @
+        }
+
+};
+

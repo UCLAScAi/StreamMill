@@ -1,0 +1,29 @@
+/*
+ *  gini.so is a shared library
+ *  using:  
+ *	    gcc -shared -o gini.so -fPIC gini.c  
+ *  to create gini.so
+ *
+ *  gini.so must be in LD_LIBRARY_PATH
+ */
+
+/* for linux */
+
+external int gini(a int) in 'gini.so';
+
+external char (4097) test_str(s char(4097)) in 'gini.so';
+
+#external char test_char(s char(4096)) in 'gini.so'; //not supported
+
+
+/* for windows*/
+/*
+external int dll_int_square(a int) in 'cdll.dll';
+*/
+
+table test (a int, b char(4097));
+insert into test values(1,'abc123xyz'),(2,'b'),(3,'c');
+
+select gini(a) from test;
+select test_str(b) from test;
+

@@ -1,0 +1,13 @@
+table test(a int, b int);
+
+insert into test values(1,2);
+
+insert into stdout 
+	values(100,200)
+	union all
+	select a,b from test 
+	union all
+	select a+2,b+2 from test
+	union all 
+	select a+4,b+3 from test;
+     

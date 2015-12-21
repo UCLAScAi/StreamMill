@@ -1,0 +1,2968 @@
+%{
+  /* {{{ c code */
+
+#define YYDEBUG 1
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <config.h>
+
+#include <sql/util.h>
+#include <sql/const.h>
+#include <sql/absyn.h>
+#include <sql/list.h>
+#include <sql/adl_sys.h>
+#include <buffer.h>
+#include <env.h>
+
+using namespace ESL;
+#include <ios/ios.h>
+
+using namespace std;
+extern system_t *ntsys;
+
+extern char *yytext;
+extern int yylineno;
+extern int filename_p;
+
+extern A_exp abs_adl;
+
+char errMsg[1024];
+extern int in_sql;
+extern int in_modeltype;
+
+int yylex2(void);
+int yylex(void);
+
+void yyerror(char *s)
+{
+  fprintf(stderr, "%s near '%s' at line %d\n", s, yytext ? (char*) yytext : "",
+	     yylineno);
+}
+
+void mkInternalName(char* name, char*& internalName, int notify)
+{
+  if(strcasecmp(name, "inwindow") == 0) {
+    internalName = strdup(name);
+    return;
+  }
+  if(strcasecmp(name, "instream") == 0) {
+    internalName = strdup(name);
+    return;
+  }
+  if(strcasecmp(name, "outstream") == 0) {
+    internalName = strdup(name);
+    return;
+  }
+  if(strcmp(getUserName(), "__user__") == 0) {
+    /*if(in_modeltype == 1) {
+      internalName = (char*)malloc(strlen(getModelName())+strlen(name)+4);
+      sprintf(internalName, "%s%s", getModelName(), name);
+    }
+    else {*/
+      internalName = strdup(name);
+    //}
+    return;
+  }
+  char* localName = strdup(name);
+  char* underScore = strchr(localName, '_');
+  if(underScore != NULL && underScore[1] == '_') {
+    char* first = strsep(&localName, "_");
+    //first++;  //skip the next '_' too
+    if(strcmp(getUserName(), first) != 0 && notify) {
+      bufferMngr* bm = bufferMngr::getInstance();
+      buffer* iob = bm->lookup("_ioBuffer");
+      iob->put(USES_LIBRARY, first);
+    }
+    /*if(in_modeltype == 1) {
+      internalName = (char*)malloc(strlen(first)+strlen(getModelName())+strlen(name)+4);
+      sprintf(internalName, "%s__%s%s", first, getModelName(), name);
+    }
+    else*/ 
+      internalName = strdup(name);
+    return;
+  }
+
+
+  char* colon = strrchr(localName, '$');
+
+  if(colon == NULL) {
+    if(in_modeltype == 1) {
+      internalName = strdup(name);
+      return;
+    }
+    char* second = localName;
+    internalName = (char*)malloc(strlen(getUserName())+strlen(getModelName())+strlen(second)+4);
+    sprintf(internalName, "%s__%s%s", getUserName(), getModelName(), second);
+  }
+  else {
+    char* first = strsep(&localName, "$");
+    if(strcmp(getUserName(), first) != 0 && notify) {
+      bufferMngr* bm = bufferMngr::getInstance();
+      buffer* iob = bm->lookup("_ioBuffer");
+      iob->put(USES_LIBRARY, first);
+    }
+
+    char* second = localName;
+    if(in_modeltype == 1) {
+      internalName = (char*)malloc(strlen(first)+strlen(second)+4);
+      sprintf(internalName, "%s__%s", first, second);
+      return;
+    }
+    internalName = (char*)malloc(strlen(first)+strlen(getModelName())+strlen(second)+4);
+    sprintf(internalName, "%s__%s%s", first, getModelName(), second);
+  }
+}
+
+void prependUserNameIfESL(char* name, char*& internalName) {
+  if(strcmp(getUserName(), "__user__") == 0) {
+    internalName = strdup(name);
+    return;
+  }
+
+  internalName = (char*)malloc(512);
+  sprintf(internalName, "../exe/%s__%s.so", getUserName(), name);
+}
+
+/* }}} */
+
+%}
+
+%union {
+  int pos;
+  int ival;
+  double rval;
+  char *sval;
+
+  A_list list;
+  A_ref ref;
+  A_exp exp;
+  A_dec dec;
+  A_ty ty;
+  A_field field;
+  A_namety namety;
+  A_range range;
+  A_slide slide;
+  A_win win;
+//    A_fundec fundec;
+//    A_aggrdec aggrdec;
+  A_selectitem selectitem;
+  A_qun qun;
+  A_tablecolumn tablecolumn;
+  S_symbol symval;
+  A_index index;
+  A_modelitem modelitem;
+  A_flow flow;
+}
+
+/* {{{ Tokens */
+
+%token <sval> IDENT SQL_ID STRING SQL_STRING CCODE
+%token <ival> NUM SQL_NUM DAY HOUR MINUTE SECOND TIMESTAMP_SYM
+%token <rval> REAL_NUM SQL_REAL_NUM
+%type <sval> opt_item_alias join_alias opt_sqlid create_table_id create_stream_id table_dec_id stream_dec_id create_model_id
+%type <sval> c_initialize_opt c_iterate_opt c_expire_opt c_terminate_opt
+
+%type <exp> sexp program statement opt_xml_attr
+%type <ref> ref
+%type <exp> sql sql_exp func_exp func_exp_window case_exp create retrieve drop insert update delete load query query_block opt_where_clause  opt_having_clause values values_list setitem initialize_opt iterate_opt expire_opt terminate_opt tabinit_opt xml_func_exp run_task create_view create_stream
+%type <ival> query_set_op set_op_distinct order_dir sel_op_distinct opt_key_type opt_default table_scope_opt unit simple_qun opt_arr_index built_in_iomod view_mode opt_num truefalse
+
+%type <symval> stream_source stream_target_opt stream_source_opt
+%type <sval> stream_timekey_opt opt_in_string
+
+%type <list> sql_explist sql_explist_opt when_exp_list decs adecs fdecs tyfields option_tyfields with_list opt_order_clause order_list select_list qun_list table_column_list opt_with_clause opt_group_by_clause opt_partition_clause statements setlist  opt_params keylist opt_from_clause ident_list  xml_attr_list tabledcls modelitems flows sharedtables
+%type <dec> dec adec vardec with_item fdec aggrdec fundec externdec window_opt modeldec
+%type <index> table_index_opt
+%type <namety> tydec
+
+//  %type <fundec> fundec
+//  %type <aggrdec> aggrdec
+%type <ty> ty adlfun_ret_ty extern_ty
+%type <field> tyfield
+%type <selectitem> select_item
+%type <qun> qun std_qun insert_target
+%type <tablecolumn> table_column
+%type <win> opt_window
+%type <range> range func_range unlimited_range
+%type <slide> opt_slide
+%type <modelitem> modelitem
+%type <flow> flow
+%token END_OF_INPUT
+
+/*************************************************************/
+/*                                                           */ 
+/*                         NT SQL COMMAND                    */
+/*                                                           */
+/*************************************************************/ 
+%token LIST_SYM QUIT_SYM HELP_SYM DB2_SYM COMPILE_SYM 
+
+/*************************************************************/
+/*                                                           */ 
+/*                         SQL STATEMENT                     */
+/*                                                           */
+/*************************************************************/ 
+%token NIL OF IF THEN ELSE WHILE DO FOR TO BREAK LET IN END TYPE ARRAY VAR 
+%token FUNCTION AGGREGATE CAGGREGATE
+%token INT_SYM CHAR_SYM REAL_SYM IEXT_SYM TRUE_ FALSE_
+
+%token SQL_CREATE SQL_SELECT SQL_DROP SQL_INSERT SQL_DELETE SQL_UPDATE LET
+%token SQL_LOAD MODELTYPE FLOW UDA SHAREDTABLES PARAMETERS PARTABLES
+%token WITH AS UNION INTERSECT EXCEPT ALL DISTINCT REFRESH IMMEDIATE DEFFERRED
+%token FROM WHERE GROUP PARTITION OVER ROWS RANGE SLIDE HEARTBEAT PRECEDING BY 
+%token UNLIMITED HAVING ORDER UNIQUE RUN USING ON
+%token ORDERED SORTED LOCAL SOURCE MEMORY BTREE HASH RTREE TARGET TIMESTAMP_SYM
+%token OID IS SYSTEM DEFINED REF
+%token VALUES EXISTS CASE WHEN
+%token TABLE STREAM INDEX CLIKE RLIKE SLIKE INTO DYNAMIC
+%token ASC DESC 
+%token SET LIST BAG OF
+
+%token COMPLEX_FUNC SCALAR_FUNC
+%token BUILTINFUNC PORT
+%token NULLSYM
+
+%token EXTERNAL NAME
+
+%token INWINDOW WINDOW RETURN STDOUT STATE INITIALIZE ITERATE EXPIRE PRODUCE TERMINATE NOP
+%token PRIMARY KEY
+
+%token AGGR_AVG AGGR_SUM AGGR_MIN AGGR_MAX AGGR_COUNT AGGR_XA
+%token BF_ABS BF_CASE BF_LENGTH BF_LTRIM BF_MAX BF_MIN BF_RTRIM BF_SQRT BF_SUBSTR BF_TRIM XML_XE XML_ATTR BF_OLDEST
+
+// stream tokens
+%token INTERNAL
+
+%left   ';' ','
+%left   DO OF ELSE THEN 
+%left	OR
+%left	AND_
+%left	BETWEEN
+%left	'=' GE LE '>' '<' NE IS LIKE SQL_IN 
+%left	'|'
+%left	'&'
+%left	'-' '+'
+%left	'*' '/' '%'
+%left	NEG
+%right  EXISTS
+%right	NOT
+%left   POINTER
+%left   MINUSMINUS PLUSPLUS PLUSEQL MINUSEQL
+%%
+
+/* }}} */
+
+program: 
+    fdecs statements END_OF_INPUT
+    {
+      abs_adl = A_LetExp(@1.first_line, $1, A_SeqExp(@2.first_line, $2));
+    }
+    ;
+
+statements: 
+    statement
+    {
+      $$ = A_List(@1.first_line, /*list,*/ A_EXP);
+      if ($1 != (A_exp)0) 
+	 appendAList($$, (void*)$1);
+    }
+    | statements ';' statement
+    {
+      if ($3  !=  (A_exp)0)
+	 appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+
+statement: 
+    /* empty */
+    {
+	$$ = (A_exp)0;
+    }
+    | sexp
+    {
+      $$ = $1;
+    }
+    ;
+	
+fdecs: fdec
+    {
+      $$ = A_List(@1.first_line, /*list,*/ A_DEC);
+      if ($1 != (A_dec)0) {
+	 appendAList($$, (void*)$1);
+      }
+    }
+    | fdecs ';' fdec
+    {
+      if ($3 != (A_dec)0) {
+	appendAList($1, (void*)$3);
+      }
+      $$ = $1;
+    }
+    ;
+
+fdec: 
+    /* empty */
+    {
+	$$ = (A_dec)0;
+    }
+    | dec
+    { 
+      $$=$1;
+    }
+    | externdec
+    {
+      $$=$1;
+    }
+    | fundec
+    { 
+      $$ = $1; 
+    }      
+    | aggrdec
+    { 
+      $$ = $1; 
+    }
+    | modeldec
+    {
+      $$ = $1; 
+    }
+    ;
+
+sexp: sql
+    {
+      $$ = $1;
+    }
+    ;
+
+/*adec - stands for declaration in aggregate*/
+adecs: adec
+    {
+      $$ = A_List(@1.first_line, A_DEC);
+      if ($1 != (A_dec)0) {
+	appendAList($$, (void*)$1);
+      }
+    }
+    | adecs ';' adec
+    {
+      if ($3 != (A_dec)0) 
+	appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+
+adec: 
+    /* empty */
+    {
+	$$ = (A_dec)0;
+    }
+    | tydec
+    { 
+      /* to be implemented 
+	 A_TypeDec(@1.first_line, $1);
+      */
+
+      $$=(A_dec)0; 
+    }
+    | vardec
+    { 
+      $$=$1;
+    }
+    | aggrdec
+    { 
+      $$ = $1; 
+    }
+    ;
+
+decs: dec
+    {
+      $$ = A_List(@1.first_line, A_DEC);
+      if ($1 != (A_dec)0) {
+	appendAList($$, (void*)$1);
+      }
+    }
+    | decs ';' dec
+    {
+      if ($3 != (A_dec)0) 
+	appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+
+dec: 
+    /* empty */
+    {
+	$$ = (A_dec)0;
+    }
+    | tydec
+    { 
+      /* to be implemented 
+	 A_TypeDec(@1.first_line, $1);
+      */
+
+      $$=(A_dec)0; 
+    }
+    | vardec
+    { 
+      $$=$1;
+    }
+    ;
+/*
+fundecs: fun
+    {
+      list_t *list = newList();
+
+      appendElementList(list, (nt_obj_t*)$1);
+
+      $$ = A_List(@1.first_line, list);
+    }
+    | fundecs fundec
+    {
+      appendElementList($1->list, (nt_obj_t*)$2);
+      $$ = $1;
+    }
+    ;
+
+aggrdecs: aggrdec
+    {
+      list_t *list = newList();
+
+      appendElementList(list, (nt_obj_t*)$1);
+
+      $$ = A_List(@1.first_line, list);
+    }
+    | aggrdecs aggrdec
+    {
+      appendElementList($1->list, (nt_obj_t*)$2);
+      $$ = $1;
+    }
+*/
+
+/*
+tydecs: tydec
+    {
+      $$ = A_List(@1.first_line, A_DEC);
+      appendAList($$, (void*)$1);
+    }
+    | tydecs tydec
+    {
+      appendAList($1, (void*)$2);
+      $$ = $1;
+    }
+*/
+
+tydec: TYPE IDENT '=' ty 
+    {
+      $$=A_Namety(S_Symbol($2), $4);
+    }
+    ;
+
+ty: '{' tyfields '}'
+    {
+      $$ = A_RecordTy(@1.first_line, $2);
+    }
+    | ARRAY OF IDENT
+    {
+      $$ = A_ArrayTy(@1.first_line, S_Symbol($3));
+    }
+    | IDENT
+    {
+      $$ = A_NameTy(@1.first_line, S_Symbol($1));
+    }
+    ;
+
+tyfield: IDENT IDENT 
+    {
+      $$ = A_Field(@1.first_line, S_Symbol($1), S_Symbol($2));
+    }
+    | IDENT REF '(' IDENT ')'
+    {
+      $$ = A_Field(@1.first_line, 
+		   S_Symbol($1), 
+		   S_Symbol($4), 
+		   -1 /* -1 indicates a ref type */);
+    }
+    | IDENT IDENT '(' NUM ')'
+    {
+      $$ = A_Field(@1.first_line, S_Symbol($1), S_Symbol($2), $4);
+    }
+	;
+
+tyfields: tyfield
+    {
+      $$ = A_List(@1.first_line, A_FIELD);
+      appendAList($$, (void*)$1);
+    }
+    | tyfields ',' tyfield
+    {
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+
+vardec: VAR IDENT ':' '=' sql_exp 
+    {
+      $$ = A_VarDec(@2.first_line, S_Symbol($2), (S_symbol)0, $5);
+    }
+    | VAR IDENT ':' IDENT ':' '=' sql_exp ';'
+    {
+      $$ = A_VarDec(@2.first_line, S_Symbol($2), S_Symbol($4), $7);
+    }
+    | WINDOW IDENT '(' tyfields ')'
+    {
+      A_ty ty = A_RecordTy(@4.first_line, $4);
+
+      int index=0; /* B_TREE */
+      S_symbol s = NULL;
+      char* iName;
+      mkInternalName($2, (iName), 0); //Don't notify since this 
+					// dec may not even be used
+      s = S_Symbol(strdup(iName));
+      free(iName);
+
+      //if ($6) {
+	// index  = (int)popElementList($6);
+      //}	
+
+      $$ = A_TabVarDec(@2.first_line, 
+		       s,	// name of the table        
+		       ty,		// tuple type               
+		       (A_index)0,  	// keys to the index 
+		       1,	// MEMORY    
+		       (A_exp)0,		// init
+		       1
+		       ); 
+    }
+    | table_dec_id AS DYNAMIC IDENT
+    {
+      S_symbol s = NULL;
+      char* iName;
+      mkInternalName($1, (iName), 0); //Don't notify since this 
+					// dec may not even be used
+      s = S_Symbol(strdup(iName));
+      free(iName);
+      S_symbol s1 = NULL;
+      char* iName1;
+      mkInternalName($4, (iName1), 0); //Don't notify since this 
+					// dec may not even be used
+      s1 = S_Symbol(strdup(iName1));
+      free(iName1);
+
+      $$ = A_DynamicVarDec(@1.first_line, s, s1, S_Symbol($4));
+
+    }
+    | table_dec_id '(' tyfields ')' table_index_opt table_scope_opt tabinit_opt
+    {
+      A_ty ty = A_RecordTy(@1.first_line, $3);
+
+      S_symbol s = NULL;
+      char* iName;
+      mkInternalName($1, (iName), 0); //Don't notify since this 
+					// dec may not even be used
+      s = S_Symbol(strdup(iName));
+      free(iName);
+      
+      //if ($5) {
+	// index  = (int)popElementList($5);
+      //}	 
+
+      $$ = A_TabVarDec(@1.first_line, 
+		       s,	// name of the table        
+		       ty,		// tuple type               
+		       $5,		// index  specification
+		       $6,		// global, local, memory, oid    
+		       $7		// init
+		       ); 
+    }
+/*    | TABLE IDENT '(' tyfields keysdec_opt')' table_scope_opt table_index_opt tabinit_opt 
+    {
+      A_ty ty = A_RecordTy(@3.first_line, $4);
+
+      $$ = A_TabVarDec(@2.first_line, 
+		       S_Symbol($2),	// name of the table        
+		       ty,		// tuple type               
+		       $5,		// key declarations         
+		       $7,		// global, local, memory, oid    
+		       $8,		// rtree, ...
+		       $9		// init 
+		       ); 
+    }
+*/
+    | stream_dec_id '(' tyfields ')' stream_target_opt
+    {
+	A_ty ty = A_RecordTy(@1.first_line, $3);
+	timekey_t tk = tk_none;
+	
+        S_symbol s = NULL;
+        
+	char* iName = NULL;
+        mkInternalName($1, iName, 0);  //do not notify since this dec
+					 // may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        
+      	$$ = A_StreamVarDec(@1.first_line, 
+		       s,		// name of the table        
+		       ty,		// tuple type               
+		       NULL,		// source
+		       $5,		// target	
+		       tk,              // time key flag
+  		       0,		// time key
+		       NULL		// init
+		       ); 
+    }
+    | stream_dec_id '(' tyfields ')' stream_timekey_opt stream_source_opt
+    {
+	A_ty ty = A_RecordTy(@1.first_line, $3);
+ 	char *timekey = $5;
+	timekey_t tk;
+  	if (timekey){  //external or internal timestamp
+	    if (strstr(timekey, ITIME_COLUMN)){  // internal timekey
+	      tk = tk_internal;
+	      if (strlen(timekey) > strlen(ITIME_COLUMN)){
+		// remove ITME_COLUMN
+		timekey[strlen(timekey) - strlen(ITIME_COLUMN)] = 0;
+      		}
+	    }
+		else{ // external timekey
+			tk = tk_external;
+		    }
+	  }
+	  else{  // no timestamp
+	    tk = tk_none;
+	  }
+
+        S_symbol s = NULL;
+        
+	char* iName = NULL;
+        mkInternalName($1, iName, 0);  //do not notify since this dec
+					 // may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        
+      	$$ = A_StreamVarDec(@1.first_line, 
+		       s,	// name of the table        
+		       ty,		// tuple type               
+		       $6,		// source
+		      	NULL,		// target	
+			tk,             // time key flag
+		       timekey?S_Symbol(timekey):0,	// time key
+			NULL		// init
+		       ); 
+    }
+    /*| STREAM IDENT '(' tyfields ')' SOURCE built_in_iomod stream_target_opt stream_timekey_opt tabinit_opt
+    {
+	A_ty ty = A_RecordTy(@3.first_line, $4);
+ 	char *timekey = $9;
+	timekey_t tk;
+  	if (timekey){  //external or internal timestamp
+	    if (strstr(timekey, ITIME_COLUMN)){  // internal timekey
+	      tk = tk_internal;
+	      if (strlen(timekey) > strlen(ITIME_COLUMN)){
+		// remove ITME_COLUMN
+		timekey[strlen(timekey) - strlen(ITIME_COLUMN)] = 0;
+      		}
+	    }
+		else{ // external timekey
+			tk = tk_external;
+		    }
+	  }
+	  else{  // no timestamp
+	    tk = tk_none;
+	  }
+
+        S_symbol s = NULL;
+        
+	char* iName = NULL;
+        mkInternalName($2, iName, 0);  //do not notify since this dec
+					 // may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        
+      	$$ = A_StreamVarDec(@2.first_line, 
+		       s,	// name of the table        
+		       ty,		// tuple type               
+		       S_Symbol(""),		// source
+		      	$8,		// target	
+			tk,             // time key flag
+		       timekey?S_Symbol(timekey):0,	// time key
+			$10,		// init
+			$7
+		       );
+    }*/
+    ;
+
+
+stream_dec_id:  //no need to return anything
+    STREAM IDENT
+    { 
+      $$ = $2;
+    }
+    ;
+
+
+create_stream_id:  //no need to return anything
+    SQL_CREATE STREAM IDENT
+    {
+      $$ = $3;
+    }
+    ;
+
+table_dec_id:  //no need to return anything
+    TABLE IDENT
+    { 
+      $$ = $2;
+    }
+    ;
+
+create_table_id:  //no need to return anything
+    SQL_CREATE TABLE IDENT
+    {
+      $$ = $3;
+    }
+    ;
+
+
+built_in_iomod: PORT ':' NUM
+    {
+	$$ = $3;
+    }
+    ;
+
+tabinit_opt:
+    /* empty */
+    {
+	$$ = (A_exp)0;
+    }   
+    |	AS query
+    {
+	$$ = $2;
+	in_sql = 0;
+    }
+    ;
+
+keylist: IDENT
+    {	 
+      $$ = A_List(@1.first_line, A_SYMBOL);
+      appendAList($$, (void*)S_Symbol($1));
+    }
+    | keylist ',' IDENT
+    {
+      appendAList($1, (void*)S_Symbol($3));
+      $$ = $1;
+    }
+    ;
+
+/*
+keysdec_opt: 
+    {
+	$$ = (A_list)0;
+    }
+    | ',' keysdec
+    {
+	$$ = $2;
+    }
+
+keysdec: keydec
+    {
+      $$ = A_List(@1.first_line, A_LIST);
+      appendAList($$, (void*)$1);
+    }
+    | keysdec ',' keydec
+    {
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+
+keydec: KEY '(' keylist ')'
+    {
+	$$ = $3;
+    }
+*/
+
+table_index_opt:
+    /* empty */
+    {
+      $$ = (A_index)0; /* DB_BTREE (default) defined in absyn.h */
+    }
+    | RTREE '(' keylist ')'
+    {
+      //appendAList($3, (void*)5);  /* DB_RTREE defined in absyn.h */
+      $$ = A_Index(@3.first_line, (tabindex_t)5, $3);
+    }
+    | BTREE '(' keylist ')'
+    {
+      //appendAList($3, (void*)1);  /* DB_BTREE (default) defined in absyn.h */
+      $$ = A_Index(@3.first_line, (tabindex_t)1, $3);
+    }
+    | HASH '(' keylist ')'
+    {
+      //appendAList($3, (void*)1);  /* same as BTREE - when we have memory we do hash*/
+      $$ = A_Index(@3.first_line, (tabindex_t)1, $3);
+    }
+    | BTREE '(' IDENT  '(' keylist ')' opt_num ')'
+    {
+      if(strcmp($3, "ditto") != 0) {
+        S_symbol s = NULL;
+        
+	char* iName = NULL;
+        mkInternalName($3, iName, 0);  //do not notify since this dec
+					 // may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+	
+        $$ = A_Index(@5.first_line, (tabindex_t)1, $5, s, $7);
+      }
+      else {
+        $$ = A_Index(@5.first_line, (tabindex_t)1, $5, (S_symbol)0, $7);
+      }
+    }
+    | HASH '(' IDENT  '(' keylist ')' opt_num ')'
+    {
+     
+      if(strcmp($3, "ditto") != 0) {
+        S_symbol s = NULL;
+        
+	char* iName = NULL;
+        mkInternalName($3, iName, 0);  //do not notify since this dec
+					 // may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+	
+        $$ = A_Index(@5.first_line, (tabindex_t)1, $5, s, $7);
+      }
+      else {
+        $$ = A_Index(@5.first_line, (tabindex_t)1, $5, (S_symbol)0, $7);
+      }
+    }
+    ;
+
+opt_num: 
+    {
+	$$ = -1;
+    }
+    | ',' NUM
+    {
+	$$ = $2;
+    }
+    ;
+
+stream_timekey_opt:
+	{
+		$$ = (char*)0;
+	}
+	| ORDER BY IDENT
+	{
+		$$ = $3;
+	}
+	| ORDER BY INTERNAL 
+	{
+		$$ = ITIME_COLUMN;
+	}
+	| ORDER BY INTERNAL AS IDENT
+	{
+		string s($5);
+		s += ITIME_COLUMN;
+		$$ = (char*)s.c_str();
+	}
+	;
+table_scope_opt:
+    /* empty */
+    {
+      $$ = 0;
+    }
+    | LOCAL			// create/open
+    {
+      $$ = 0;
+    }
+    | SOURCE STRING
+    {
+      S_symbol s = NULL;
+      char* iName;
+      mkInternalName($2, (iName), 0); //Don't notify since this 
+					// may not even be used
+      s = S_Symbol(strdup(iName));
+      free(iName);
+      
+      $$ = (int)s;
+    }
+    | MEMORY
+    {
+      $$ = 2;
+    }
+    | MEMORY OID IS SYSTEM DEFINED
+    {
+      $$ = 2;
+    }
+    ;
+
+stream_source_opt:
+    {
+      $$ = 0;
+    }
+    | SOURCE TABLE IDENT
+    {
+        S_symbol s = NULL;
+        char* iName;
+        char tName[256];
+        mkInternalName($3, (iName), 0); //Don't notify since this
+                                        // may not even be used
+        sprintf(tName, "table%s", iName);
+        s = S_Symbol(strdup(tName));
+        free(iName);
+
+        $$ = s;
+    }
+    | SOURCE stream_source
+    {
+      $$ = $2;
+    }
+    ;
+
+stream_source:
+    STRING
+    {
+      if(strstr(strlwr($1), "port") == $1) {
+        $$ = S_Symbol($1);
+      }
+      else {
+        S_symbol s = NULL;
+        char* iName;
+        mkInternalName($1, (iName), 0); //Don't notify since this 
+					// may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      
+        $$ = s;
+      }
+    }
+	;
+stream_target_opt:
+    {
+      $$ = 0;
+    }
+    | TARGET STRING
+	{
+      $$ = S_Symbol($2);
+    }
+	;    	
+fundec: FUNCTION IDENT '(' option_tyfields ')' ':' adlfun_ret_ty 
+        '{' decs statements '}' 
+    {
+      A_exp body = ($10)? A_SeqExp(@10.first_line, $10) : (A_exp)0;
+      $$ = A_Fundec(@1.first_line, S_Symbol($2), $4, $7, $9, body);
+    }
+    | FUNCTION IDENT '(' option_tyfields ')' '{' decs statements '}'
+    {
+      A_exp body = ($8)? A_SeqExp(@8.first_line, $8) : (A_exp)0;
+      $$ = A_Fundec(@1.first_line, S_Symbol($2), $4, (A_ty)0, $7, body);
+    }
+    ;
+
+opt_in_string: IN STRING
+    {
+        char* iName2 = NULL;
+        mkInternalName($2, iName2, 1);
+	$$ = strdup(iName2);
+        free(iName2);
+    }
+    |
+    {
+	$$= NULL;
+    }
+    ;
+
+externdec: EXTERNAL extern_ty IDENT '(' option_tyfields ')' opt_in_string 
+    {
+     	S_symbol s3 = NULL;
+          char* iName3 = NULL;
+          mkInternalName($3, iName3, 1);
+          s3 = S_Symbol(strdup(iName3));
+          free(iName3);
+      if($7 == NULL) {
+        char* sourceName;
+	prependUserNameIfESL($3, sourceName);
+        $$ = A_Externdec(@1.first_line, s3, $5, $2, S_Symbol(strdup(sourceName)), 0, S_Symbol($3));
+	free(sourceName);
+      }
+      else {
+        $$ = A_Externdec(@1.first_line, S_Symbol($3), $5, $2, S_Symbol($7));
+      }
+    }
+    | EXTERNAL CHAR_SYM opt_arr_index IDENT '(' option_tyfields ')' opt_in_string
+    {
+     	S_symbol s4 = NULL;
+      	char* iName4 = NULL;
+        mkInternalName($4, iName4, 1);
+        s4 = S_Symbol(strdup(iName4));
+        free(iName4);
+      if($3 == 0)
+      {
+	if($8 == NULL) {
+          char* sourceName;
+	  prependUserNameIfESL($4, sourceName);
+          $$ = A_Externdec(@1.first_line, s4, $6, A_NameTy(@2.first_line, S_Symbol((char*)"char")), S_Symbol(strdup(sourceName)), 0, S_Symbol($4));
+          free(sourceName);
+        }
+	else {
+          $$ = A_Externdec(@1.first_line, s4, $6, A_NameTy(@2.first_line, S_Symbol((char*)"char")), S_Symbol($8), 0, S_Symbol($4));
+        }
+      }
+      else
+      {
+	if($8 == NULL) {
+          char* sourceName;
+	  prependUserNameIfESL($4, sourceName);
+          $$ = A_Externdec(@1.first_line, s4, $6, A_NameTy(@2.first_line, S_Symbol((char*)"char")), S_Symbol(strdup(sourceName)), $3, S_Symbol($4));
+	  free(sourceName);
+        }
+	else {
+	   $$ = A_Externdec(@1.first_line, s4, $6, A_NameTy(@2.first_line, S_Symbol((char*)"char")), S_Symbol($8), $3, S_Symbol($4));
+        }
+      }
+    }
+    ;
+
+opt_arr_index: 
+    '(' NUM ')'
+    {
+      $$ = $2;
+    }
+    ;
+extern_ty: IDENT
+    {
+      $$ = A_NameTy(@1.first_line, S_Symbol($1));
+    }
+    | TABLE '(' option_tyfields ')'	
+    {
+      $$ = A_RecordTy(@1.first_line, $3);
+    }
+    ;
+option_tyfields: /* empty */
+    {
+      $$ = (A_list)0;
+    }
+    | tyfields
+    {
+      $$ = $1;
+    }
+    ;
+
+/*************************************************************/
+/*                                                           */ 
+/*                         SQL                               */
+/*                                                           */
+/*************************************************************/ 
+
+    
+ref:
+    ref POINTER SQL_ID
+    {
+      $$ = A_Ref(@1.first_line, $1, S_Symbol($3));
+    }
+    | SQL_ID POINTER SQL_ID
+    {
+      $$ = A_Ref(@1.first_line, 
+		 A_SimpleVar(@1.first_line, S_Symbol($1)),
+		 S_Symbol($3));
+    }
+    | SQL_ID '.' SQL_ID POINTER SQL_ID
+    {
+      $$ = A_Ref(@1.first_line, 
+		 A_FieldVar(@1.first_line, 
+			    A_SimpleVar(@1.first_line, S_Symbol($1)),
+			    S_Symbol($3)),
+		 S_Symbol($5));
+    }
+    ;
+
+func_exp_window: func_exp OVER '(' opt_partition_clause opt_order_clause func_range opt_slide ')' 
+    {
+	$$ = $1;
+        if($$->kind == A_opExp) {
+	  A_win win1 = A_Win(@1.first_line, $4, $5, $6, $7);
+	  A_win win2 = A_Win(@1.first_line, $4, $5, $6, $7);
+          A_SetCallExpWindow($$->u.op.left, win1);
+          A_SetCallExpWindow($$->u.op.right, win2);
+        }
+	//all windowed aggregate names are appended with "_window"
+	//but not when unlimited window
+	else if((!($6->type == TIME_RANGE && $6->size == -1)) &&
+            !($1->u.call.func == S_Symbol("sum") ||
+              $1->u.call.func == S_Symbol("count") ||
+              $1->u.call.func == S_Symbol("min") ||
+              $1->u.call.func == S_Symbol("max") ||
+              $1->u.call.func == S_Symbol("minr") ||
+              $1->u.call.func == S_Symbol("maxr") ||
+              $1->u.call.func == S_Symbol("sumr") ||
+              $1->u.call.func == S_Symbol("avg") ||
+              $1->u.call.func == S_Symbol("countr") ||
+              $1->u.call.func == S_Symbol("var"))) {
+	  char fixAggrName[1024];
+ 	  sprintf(fixAggrName, "%s_window", S_name($1->u.call.func));
+	  $1->u.call.func = S_Symbol(fixAggrName);
+        }
+        if($$->kind == A_callExp) {
+	  A_win win = A_Win(@1.first_line, $4, $5, $6, $7);
+	  A_SetCallExpWindow($$, win);
+        }
+    }
+    ;
+
+func_exp:
+    xml_func_exp 
+	{ 
+		$$ = $1;
+	}
+
+    | AGGR_SUM '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+      
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("sum"), 
+		     list,
+		     (S_symbol)0);
+    }
+    | VAR '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+      
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("var"), 
+		     list,
+		     (S_symbol)0);
+    }
+	| SQL_ID '(' sql_explist_opt ')'
+    {
+      if(strcasecmp($1, "sum") != 0 &&
+ 	 strcasecmp($1, "avg") != 0 &&
+	 strcasecmp($1, "max") != 0 &&
+	 strcasecmp($1, "min") != 0 &&
+	 strcasecmp($1, "maxr") != 0 &&
+	 strcasecmp($1, "minr") != 0 &&
+	 strcasecmp($1, "sumr") != 0 &&
+	 strcasecmp($1, "countr") != 0 &&
+     strcasecmp($1, "count") != 0 &&
+	 strcasecmp($1, "oldest") != 0 &&
+	 strcasecmp($1, "XMLAgg") != 0 &&
+	 strcasecmp($1, "XMLElement") != 0 &&
+	 strcasecmp($1, "XMLAttributes") != 0 &&
+	 strcasecmp($1, "var") != 0 &&
+	 strcasecmp($1, "print") != 0 &&
+	 strcasecmp($1, "srand") != 0 &&
+	 strcasecmp($1, "pow") != 0 &&
+	 strcasecmp($1, "log") != 0 &&
+	 strcasecmp($1, "ceil") != 0 &&
+	 strcasecmp($1, "timeofday") != 0 &&
+	 strcasecmp($1, "rand") != 0 &&
+	 strcasecmp($1, "flush") != 0 &&
+	 strcasecmp($1, "getchar") != 0 &&
+	 strcasecmp($1, "ord") != 0 &&
+	 strcasecmp($1, "char") != 0 &&
+	 strcasecmp($1, "size") != 0 &&
+	 strcasecmp($1, "substring") != 0 &&
+	 strcasecmp($1, "concat") != 0 &&
+	 strcasecmp($1, "not") != 0 &&
+	 strcasecmp($1, "sqrt") != 0 &&
+	 strcasecmp($1, "vert") != 0 &&
+	 strcasecmp($1, "iExtvert") != 0 &&
+	 strcasecmp($1, "buildiExt") != 0 &&
+	 strcasecmp($1, "newiExt") != 0 &&
+	 strcasecmp($1, "deleteiext") != 0 &&
+	 strcasecmp($1, "rExtvert") != 0 &&
+	 strcasecmp($1, "newrExt") != 0 &&
+	 strcasecmp($1, "deleterext") != 0 &&
+	 strcasecmp($1, "cExtvert") != 0 &&
+	 strcasecmp($1, "newcExt") != 0 &&
+	 strcasecmp($1, "deletecext") != 0 &&
+	 strcasecmp($1, "tExtvert") != 0 &&
+	 strcasecmp($1, "newtExt") != 0 &&
+	 strcasecmp($1, "deletetext") != 0 &&
+	 strcasecmp($1, "inttostring") != 0 &&
+	 strcasecmp($1, "realtostring") != 0 &&
+	 strcasecmp($1, "stringtoint") != 0 &&
+	 strcasecmp($1, "stringtoreal") != 0 &&
+	 strcasecmp($1, "inttoreal") != 0 &&
+	 strcasecmp($1, "realtoint") != 0 &&
+	 strcasecmp($1, "exit") != 0)
+      {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($1, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      
+      	$$ = A_CallExp(@1.first_line, s, $3, (S_symbol)0);
+      }
+      else
+	$$ = A_CallExp(@1.first_line, S_Symbol($1), $3, (S_symbol)0);
+    }
+    | SQL_ID '(' sql_explist_opt ')' POINTER SQL_ID
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($1, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      
+        S_symbol s1 = NULL;
+        char* iName1 = NULL;
+        mkInternalName($6, iName1, 1);
+        s1 = S_Symbol(strdup(iName1));
+        free(iName1);
+      $$ = A_CallExp(@1.first_line, s, $3, s1);
+    }
+    | AGGR_MAX '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("max"), 
+		     list, 
+		     (S_symbol)0);
+    }
+    | AGGR_MIN '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("min"), 
+		     list,
+		     (S_symbol)0);
+    }
+    | AGGR_COUNT '(' '*' ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);            
+      appendAList(list, (void*)A_IntExp(@2.first_line, 1));
+                  
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("count"), 
+		     list,
+		     (S_symbol)0);
+    }
+    | AGGR_COUNT '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+      
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("count"), 
+		     list,
+		     (S_symbol)0);
+    }
+    | AGGR_AVG '(' sql_exp ')'
+    {
+      A_exp sum_exp, cnt_exp;
+
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+
+      sum_exp = A_CallExp(@2.first_line, 
+			  S_Symbol("sumr"), 
+			  list,
+			  (S_symbol)0);
+
+      list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)A_IntExp(@2.first_line, 1));
+
+      cnt_exp = A_CallExp(@2.first_line,
+			  S_Symbol("count"),
+			  list,
+			  (S_symbol)0);			  
+
+      $$ = A_OpExp(@2.first_line, A_divideOp, sum_exp, cnt_exp);
+    }
+
+    ;
+	
+xml_func_exp:
+   	AGGR_XA '(' sql_exp ')'
+    {
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("XMLAgg"), 
+		     list, 
+		     (S_symbol)0);
+    }	
+	| XML_XE '(' NAME sql_exp ',' sql_explist ')'
+	{
+		A_list list=A_List(@4.first_line,A_EXP);
+		appendAList(list, (void*)$4);
+		appendListList(list, $6);
+		$$ = A_CallExp(@1.first_line, S_Symbol("XMLElement"), list, (S_symbol)0);		
+	}
+	| XML_XE '(' NAME sql_exp opt_xml_attr ',' sql_explist ')'
+	{
+		A_list list=A_List(@4.first_line,A_EXP);
+		appendAList(list, $4);
+		if ($5) appendAList(list, (void*)$5);
+		appendListList(list, $7);
+		$$ = A_CallExp(@1.first_line, S_Symbol("XMLElement"), list, (S_symbol)0);		
+	}
+	| XML_XE '(' NAME sql_exp opt_xml_attr ')'
+	{
+		A_list list=A_List(@4.first_line, A_EXP);
+		appendAList(list, (void*)$4);
+		if ($5) appendAList(list, $5);
+		$$ = A_CallExp(@1.first_line, S_Symbol("XMLElement"), list, (S_symbol)0);		
+	}
+	;
+
+
+
+opt_xml_attr: { $$=0;}
+	| ',' XML_ATTR '(' xml_attr_list ')'
+	{
+      	      $$ = A_CallExp(@1.first_line,
+			  S_Symbol("XMLAttributes"),
+			  $4,
+			  (S_symbol)0);	
+	}
+	;
+
+xml_attr_list: 
+	sql_exp
+	{
+	      $$ = A_List(@1.first_line, A_EXP);
+	      appendAList($$, $1);
+	      A_exp exp = A_StringExp(@1.first_line, getVarNameSuffix($1->u.var)->name);
+	      appendAList($$, (void*)exp);
+
+	}
+	| xml_attr_list ',' sql_exp
+	{
+		appendAList($1, (void*)$3);
+	      A_exp exp = A_StringExp(@3.first_line, getVarNameSuffix($3->u.var)->name);	 
+	      appendAList($1, (void*)exp);
+		$$ = $1;
+	}
+
+	| sql_exp AS SQL_STRING 
+	{
+	      $$ = A_List(@1.first_line, A_EXP);
+	      appendAList($$, $1);
+	      A_exp exp = A_StringExp(@3.first_line, $3);
+	      appendAList($$, (void*)exp);
+
+	}
+	| xml_attr_list ',' sql_exp AS SQL_STRING
+	{
+		appendAList($1, (void*)$3);
+	      A_exp exp = A_StringExp(@5.first_line, $5);	 
+	      appendAList($1, (void*)exp);
+		$$ = $1;
+	}
+
+	;
+opt_sqlid:
+    /* empty */
+    {
+      $$ = (char*)0;
+    }
+    |'.' SQL_ID 
+    { 
+      $$=$2; 
+    }
+    ;
+
+
+sql_exp:
+    SQL_ID
+    {
+      $$ = A_SqlVarExp(@1.first_line, (S_symbol)0, S_Symbol($1));
+    }
+    | SQL_ID '.' SQL_ID
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($1, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      $$ = A_SqlVarExp(@1.first_line, s, S_Symbol($3));
+    }	 
+    | ref 
+    {
+      $$ = A_RefExp(@1.first_line, $1);
+    }
+    | NULLSYM
+    {
+      $$ = A_NilExp(@1.first_line);
+    }
+    | SQL_NUM
+    {
+      $$ = A_IntExp(@1.first_line, $1);
+    }
+    | SQL_REAL_NUM
+    {
+      $$ = A_RealExp(@1.first_line, $1);
+    }
+    | SQL_NUM unit
+    {
+      $$ = A_IntExp(@1.first_line, $1*$2);
+    }
+    | SQL_REAL_NUM unit
+    {
+      $$ = A_RealExp(@1.first_line, $1*$2);
+    }
+    | SQL_STRING
+    {
+      $$ = A_StringExp(@1.first_line, $1);
+    }
+    | TIMESTAMP_SYM SQL_STRING
+    {
+      $$ = A_TimestampExp(@1.first_line, $2);
+    }
+    | BF_OLDEST '(' ')' opt_sqlid
+    {
+      A_exp v;
+      if($4 == (char*)NULL) {
+        v = A_VarExp(@1.first_line, A_FieldVar(@1.first_line, 
+			   A_SimpleVar(@3.first_line, S_Symbol("inwindow")),
+			   (S_symbol)0));
+      }
+      else {
+        v = A_VarExp(@1.first_line, A_FieldVar(@1.first_line, 
+			   A_SimpleVar(@3.first_line, S_Symbol("inwindow")),
+			   S_Symbol($4)));
+      }
+
+
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)v);
+
+      $$ = A_CallExp(@2.first_line, 
+		     S_Symbol("oldest"), 
+		     list, 
+		     (S_symbol)0);
+    }
+    | BF_SQRT '(' sql_exp ')'
+    {	
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)$3);
+
+      $$ = A_CallExp(@1.first_line, S_Symbol("sqrt"), list, (S_symbol)0);
+    }
+    | case_exp
+    {
+      $$ = $1;
+    }
+    | sql_exp '+' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_plusOp, $1, $3);
+    }
+    | sql_exp '-' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_minusOp, $1, $3);
+    }
+    | sql_exp '*' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_timesOp, $1, $3);
+    }
+    | sql_exp '/' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_divideOp, $1, $3);
+    }
+    | sql_exp '%' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_modOp, $1, $3);
+    }
+    | sql_exp MINUSMINUS
+    {
+      $$ = A_OpExp(@1.first_line, A_minuseqOp, $1, 0);
+    }
+    | sql_exp MINUSEQL sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_minuseqOp, $1, $3);
+    }
+    | sql_exp PLUSPLUS
+    {
+      $$ = A_OpExp(@1.first_line, A_pluseqOp, $1, 0);
+    }
+    | sql_exp PLUSEQL sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_pluseqOp, $1, $3);
+    }
+    | sql_exp '=' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_eqOp, $1, $3);
+    }
+    | sql_exp NE sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_neqOp, $1, $3);
+    }
+    | sql_exp '<' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_ltOp, $1, $3);
+    }
+    | sql_exp LE sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_leOp, $1, $3);
+    }
+    | sql_exp '>' sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_gtOp, $1, $3);
+    }
+    | sql_exp GE sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_geOp, $1, $3);
+    }
+    | sql_exp AND_ sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_andOp, $1, $3);
+    }
+    | sql_exp OR sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_orOp, $1, $3);
+    }
+    | sql_exp LIKE sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_likeOp, $1, $3);
+    }
+    | sql_exp NOT LIKE sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_nlikeOp, $1, $4);
+    }
+    | sql_exp SQL_IN sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_inOp, $1, $3);
+    }
+    | sql_exp NOT SQL_IN sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_ninOp, $1, $4);
+    }
+    | sql_exp IS NULLSYM
+    {
+      $$ = A_OpExp(@1.first_line, A_isnullOp, $1, 0);
+    }
+    | sql_exp IS NOT NULLSYM
+    {
+      $$ = A_OpExp(@1.first_line, A_isnullOp, $1, 0);
+    }
+    | EXISTS sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_existOp, $2, 0);
+    }
+    | NOT EXISTS sql_exp
+    {
+      $$ = A_OpExp(@1.first_line, A_notexistOp, $3, 0);
+    }
+    | '(' sql_exp ')'
+    {
+      $$ = $2;
+    }
+    | '(' query ')'
+    {
+      $$ = $2;
+    }
+    | '{' decs statements '}'
+    {
+      $$ = A_LetExp(@1.first_line, $2, A_SeqExp(@3.first_line, $3));
+    }
+    | func_exp
+    {
+	$$ = $1;
+    }
+    ;
+
+case_exp:
+    CASE sql_exp when_exp_list ELSE sql_exp END
+    {
+      $$ = A_CaseExp(@1.first_line, $2, $3, $5);
+    }
+    | CASE when_exp_list ELSE sql_exp END
+    {
+      $$ = A_CaseExp(@1.first_line, (A_exp)0, $2, $4);
+    }
+    | CASE sql_exp when_exp_list END
+    {
+      $$ = A_CaseExp(@1.first_line, $2, $3, (A_exp)0);
+    }
+    | CASE when_exp_list END
+    {
+      $$ = A_CaseExp(@1.first_line, (A_exp)0, $2, (A_exp)0);
+    }
+    ;
+
+sql_explist_opt:
+    {
+	$$ = (A_list)0;
+    }
+    | sql_explist
+    {
+	$$ = $1;
+    }
+    ;
+
+sql_explist: sql_exp
+    {
+      $$ = A_List(@1.first_line, A_EXP);
+      appendAList($$, (void*)$1);
+    }
+    | sql_explist ',' sql_exp
+    {
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+
+when_exp_list: WHEN sql_exp THEN sql_exp
+    {
+      $$ = A_List(@1.first_line, A_EXP);
+      appendAList($$, (void*)$2);
+      appendAList($$, (void*)$4);
+    }
+    | when_exp_list WHEN sql_exp THEN sql_exp
+    {
+      appendAList($1, (void*)$3);
+      appendAList($1, (void*)$5);
+      $$ = $1;
+    }
+    ;
+
+/*
+sql_ty: INT_SYM '(' SQL_NUM ')'
+    {
+      $$ = A_NameTy(@1.first_line, S_Symbol("int"));
+    }
+    | CHAR_SYM '(' SQL_NUM ')'
+    {
+      $$ = A_NameTy(@1.first_line, S_Symbol("string"));
+    }
+    ;
+*/
+
+adlfun_ret_ty:
+    IDENT
+    {
+      A_list list = A_List(@1.first_line, A_FIELD);
+      A_field field = A_Field(@1.first_line,
+			      S_Symbol("field_0"), S_Symbol($1)); 
+      appendAList(list, (void*)field);
+
+      $$ = A_RecordTy(@1.first_line, list);
+    }
+    | '(' tyfields ')'
+    {
+      $$ = A_RecordTy(@1.first_line, $2);
+    }
+    ;
+
+window_opt: INWINDOW '(' tyfields ')' table_index_opt ';'
+  {
+    A_ty ty = A_RecordTy(@3.first_line, $3);
+    /*A_list keys = A_List(@1.first_line, A_SYMBOL);
+    appendAList(keys, (void*)S_Symbol($7));*/
+    //int index= 0; /* B_TREE */
+
+    //if ($5) {
+    //  popElementList($5); //we only support btree on memory tabs, as for now, Hetal
+    //}
+
+    $$ = A_TabVarDec(@2.first_line, 
+        	     S_Symbol("inwindow"),	// name of the table        
+		       ty,		// tuple type               
+		       //index,		// btree, rtree
+                       $5,
+                       1,
+                       (A_exp)0
+		       ); 
+  }
+  |
+  {
+    $$=(A_dec)0;
+  }
+  ;
+
+flows:
+    /* empty */
+    {
+      $$ = (A_list)(0);
+    }
+    | flow
+    {
+      A_list list = A_List(@1.first_line, A_FLOW);
+
+      appendElementList(list, (nt_obj_t*)$1);
+
+      $$ = list;
+    }
+    | flows ',' flow
+    {
+      appendElementList($1, (nt_obj_t*)$3);
+      $$ = $1;
+    }
+    ;
+
+modelitems: 
+    modelitem
+    {
+      A_list list = A_List(@1.first_line, A_MODELITEM);
+
+      appendElementList(list, (nt_obj_t*)$1);
+
+      $$ = list;
+    }
+    | modelitems ',' modelitem
+    {
+      appendElementList($1, (nt_obj_t*)$3);
+      $$ = $1;
+    }
+    ;
+
+tabledcls:
+    tabledcls ',' IDENT
+    {
+      appendElementList($1, (nt_obj_t*)S_Symbol($3));
+      $$ = $1;
+    }
+    | IDENT
+    {
+      A_list list = A_List(@1.first_line, A_SYMBOL);
+      appendElementList(list, (nt_obj_t*)S_Symbol($1));
+      $$ = list;
+    }
+    ;
+
+truefalse:
+    TRUE_
+    {
+      $$ = 1;
+    }
+    | FALSE_
+    {
+      $$ = 0;
+    }
+    ;
+
+flow:
+    FLOW IDENT '(' statements ')'
+    {
+      $$ = A_Flow(@1.first_line, S_Symbol(strdup($2)), $4);
+    };
+
+modelitem:
+    IDENT '('
+      UDA IDENT ','
+      WINDOW truefalse ','
+      PARTABLES '(' tabledcls ')' ','
+      PARAMETERS '(' option_tyfields ')'
+    ')'
+    {
+      S_symbol s = NULL;
+      char* iName = NULL;
+      mkInternalName($4, iName, 1);
+      s = S_Symbol(strdup(iName));
+      free(iName);
+
+      $$ = A_ModelItem(@1.first_line, S_Symbol(strdup($1)), 
+                       s, $7, $11, $16);
+    }
+    ;
+
+sharedtables: 
+    SHAREDTABLES '('
+      tabledcls
+    ')'
+    {
+      $$ = $3;
+    }
+    ;
+
+create_model_id:  //no need to return anything
+    SQL_CREATE MODELTYPE IDENT
+    {
+      $$ = $3;
+    }
+    ;
+
+modeldec:
+    MODELTYPE IDENT '{'
+      sharedtables ','
+      modelitems ',' {in_modeltype = 1; setModelName($2);}
+      flows
+    '}'
+    {
+      in_modeltype = 0;
+      setModelName("");
+      S_symbol s = NULL;
+      char* iName = NULL;
+      mkInternalName($2, iName, 1);
+      s = S_Symbol(strdup(iName));
+      free(iName);
+
+      $$ = A_ModelTypeDec(@1.first_line, s, $4, $6, $9);
+    }
+    | MODELTYPE IDENT AS IDENT
+    {
+      S_symbol s = NULL;
+      char* iName = NULL;
+      mkInternalName($2, iName, 1);
+      s = S_Symbol(strdup(iName));
+      free(iName);
+
+      S_symbol s1 = NULL;
+      char* iName1 = NULL;
+      mkInternalName($4, iName1, 1);
+      s1 = S_Symbol(strdup(iName1));
+      free(iName1);
+
+      $$ = A_ModelTypeDec(@1.first_line, s, s1);
+    }
+    ;
+
+aggrdec:
+    WINDOW AGGREGATE IDENT '(' option_tyfields ')' ':' adlfun_ret_ty
+    '{' 
+        window_opt
+     	adecs
+	initialize_opt
+        iterate_opt
+	expire_opt
+	terminate_opt
+    '}'	
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        char fixAggrName[1024];
+        
+        sprintf(fixAggrName, "%s_window", $3);
+        mkInternalName(fixAggrName, iName, 0);  //Don't notify since the aggr may not
+                                         //actually be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        
+	$$ = A_Aggrdec(@1.first_line,
+                       A_window,
+		       s, 
+		       $5, 
+		       $8, /* return type */
+		       $11,
+		       $12,
+		       $13,
+		       $14,
+		       $15,
+                       $10);
+
+    }
+    | AGGREGATE IDENT '(' option_tyfields ')' ':' adlfun_ret_ty 
+    '{' 
+	adecs
+	initialize_opt
+        iterate_opt
+	terminate_opt
+    '}'	
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($2, iName, 0);  //Don't notify since the aggr may not
+                                         //actually be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        
+	$$ = A_Aggrdec(@1.first_line, 
+                       A_simple,
+		       s, 
+		       $4, 
+		       $7, /* return type */
+		       $9,
+		       $10,
+		       $11,
+		       (A_exp)0,
+		       $12,
+                       (A_dec)0);
+    }
+    | AGGREGATE IDENT '(' option_tyfields ')' ':' adlfun_ret_ty 
+     '{' adecs statements '}'
+    {
+        S_symbol s = NULL;
+	char* iName = NULL;
+        mkInternalName($2, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        A_exp exp = A_SeqExp(@10.first_line, $10);
+
+	$$ = A_Aggrdec(@1.first_line, 
+		       A_simple,
+		       s, 
+		       $4, 
+		       $7, 
+		       $9,
+		       exp,
+		       (A_exp)0,
+		       (A_exp)0,
+		       (A_exp)0,
+                       (A_dec)0
+		       );
+    }
+        | WINDOW CAGGREGATE IDENT '(' option_tyfields ')' ':' adlfun_ret_ty
+    '{'
+        CCODE
+        window_opt
+        adecs
+        CCODE
+        c_initialize_opt
+        c_iterate_opt
+        c_expire_opt
+        c_terminate_opt
+    '}'
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        char fixAggrName[1024];
+
+        sprintf(fixAggrName, "%s_window", $3);
+        mkInternalName(fixAggrName, iName, 0);  //Don't notify since the aggr may not
+                                         //actually be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+
+        $$ = A_Aggrdec(@1.first_line,
+                       A_window,
+                       s,
+                       $5,
+                       $8, /* return type */
+                       $10, /* glocal c code */
+		       $12,
+                       $13, /* c decs */
+                       $14, /* init */
+                       $15, /* iterate */
+                       $16, /* expire */
+                       $17, /* terminate */
+                       $11);
+    }
+    | CAGGREGATE IDENT '(' option_tyfields ')' ':' adlfun_ret_ty
+    '{'
+	CCODE
+        adecs
+        CCODE
+        c_initialize_opt
+        c_iterate_opt
+        c_terminate_opt
+    '}'
+    {
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($2, iName, 0);  //Don't notify since the aggr may not
+                                         //actually be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+
+        $$ = A_Aggrdec(@1.first_line,
+                       A_simple,
+                       s,
+                       $4,
+                       $7, /* return type */
+		       $9, /* global c code */ 
+                       $10,
+                       $11, /* c decs */
+                       $12, /* init */
+                       $13, /* iterate */
+                       (char*)0, /* expire */
+                       $14, /* termiante */
+                       (A_dec)0);
+    }
+    ;
+
+c_initialize_opt:
+    {
+      $$ = NULL;
+    }
+    | INITIALIZE ':' '{' CCODE '}'
+    {
+      $$ = strdup($4);
+    }
+    | INITIALIZE ':'
+    {
+      $$ = (char*)1;            // share with ITERATE
+    }
+    ;
+
+c_iterate_opt:
+    {
+      $$ = NULL;
+    }
+    | ITERATE ':' '{' CCODE '}'
+    {
+      $$ = strdup($4);
+    }
+    ;
+
+
+c_expire_opt:
+    {
+      $$ = NULL;
+    }
+    | EXPIRE ':' '{' CCODE '}'
+    {
+      $$ = strdup($4);
+    }
+    ;
+
+
+c_terminate_opt:
+    {
+      $$ = NULL;
+    }
+    | TERMINATE ':' '{' CCODE '}'
+    {
+      $$ = strdup($4);
+    }
+    ;
+
+expire_opt:
+    {
+      $$ = (A_exp)0;
+    }
+    | EXPIRE ':' sql_exp
+    {
+      $$ = $3;
+    }
+    ;
+
+initialize_opt: 
+/*    {
+      $$ = (A_exp)0;
+    }
+    | */
+    INITIALIZE ':' sql_exp 
+    {
+      $$ = $3;
+    }
+    | INITIALIZE ':' 
+    {
+      $$ = (A_exp)1;		// share with ITERATE
+    }
+    ;
+
+iterate_opt: 
+    {
+      $$ = (A_exp)0;
+    }
+    | ITERATE ':' sql_exp
+    {
+      $$ = $3;
+    }
+    | ITERATE ':' 
+    {
+      $$ = (A_exp)1;		// share with TERMINATE
+    }
+    ;
+
+terminate_opt:
+    {
+      $$ = (A_exp)0;
+    }
+    | TERMINATE ':' sql_exp 
+    {
+      $$ = $3;
+    }
+    ;
+
+sql:
+    create 
+    { 
+      in_sql = 0;
+      $$ = $1; 
+    }
+    | retrieve 
+    { 
+      in_sql = 0;
+      $$ = $1;
+    }
+    | drop 
+    { 
+      in_sql = 0;
+      $$ = $1; 
+    }
+    | insert 
+    { 
+      in_sql = 0;
+      $$ = $1; 
+    }
+    | update 
+    { 
+      in_sql = 0;
+      $$ = $1; 
+    }
+    | delete 
+    { 
+      in_sql = 0;
+      $$ = $1; 
+    }
+    | load
+    {
+	in_sql = 0;
+	$$ = $1;
+    }
+    | create_view
+    {
+	in_sql = 0;
+	$$ = $1;
+    }
+    | create_stream
+    {
+	in_sql = 0;
+	$$ = $1;
+    }
+    | run_task
+    {
+	in_sql = 0;
+	$$ = $1;
+    }
+    ;
+
+/*************************************************************/
+/*                                                           */ 
+/*                         SELECT                            */
+/*                                                           */
+/*************************************************************/ 
+retrieve : 
+    opt_with_clause query 
+    {
+      if (isValuesSqlOpr($2)) {
+	 $$ = $2;
+      } else {
+	/* recast it to INSERT INTO STDOUT query */
+
+	A_list jtl = A_List(@2.first_line, A_QUN);
+	S_symbol std = S_Symbol("stdout");
+	appendAList(jtl, (void*)A_NameQun(@2.first_line, std, std));
+	appendAList(jtl, (void*)A_QueryQun(@2.first_line, 0, $2));
+
+	$$ = A_SqlOprExp(@1.first_line,
+			 A_SQL_INSERT, 
+			 0,
+			 (A_list)0,
+			 jtl,
+			 (A_list)0);
+      }
+    }
+    ;
+
+opt_with_clause:
+    /* empty */
+    { $$ = (A_list)0; }
+    | WITH { in_sql = 1; } with_list
+    { $$ = $3; }
+    ;
+    
+query:
+    query query_set_op set_op_distinct query_block
+    {
+      A_list jtl = A_List(@1.first_line, A_QUN);
+      appendAList(jtl, (void*)A_QueryQun(@1.first_line, 0, $1));
+      appendAList(jtl, (void*)A_QueryQun(@4.first_line, 0, $4));
+
+      $$ = A_SqlOprExp(@1.first_line, 
+                       (sqlopr_t)$2,		/* set oper */
+                       $3,			/* distinct */
+		       (A_list)0,		/* hxp_list */
+                       jtl,			/* join table list */
+		       (A_list)0		/* wr_prd_list */
+		       ); 	
+    }  
+    | query_block
+    {
+      $$ = $1;
+    }
+    ;
+
+opt_order_clause: 
+    /* empty */
+    { $$ = (A_list)0; }			
+    | ORDER BY order_list
+    { $$ = $3; 
+    }
+    ;
+
+order_list:
+    order_list ',' sql_exp order_dir
+    {
+      A_orderitem oi = A_OrderItem(@3.first_line, $3, $4);
+      appendAList($1, (void*)oi);
+      $$ = $1;
+    }
+    | sql_exp order_dir
+    {
+      A_orderitem oi = A_OrderItem(@1.first_line, $1, $2);
+      $$ = A_List(@1.first_line, A_ORDERITEM);
+      appendAList($$, (void*)oi);
+    }
+    ;
+
+order_dir:
+    /* empty */ { $$ =  SQL_ASC; }
+    | ASC  { $$ =  SQL_ASC; }
+    | DESC { $$ =  SQL_DESC; }
+    ;
+
+with_list: 
+    with_list ',' with_item
+    {	
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    | with_item
+    {
+      $$ = A_List(@1.first_line, A_DEC);
+      appendAList($$, (void*)$1);
+    }
+    ;
+
+with_item:	
+    SQL_ID '(' tyfields ')' AS '(' query ')'
+    {
+      A_ty ty = A_RecordTy(@2.first_line, $3);
+      $$ = A_TabVarDec(@1.first_line,            
+		       S_Symbol($1),           // name of the table        
+		       ty, 		       // tuple type               
+		       (A_index)0,	       // key declarations	    
+		       0, 		       // global, local, memory    
+		       $7		       // init
+		       );
+    }
+    ;
+
+opt_params:
+    {
+      $$ = (A_list)0; 
+    }
+    | USING {in_sql = 1;} '(' setlist ')'
+    {
+      $$= $4;
+    }
+    ;
+
+opt_window:
+    {
+      $$ = (A_win)0;
+    }
+    | OVER '(' opt_partition_clause opt_order_clause func_range opt_slide ')'
+    {
+      $$ = A_Win(@1.first_line, $3, $4, $5, $6);
+    };
+
+run_task:
+    RUN {in_sql = 1;} SQL_ID opt_sqlid ON SQL_ID opt_window opt_params
+    {
+      S_symbol s = NULL;
+      if($4 != NULL) {
+        char* iName;
+        mkInternalName($3, (iName), 0); //Don't notify since this
+                                        // dec may not even be used
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      }
+
+      S_symbol s1 = NULL;
+      char* iName1;
+      mkInternalName($6, (iName1), 0); //Don't notify since this
+                                        // dec may not even be used
+      s1 = S_Symbol(strdup(iName1));
+      free(iName1);
+
+      if($4 == NULL)
+        $$ = A_Runtask(@1.first_line, s, S_Symbol($3), s1, $7, $8);
+      else
+        $$ = A_Runtask(@1.first_line, s, S_Symbol($4), s1, $7, $8);
+    }
+    ;
+
+query_block:	
+    SQL_SELECT { in_sql = 1; } sel_op_distinct  select_list 
+    opt_from_clause 
+    opt_where_clause 
+    opt_group_by_clause 
+    opt_having_clause
+    opt_order_clause
+    {
+      $$ = A_Select(@1.first_line,
+		    $3,		/* distinct */
+		    $4,		/* select_list */
+		    $5,		/* qun_list */
+		    $6,		/* where cond */
+		    $7,		/* group by */
+		    $8,		/* having cond */
+		    $9		/* order by */
+		    );
+    }
+    | VALUES { in_sql = 1; } values_list opt_where_clause
+    {
+      if ($4) {
+	A_list wr_prd_list = A_List(@4.first_line, A_EXP);
+	decomposeBoolExpr($4, wr_prd_list);
+	$3->u.sqlopr->prd_list = wr_prd_list;
+      }
+      $$ = $3;
+    }
+    | run_task
+    {
+      $$ = $1;
+    }
+    ;    
+
+values_list: values
+    {
+      $$ = $1;
+    }
+    | values_list ',' values
+    {
+      if ($1->u.sqlopr->kind == A_SQL_SEL) {
+	A_list jtl = A_List(@1.first_line, A_QUN);
+	appendAList(jtl, (void*)A_QueryQun(@1.first_line, 0, $1));
+	appendAList(jtl, (void*)A_QueryQun(@3.first_line, 0, $3));
+	$$ = A_SqlOprExp(@1.first_line, 
+			 A_SQL_UNION,		/* set oper */
+			 0,			/* distinct */
+			 (A_list)0,		/* hxp_list */
+			 jtl,			/* join table list */
+			 (A_list)0		/* wr_prd_list */
+			 ); 	
+      } else {
+	// $1 is a UNION opertor
+	appendAList($1->u.sqlopr->jtl_list, 
+		    (void*)A_QueryQun(@3.first_line, 0, $3));
+	$$ = $1;
+      }
+    }
+    ;
+
+values: '(' select_list ')'
+    {
+      $$ = A_SqlOprExp(@1.first_line,
+		       A_SQL_SEL,	/* opr */
+		       0,		/* distinct */
+		       $2,		/* hxp_list */
+		       (A_list)0,	/* qun_list */
+		       (A_list)0	/* prd */
+		       );
+    }
+    ;
+    
+query_set_op:
+    UNION
+    { $$ = (int)A_SQL_UNION; }
+    | INTERSECT
+    { $$ = (int)A_SQL_INTERSECT; }
+    | EXCEPT
+    { $$ = (int)A_SQL_EXCEPT; }
+    ;
+
+set_op_distinct:
+    /* empty, distinct */
+    { $$ = 1; }
+    | ALL
+    { $$ = 0; }
+    ;
+
+sel_op_distinct:
+    /* empty, all */
+    { $$ = 0; }
+    | ALL
+    { $$ = 0; }
+    | DISTINCT
+    { $$ = 1; }
+	;
+
+select_list:
+    select_list ','  select_item 
+    { 
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    | select_item 
+    {
+      $$ = A_List(@1.first_line, A_SELECT_ITEM);
+      appendAList($$, (void*)$1);
+    }
+    ;
+
+select_item:
+    BF_OLDEST '(' SQL_ID '.' SQL_ID ')' opt_item_alias
+    {
+      A_exp v = A_VarExp(@1.first_line, A_FieldVar(@1.first_line, 
+			   A_SimpleVar(@3.first_line, S_Symbol($3)),
+			   S_Symbol($5)));
+
+      A_list list = A_List(@3.first_line, A_EXP);
+      appendAList(list, (void*)v);
+
+      A_exp e = A_CallExp(@2.first_line, 
+		     S_Symbol("oldest"), 
+		     list, 
+		     (S_symbol)0);
+
+      if ($7 == (char *)0) 
+	$$ = A_SelectItem(@1.first_line, e, (S_symbol)0);
+      else 
+	$$ = A_SelectItem(@1.first_line, e, S_Symbol($7));
+    }
+    | sql_exp AS '(' ident_list ')'
+    {
+      $$ = A_SelectItemComplex(@1.first_line, $1, $4);
+    }
+    | func_exp_window opt_item_alias
+    {
+      if ($2 == (char *)0) 
+	$$ = A_SelectItem(@1.first_line, $1, (S_symbol)0);
+      else 
+	$$ = A_SelectItem(@1.first_line, $1, S_Symbol($2));
+    }
+    | sql_exp  opt_item_alias 
+    { 
+      if ($2 == (char *)0) 
+	$$ = A_SelectItem(@1.first_line, $1, (S_symbol)0);
+      else 
+	$$ = A_SelectItem(@1.first_line, $1, S_Symbol($2));
+    }
+    | SQL_ID '.' '*' 
+    { 
+      $$ = A_SelectItemStar(@1.first_line, S_Symbol($1));
+    }
+    | '*'
+    {
+      $$ = A_SelectItemStar(@1.first_line, (S_symbol)0);
+    }
+    ;
+
+ident_list:
+    ident_list ',' SQL_ID
+    { 
+      appendAList($1, (void*)S_Symbol($3));
+      $$ = $1;
+    }
+    | SQL_ID
+    {
+      $$ = A_List(@1.first_line, A_SYMBOL);
+      appendAList($$, (void*)S_Symbol($1));
+    }
+    ;
+opt_item_alias:
+    /* empty */
+    { $$=(char*)0;}
+    | SQL_ID { $$=$1; }
+    | AS SQL_ID { $$=$2;}
+    ;
+
+qun_list: 
+    qun_list ',' qun
+    { 
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    | qun
+    {
+      $$ = A_List(@1.first_line, A_QUN);
+      appendAList($$, (void*)$1);
+    }
+    ;
+join_alias:
+    SQL_ID 
+    { 
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($1, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+       $$=S_name(s); 
+    }
+    | AS SQL_ID 
+    { 
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($2, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+       $$=S_name(s);
+    }
+    ;
+
+/* window_opt:
+    {
+	$$ = (A_win)0;
+    }
+    | '[' opt_partition_clause range opt_where_clause ']'
+    {
+      A_list prd_list = (A_list)0;
+
+      if ($4) {
+	prd_list = A_List(@4.first_line, A_EXP);
+	decomposeBoolExpr($4, prd_list);
+      }
+      $$ = A_Win(@1.first_line, $2, prd_list, $3);
+    }
+    ;
+*/
+
+opt_partition_clause:
+    /* empty */
+    { $$ = (A_list)0;}
+    | PARTITION BY sql_explist
+    { $$ = $3;}
+    ;
+
+func_range: range
+    {
+      $$ = $1;
+    }
+    | unlimited_range
+    {
+      $$ = $1;
+    }
+    ;
+
+range: ROWS SQL_NUM PRECEDING
+    {
+	$$ = A_Range(@1.first_line, $2+1, COUNT_RANGE);
+    }
+    | RANGE SQL_NUM PRECEDING
+    {
+	$$ = A_Range(@1.first_line, $2, TIME_RANGE);
+    }
+    | RANGE SQL_NUM unit PRECEDING
+    {
+	$$ = A_Range(@1.first_line, $2*$3*1000, TIME_RANGE);
+    }
+    ;
+
+unlimited_range: RANGE UNLIMITED PRECEDING
+    {
+        $$ = A_Range(@1.first_line, -1, TIME_RANGE);
+    }
+    ;
+
+opt_slide:	SLIDE SQL_NUM
+	{
+	  $$ = A_Slide(@1.first_line, $2, COUNT_SLIDE);
+	}
+	| SLIDE SQL_NUM unit
+	{
+	  $$ = A_Slide(@1.first_line, $2*$3*1000, TIME_SLIDE);
+	}
+	| SLIDE SQL_NUM unit HEARTBEAT
+	{
+	  $$ = A_Slide(@1.first_line, $2*$3*1000, HEARTBEAT_TIME_SLIDE);
+	}
+	|
+	{
+		$$ = A_Slide(@$.first_line, 1, COUNT_SLIDE);
+	}
+	;
+
+unit:  
+    SECOND
+    { $$ = 1;}
+    | MINUTE
+    { $$ = 60;}
+    | HOUR
+    { $$ = 3600;}
+    | DAY
+    { $$ = 86400;}
+    ;
+
+
+simple_qun: 
+    INWINDOW
+    {
+	$$ = (int)S_Symbol("inwindow");
+    }
+    | SQL_ID
+    {
+        S_symbol s = NULL;
+	char* iName = NULL;
+        mkInternalName($1, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        $$ = (int)s;
+    }
+    ;
+
+std_qun: 
+    simple_qun
+    {
+      $$ = A_NameQun(@1.first_line, (S_symbol)($1), (S_symbol)($1));
+    }
+    ;
+
+
+/* table function and sub query must have an alias */
+qun:
+    std_qun
+    { 
+      $$ = $1;
+    }
+    | simple_qun join_alias
+    {
+      $$ = A_NameQun(@1.first_line, (S_symbol)($1), S_Symbol($2));
+    }
+    | SQL_ID OVER '(' range SQL_ID ')'
+    {
+        S_symbol s1 = NULL;
+        char* iName1 = NULL;
+        mkInternalName($1, iName1, 1);
+        s1 = S_Symbol(strdup(iName1));
+        free(iName1);
+        S_symbol s5 = NULL;
+	if(strcasecmp($5, "current") == 0) {
+	  s5 = s1;
+        }
+        else {
+          char* iName5 = NULL;
+          mkInternalName($5, iName5, 1);
+          s5 = S_Symbol(strdup(iName5));
+          free(iName5);
+        }
+        $$ = A_WindowQun(@1.first_line, s1, $4, s5, s1);
+    }
+    | TABLE '(' SQL_ID OVER '(' range SQL_ID ')' ')' join_alias
+    {
+        S_symbol s3 = NULL;
+        char* iName3 = NULL;
+        mkInternalName($3, iName3, 1);
+        s3 = S_Symbol(strdup(iName3));
+        free(iName3);
+        S_symbol s7 = NULL;
+	if(strcasecmp($7, "current") == 0) {
+	  s7 = s3;
+        }
+        else {
+          char* iName7 = NULL;
+          mkInternalName($7, iName7, 1);
+          s7 = S_Symbol(strdup(iName7));
+          free(iName7);
+        }
+        S_symbol s10 = NULL;
+        char* iName10 = NULL;
+        mkInternalName($10, iName10, 1);
+        s10 = S_Symbol(strdup(iName10));
+        free(iName10);
+        $$ = A_WindowQun(@1.first_line, s3, $6, s7, s10);
+    }
+    | TABLE '(' SQL_ID '(' sql_explist_opt ')'')'  join_alias /* table function */ 
+    {
+        S_symbol s1 = NULL;
+        if(S_Symbol("fetchtbl") != S_Symbol($3)) {
+          char* iName1 = NULL;
+          mkInternalName($3, iName1, 1);
+          s1 = S_Symbol(strdup(iName1));
+          free(iName1);
+        }
+        else {
+          s1 = S_Symbol(strdup($3));
+        }
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($8, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        $$ = A_FunctionQun(@1.first_line, s1, $5, s);
+    }
+    | '(' query ')' join_alias	/* sub query */
+    { 
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($4, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+        $$ = A_QueryQun(@1.first_line, s, $2);
+	/* A_SetQunWindow($$, $4); */
+    }
+    ;
+
+opt_from_clause:
+    /* empty */
+    { $$ = (A_list)0; }
+    | FROM qun_list
+    { 
+      $$ = $2;
+    }
+    ;
+opt_where_clause: 
+    /* empty */
+    { $$ = (A_exp)0; }
+    | WHERE sql_exp
+    { 
+      $$ = $2;
+    }
+    ;
+opt_group_by_clause:
+    /* empty */
+    { $$ = (A_list)0; }
+    | GROUP BY sql_explist
+    { $$ = $3; }
+    ;
+opt_having_clause:
+    /* empty */
+    { $$ = (A_exp)0; }
+    | HAVING sql_exp
+    { 
+      $$ = $2;
+    }
+    ;
+/*************************************************************/
+/*                                                           */ 
+/*                         CREATE                            */
+/*                                                           */
+/*************************************************************/ 
+
+create: 
+    SQL_CREATE { in_sql = 1; } TABLE SQL_ID '(' table_column_list ')' 
+    {
+      $$ = (A_exp)0;
+    }
+    | INDEX 
+    {
+    }
+    ;
+table_column_list:
+    table_column
+    {
+      $$ = A_List(@1.first_line, A_TABLE_COLUMN);
+      appendAList($$, (void*)$1);
+    }
+    | table_column_list ',' table_column
+    { 
+      appendAList($1, (void *)$3); 
+      $$ = $1;
+    }
+    ;
+table_column:
+    tyfield opt_default opt_key_type
+    {
+      $$ = A_TableColumn(@1.first_line, $1, $2, $3);
+    }
+    ;
+opt_default:
+    /* empty */
+    { $$ = 0; }
+    | NOT NULLSYM
+    { $$ = COLUMN_NOT_NULL; }
+    ;
+opt_key_type: 
+    /*empty*/
+    { $$ = 0; }
+/*    | PRIMARY KEY 
+    { $$ = COLUMN_PRIMARY_KEY; }
+*/
+    ;
+
+/*************************************************************/
+/*                                                           */ 
+/*                       CREATE STREAM                       */
+/*                                                           */
+/*************************************************************/ 
+create_stream:
+    SQL_CREATE STREAM IDENT AS '(' query ')' {in_sql = 0;} stream_timekey_opt
+    {	
+	S_symbol s = NULL;
+        char* iName = NULL;
+	mkInternalName($3, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+	if($9 != (char*)NULL)
+          $$ = A_CreatestreamExp(@1.first_line, s, $6, S_Symbol($9));
+	else
+          $$ = A_CreatestreamExp(@1.first_line, s, $6, (S_symbol)NULL);
+    }
+    ;
+
+
+/*************************************************************/
+/*                                                           */ 
+/*                       CREATE VIEW                         */
+/*                                                           */
+/*************************************************************/ 
+create_view:
+    SQL_CREATE TABLE IDENT AS '(' query_block ')' view_mode
+    {
+	S_symbol s = NULL;
+        char* iName = NULL;
+	mkInternalName($3, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+	//if($9) {
+	//  popElementList($9);
+        //}
+        $$ = A_CreateviewExp(@1.first_line, s, $6, (A_list)0, (viewmode_t)$8);
+    }
+    ;
+
+view_mode:
+    REFRESH IMMEDIATE
+    {
+	$$ = (int)A_immidiate;
+    }
+    | REFRESH DEFFERRED
+    {
+	$$ = (int)A_defferred;
+    }
+    ;
+
+
+/*************************************************************/
+/*                                                           */ 
+/*                         DROP                              */
+/*                                                           */
+/*************************************************************/ 
+drop:
+    SQL_DROP { in_sql = 1; } FUNCTION SQL_ID 
+    { 
+    }
+    | SQL_DROP { in_sql = 1; } TABLE SQL_ID 
+    { 
+    }
+    ;
+
+/*************************************************************/
+/*                                                           */ 
+/*                         INSERT                            */
+/*                                                           */
+/*************************************************************/ 
+
+/* we use STDOUT and RETURN as variables, instead of keyword in the program. */
+insert_target:	std_qun
+		{	
+                  $$ = $1;
+		}
+		| STDOUT
+		{	
+                  $$ = A_NameQun(@1.first_line, S_Symbol("stdout"), 
+                                                      S_Symbol("stdout"));
+		}
+		| RETURN
+		{
+		  $$ = A_NameQun(@1.first_line, S_Symbol("return"), 
+                                                      S_Symbol("return"));
+		}			
+		;
+
+insert: 
+    SQL_INSERT { in_sql = 1; } INTO insert_target query opt_order_clause 
+    {
+      A_list jtl = A_List(@4.first_line, A_QUN);
+
+      if ($6 && $5->kind == A_selectExp) {
+	$5->u.select.order_by_list = $6;
+      }
+      
+      appendAList(jtl, $4);
+      appendAList(jtl, (void*)A_QueryQun(@5.first_line, 0, $5));
+
+      $$ = A_SqlOprExp(@1.first_line,
+		       A_SQL_INSERT, 
+		       0,
+		       (A_list)0,
+		       jtl,
+		       (A_list)0);
+
+    }
+    ;
+/*************************************************************/
+/*                                                           */ 
+/*                         LOAD                              */
+/*                                                           */
+/*************************************************************/ 
+load: 
+    SQL_LOAD FROM STRING INTO { in_sql=1; } SQL_ID
+    {
+      A_list jtl = A_List(@3.first_line, A_QUN);
+
+        S_symbol s = NULL;
+        char* iName = NULL;
+        mkInternalName($6, iName, 1);
+        s = S_Symbol(strdup(iName));
+        free(iName);
+      appendAList(jtl, (void*)A_NameQun(@3.first_line, S_Symbol($3), 0));
+      appendAList(jtl, (void*)A_NameQun(@6.first_line, s, 0));
+      $$ = A_SqlOprExp(@1.first_line,
+		       A_SQL_LOAD, 
+		       0,
+		       (A_list)0,
+		       jtl,
+		       (A_list)0);
+    }
+    ;
+
+/*************************************************************/
+/*                                                           */ 
+/*                         UPDATE                            */
+/*                                                           */
+/*************************************************************/ 
+update: SQL_UPDATE { in_sql = 1; } std_qun SET setlist opt_where_clause
+    {
+      A_list wr_prd_list = (A_list)0;
+      A_list jtl = A_List(@4.first_line, A_QUN);
+      appendAList(jtl, $3);
+
+      if ($6) {
+	wr_prd_list = A_List(@6.first_line, A_EXP);
+	decomposeBoolExpr($6, wr_prd_list);
+      }
+
+      $$ = A_SqlOprExp(@1.first_line,
+		       A_SQL_UPDATE, 
+		       0,	// distinct
+		       $5,	// hxp
+		       jtl,	// join table list
+		       wr_prd_list // where
+		       );
+    }
+    ;
+setlist: setitem
+    {
+      $$ = A_List(@1.first_line, A_EXP);
+      appendAList($$, (void*)$1);
+    }
+    | setlist ',' setitem
+    {
+      appendAList($1, (void*)$3);
+      $$ = $1;
+    }
+    ;
+setitem: SQL_ID '=' sql_exp
+    {
+      A_var var = A_SimpleVar(@1.first_line, S_Symbol($1)); 
+
+      $$ = A_AssignExp(@1.first_line, var, $3);
+    }
+    | ref '=' sql_exp
+    {
+      A_var var = A_RefVar(@1.first_line, $1); 
+
+      $$ = A_AssignExp(@1.first_line, var, $3);
+    }	    
+    ;
+/*************************************************************/
+/*                                                           */ 
+/*                         DELETE                            */
+/*                                                           */
+/*************************************************************/ 
+delete: SQL_DELETE { in_sql = 1; } FROM std_qun opt_where_clause
+    {
+      A_list jtl = A_List(@4.first_line, A_QUN);
+      A_list wr_prd_list = (A_list)0;
+      appendAList(jtl, $4);
+
+      if ($5) {
+	wr_prd_list = A_List(@5.first_line, A_EXP);
+	decomposeBoolExpr($5, wr_prd_list);
+      }
+
+      $$ = A_SqlOprExp(@1.first_line,
+		       A_SQL_DELETE, 
+		       0,	// distinct
+		       (A_list)0, // hxp
+		       jtl,	// join table list
+		       wr_prd_list // where
+		       );
+    }
+    ;
+
+

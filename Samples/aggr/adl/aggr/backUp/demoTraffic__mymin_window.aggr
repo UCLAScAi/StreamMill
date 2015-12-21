@@ -1,0 +1,15 @@
+window aggregate demoTraffic$mymin(i int):
+int {  /* require WINDOW table */
+ 
+  initialize:
+iterate:
+{
+        delete from inwindow where inwindow.i > i;
+        insert into return values(oldest(inwindow.i));
+  }
+  expire:
+{
+
+  }
+};
+

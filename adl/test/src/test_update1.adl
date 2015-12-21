@@ -1,0 +1,19 @@
+table test(i int);
+table tab(a real);
+
+insert into test values (1);
+
+insert into stdout select i from test;
+
+update test set i=2;
+
+insert into stdout select i from test;
+
+
+
+insert into tab values(3);
+
+update tab set a=0;
+
+insert into stdout SELECT a FROM tab;
+

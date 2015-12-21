@@ -1,0 +1,9 @@
+table abc(a int, b int) memory;
+
+insert into abc values(1,2),(2,3),(3,4),(8,10),(4,2);
+
+insert into stdout
+select a,b from abc where a=8;
+
+insert into stdout
+select a,b from abc;

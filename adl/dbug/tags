@@ -1,0 +1,150 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+AUTO	dbug.c	136;"	d	file:
+AUTOS_REVERSE	dbug.c	158;"	d	file:
+A_EXECUTE	dbug.c	319;"	d	file:
+A_EXISTS	dbug.c	318;"	d	file:
+A_READ	dbug.c	321;"	d	file:
+A_WRITE	dbug.c	320;"	d	file:
+BOOLEAN	dbug.c	/^typedef int BOOLEAN;$/;"	t	file:
+BaseName	dbug.c	/^LOCAL char *BaseName (pathname)$/;"	f
+ChangeOwner	dbug.c	/^LOCAL VOID ChangeOwner (pathname)$/;"	f
+Clock	dbug.c	/^LOCAL unsigned long Clock ()$/;"	f
+CloseFile	dbug.c	/^LOCAL VOID CloseFile (fp)$/;"	f
+DBUG_ENTER	dbug.h	129;"	d
+DBUG_ENTER	dbug.h	141;"	d
+DBUG_EXECUTE	dbug.h	132;"	d
+DBUG_EXECUTE	dbug.h	151;"	d
+DBUG_FILE	dbug.h	137;"	d
+DBUG_FILE	dbug.h	158;"	d
+DBUG_LEAVE	dbug.h	146;"	d
+DBUG_LONGJMP	dbug.h	139;"	d
+DBUG_LONGJMP	dbug.h	160;"	d
+DBUG_POP	dbug.h	135;"	d
+DBUG_POP	dbug.h	156;"	d
+DBUG_PRINT	dbug.h	133;"	d
+DBUG_PRINT	dbug.h	153;"	d
+DBUG_PROCESS	dbug.h	136;"	d
+DBUG_PROCESS	dbug.h	157;"	d
+DBUG_PUSH	dbug.h	134;"	d
+DBUG_PUSH	dbug.h	155;"	d
+DBUG_RETURN	dbug.h	130;"	d
+DBUG_RETURN	dbug.h	148;"	d
+DBUG_SETJMP	dbug.h	138;"	d
+DBUG_SETJMP	dbug.h	159;"	d
+DBUG_VOID_RETURN	dbug.h	131;"	d
+DBUG_VOID_RETURN	dbug.h	150;"	d
+DEBUGGING	dbug.c	118;"	d	file:
+DEBUG_ON	dbug.c	108;"	d	file:
+DEPTH_ON	dbug.c	111;"	d	file:
+DateStamp	dbug.c	/^struct DateStamp {		\/* Yes, this is a hack, but doing it right *\/$/;"	s	file:
+DbugExit	dbug.c	/^LOCAL VOID DbugExit (why)$/;"	f
+DbugMalloc	dbug.c	/^LOCAL long *DbugMalloc (size)$/;"	f
+Delay	dbug.c	/^Delay ()$/;"	f
+Delay	dbug.c	333;"	d	file:
+Delay	dbug.c	338;"	d	file:
+DelayArg	dbug.c	/^LOCAL int DelayArg (value)$/;"	f
+DoPrefix	dbug.c	/^LOCAL VOID DoPrefix (_line_)$/;"	f
+DoProfile	dbug.c	/^LOCAL BOOLEAN DoProfile ()$/;"	f
+DoTrace	dbug.c	/^LOCAL BOOLEAN DoTrace ()$/;"	f
+EOS	dbug.c	91;"	d	file:
+ERR_ABORT	dbug.c	310;"	d	file:
+ERR_CHOWN	dbug.c	311;"	d	file:
+ERR_CLOSE	dbug.c	309;"	d	file:
+ERR_MISSING_RETURN	dbug.c	307;"	d	file:
+ERR_OPEN	dbug.c	308;"	d	file:
+EXISTS	dbug.c	322;"	d	file:
+EXISTS	dbug.c	325;"	d	file:
+EXPORT	dbug.c	135;"	d	file:
+FALSE	dbug.c	89;"	d	file:
+FILE_ON	dbug.c	109;"	d	file:
+FreeList	dbug.c	/^LOCAL VOID FreeList (linkp)$/;"	f
+HZ	dbug.c	76;"	d	file:
+IMPORT	dbug.c	134;"	d	file:
+INDENT	dbug.c	98;"	d	file:
+InList	dbug.c	/^LOCAL BOOLEAN InList (linkp, cp)$/;"	f
+Indent	dbug.c	/^LOCAL VOID Indent (indent)$/;"	f
+LATTICE	dbug.c	65;"	d	file:
+LINE_ON	dbug.c	110;"	d	file:
+LOCAL	dbug.c	133;"	d	file:
+ListParse	dbug.c	/^LOCAL struct link *ListParse (ctlp)$/;"	f
+MAXDEPTH	dbug.c	99;"	d	file:
+NUMBER_ON	dbug.c	113;"	d	file:
+OpenFile	dbug.c	/^LOCAL VOID OpenFile (name)$/;"	f
+OpenProfile	dbug.c	/^LOCAL VOID OpenProfile (name)$/;"	f
+PID_ON	dbug.c	115;"	d	file:
+PRINTBUF	dbug.c	97;"	d	file:
+PROCESS_ON	dbug.c	112;"	d	file:
+PROFILE_ON	dbug.c	114;"	d	file:
+PROFILING	dbug.c	119;"	d	file:
+PROF_EFMT	dbug.c	153;"	d	file:
+PROF_FILE	dbug.c	152;"	d	file:
+PROF_SFMT	dbug.c	154;"	d	file:
+PROF_XFMT	dbug.c	155;"	d	file:
+PushState	dbug.c	/^LOCAL VOID PushState ()$/;"	f
+REGISTER	dbug.c	137;"	d	file:
+STREQ	dbug.c	120;"	d	file:
+StrDup	dbug.c	/^LOCAL char *StrDup (string)$/;"	f
+TRACE_ON	dbug.c	107;"	d	file:
+TRACING	dbug.c	117;"	d	file:
+TRUE	dbug.c	90;"	d	file:
+VOID	dbug.c	126;"	d	file:
+WRITABLE	dbug.c	323;"	d	file:
+Writable	dbug.c	/^LOCAL BOOLEAN Writable (pathname)$/;"	f
+_db_doprnt_	dbug.c	/^VOID _db_doprnt_ (format, va_alist)$/;"	f
+_db_enter_	dbug.c	/^VOID _db_enter_ (_func_, _file_, _line_, _sfunc_, _sfile_, _slevel_,$/;"	f
+_db_fp_	dbug.c	/^EXPORT FILE *_db_fp_ = (FILE *)0;	\/* Output stream, default stderr *\/$/;"	v
+_db_keyword_	dbug.c	/^BOOLEAN _db_keyword_ (keyword)$/;"	f
+_db_longjmp_	dbug.c	/^VOID _db_longjmp_ ()$/;"	f
+_db_on_	dbug.c	/^EXPORT BOOLEAN _db_on_ = FALSE;		\/* TRUE if debugging currently on *\/$/;"	v
+_db_pargs_	dbug.c	/^VOID _db_pargs_ (_line_, keyword)$/;"	f
+_db_pfp_	dbug.c	/^EXPORT FILE *_db_pfp_ = (FILE *)0;	\/* Profile stream, 'dbugmon.out' *\/$/;"	v
+_db_pon_	dbug.c	/^EXPORT BOOLEAN _db_pon_ = FALSE;	\/* TRUE if debugging currently on *\/$/;"	v
+_db_pop_	dbug.c	/^VOID _db_pop_ ()$/;"	f
+_db_process_	dbug.c	/^EXPORT char *_db_process_ = "dbug";	\/* Pointer to process name; argv[0] *\/$/;"	v
+_db_push_	dbug.c	/^VOID _db_push_ (control)$/;"	f
+_db_return_	dbug.c	/^VOID _db_return_ (_line_, _sfunc_, _sfile_, _slevel_)$/;"	f
+_db_setjmp_	dbug.c	/^VOID _db_setjmp_ ()$/;"	f
+amiga	dbug.c	64;"	d	file:
+begin	dbug.c	/^static struct DateStamp begin;$/;"	v	typeref:struct:DateStamp	file:
+delay	dbug.c	/^    unsigned int delay;			\/* Delay after each output line *\/$/;"	m	struct:state	file:
+ds_Days	dbug.c	/^	long ds_Days;		\/* is incredibly ugly without splitting this *\/$/;"	m	struct:DateStamp	file:
+ds_Minute	dbug.c	/^	long ds_Minute;		\/* off into a separate file *\/$/;"	m	struct:DateStamp	file:
+ds_Tick	dbug.c	/^	long ds_Tick;$/;"	m	struct:DateStamp	file:
+elapsed	dbug.c	/^static struct DateStamp elapsed;$/;"	v	typeref:struct:DateStamp	file:
+file	dbug.c	/^LOCAL char *file = "?file";	\/* Name of current user file *\/$/;"	v
+first_clock	dbug.c	/^static int first_clock = TRUE;$/;"	v	file:
+flags	dbug.c	/^    int flags;				\/* Current state flags *\/$/;"	m	struct:state	file:
+framep	dbug.c	/^LOCAL char **framep = NULL;	\/* Pointer to current frame *\/$/;"	v
+func	dbug.c	/^LOCAL char *func = "?func";	\/* Name of current user function *\/$/;"	v
+functions	dbug.c	/^    struct link *functions;		\/* List of functions *\/$/;"	m	struct:state	typeref:struct:state::link	file:
+init_done	dbug.c	/^LOCAL BOOLEAN init_done = FALSE;\/* Set to TRUE when initialization done *\/$/;"	v
+jmpfile	dbug.c	/^LOCAL char *jmpfile;		\/* Remember current file for setjmp *\/$/;"	v
+jmpfunc	dbug.c	/^LOCAL char *jmpfunc;		\/* Remember current function for setjmp *\/$/;"	v
+jmplevel	dbug.c	/^LOCAL int jmplevel;		\/* Remember nesting level at setjmp () *\/$/;"	v
+keywords	dbug.c	/^    struct link *keywords;		\/* List of debug keywords *\/$/;"	m	struct:state	typeref:struct:state::link	file:
+level	dbug.c	/^    int level;				\/* Current function nesting level *\/$/;"	m	struct:state	file:
+lineno	dbug.c	/^LOCAL int lineno = 0;		\/* Current debugger output line number *\/$/;"	v
+link	dbug.c	/^struct link {$/;"	s	file:
+maxdepth	dbug.c	/^    int maxdepth;			\/* Current maximum trace depth *\/$/;"	m	struct:state	file:
+next_link	dbug.c	/^    struct link *next_link;	\/* Pointer to the next link *\/$/;"	m	struct:link	typeref:struct:link::link	file:
+next_state	dbug.c	/^    struct state *next_state;		\/* Next state in the list *\/$/;"	m	struct:state	typeref:struct:state::state	file:
+out_file	dbug.c	/^    FILE *out_file;			\/* Current output stream *\/$/;"	m	struct:state	file:
+p_functions	dbug.c	/^    struct link *p_functions;		\/* List of profiled functions *\/$/;"	m	struct:state	typeref:struct:state::link	file:
+perror	dbug.c	/^LOCAL VOID perror (s)$/;"	f
+processes	dbug.c	/^    struct link *processes;		\/* List of process names *\/$/;"	m	struct:state	typeref:struct:state::link	file:
+prof_file	dbug.c	/^    FILE *prof_file;			\/* Current profiling stream *\/$/;"	m	struct:state	file:
+stack	dbug.c	/^LOCAL struct state *stack = NULL;	\/* Linked list of stacked states *\/$/;"	v	typeref:struct:state
+state	dbug.c	/^struct state {$/;"	s	file:
+string	dbug.c	/^    char *string;		\/* Pointer to link's contents *\/$/;"	m	struct:link	file:
+strrchr	dbug.c	/^LOCAL char *strrchr (s, c)$/;"	f
+strtok	dbug.c	/^LOCAL char *strtok (s1, s2)$/;"	f
+u_keyword	dbug.c	/^LOCAL char *u_keyword = "?";	\/* Keyword for current macro *\/$/;"	v
+u_line	dbug.c	/^LOCAL int u_line = 0;		\/* User source code line number *\/$/;"	v
+unix	dbug.c	62;"	d	file:
+xenix	dbug.c	63;"	d	file:
+xenix	dbug.c	81;"	d	file:

@@ -1,0 +1,57 @@
+table test (a int);
+
+
+
+
+
+
+
+
+aggregate fac (num int):int
+
+
+{
+
+
+table tmp (n int);
+
+
+table result (n int);
+
+
+initialize:
+
+
+iterate:
+
+
+  {
+
+
+    insert into tmp values (num-1);
+
+
+    insert into result values (num) ;
+
+
+    insert into result select max(r.n)*fac(t.n) from result r, tmp t where num>1;
+
+
+    insert into return select max(n) from result;
+
+
+  }
+
+
+};
+
+
+
+
+
+insert into test values (6);
+
+
+insert into stdout select fac(a) from test;
+
+

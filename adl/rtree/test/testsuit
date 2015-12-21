@@ -1,0 +1,43 @@
+#!/bin/sh
+
+#export LD_LIBRARY_PATH=./lib
+#(cd ./lib; make) 
+echo "Remember to change M to 80(debug size)"
+for i in `ls src/$1*.c`; do
+    BASENAME=`echo $i | cut -d. -f 1`
+
+    echo testing $BASENAME ...
+
+    if [ ! -f $BASENAME.result ]; then
+        echo "skipped. Can't locate $BASENAME.result"
+    else
+	
+	g++ -o adlctmp $BASENAME.c -I/home/lc/atlas/include /home/lc/atlas/lib/librtree.a /home/lc/atlas/lib/libdb.a
+	./adlctmp > adltestsuittmp
+
+        cmp=`diff adltestsuittmp $BASENAME.result`
+
+        if [ "$cmp" = "" ]; then
+            echo "TEST $i : PASS"
+        else
+	    sort adltestsuittmp > sort.1
+	    sort $BASENAME.result > sort.2
+	    cmp= `diff sort.1 sort.2`
+	    if [ "$cmp" = "" ]; then
+		echo "TEST $BASENAME **ORDER**"
+	    else 
+		echo "TEST $BASENAME FAILED"
+
+	echo "*********CURRENT RESULT***************"
+	cat adltestsuittmp
+	echo "*********ORIGINAL RESULT**************"
+	cat $BASENAME.result
+	echo "**************************************"
+
+	    fi
+        fi
+
+	rm -rf adlctmp adlctmp.*
+    fi
+done
+echo "Remember to change M to 80(debug size)"

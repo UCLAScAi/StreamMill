@@ -1,0 +1,254 @@
+table iris(id int, a1 real, b1 real, c1 real, d1 real, e1 int) memory;
+table iris1(id int, a1 real, b1 real, c1 real, d1 real, e1 int) memory;
+
+function dissemble(a1 real, b1 real, c1 real, d1 real, classLbl int)
+           :(col int, val int, classLbl int)
+{
+   INSERT INTO RETURN VALUES (1, realtoint(a1), classLbl), (2, realtoint(b1), classLbl), 
+                             (3, realtoint(c1), classLbl), (4, realtoint(d1), classLbl);
+};
+
+CAggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  @
+    /* global c stuff here */
+    typedef enum {
+      aDisc=0,
+      aCont,
+    } aType;
+    //printf could be read from a config table
+    aType aTypes[4] = {aCont, aCont, aCont, aCont};
+    struct contInfo {
+      double mean;
+      double var;
+      double sumSoFar;
+      int cnt;
+    };
+    struct attr {
+      aType ty;
+      contInfo* ci;
+      hash_map<int, int, hash<int> >* di;
+    };
+    
+    static int cnt = 0;
+    static hash_map<int, int, hash<int> >* classStat = new hash_map<int, int, hash<int> >;
+    static hash_map<int, hash_map<int, attr*, hash<int> >*, hash<int> >* colStat = new hash_map<int, hash_map<int, attr*, hash<int> >*, hash<int> >;
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+        /* Random c code here -- init*/
+        if(coli==numColsi)
+          cnt++;
+
+        if(classStat->operator[](classLbli)) {
+          classStat->operator[](classLbli) += 1;
+        }
+        else {
+          classStat->operator[](classLbli) = 1;
+        }
+
+        if(aTypes[coli-1] == aDisc) {
+          if(colStat->operator[](coli)) {
+            if(colStat->operator[](coli)->operator[](classLbli)) {
+              if(colStat->operator[](coli)->operator[](classLbli)->di->operator[](vali)) {
+                colStat->operator[](coli)->operator[](classLbli)->di->operator[](vali) += 1;
+              }
+              else {
+                colStat->operator[](coli)->operator[](classLbli)->di->operator[](vali) = 1;
+              }
+            }
+            else {
+              attr* at = (attr*)malloc(sizeof(attr));
+              at->ty = aDisc;
+              at->di = new hash_map<int, int, hash<int> >;
+              colStat->operator[](coli)->operator[](classLbli) = at;
+              colStat->operator[](coli)->operator[](classLbli)->di->operator[](vali) = 1;
+            }
+          }
+          else {
+            attr* at = (attr*)malloc(sizeof(attr));
+            at->ty = aDisc;
+            at->di = new hash_map<int, int, hash<int> >;
+            colStat->operator[](coli) = new hash_map<int, attr*, hash<int> >;
+            colStat->operator[](coli)->operator[](classLbli) = at;
+            colStat->operator[](coli)->operator[](classLbli)->di->operator[](vali) = 1;
+          }
+        }
+        else {
+          if(colStat->operator[](coli)) {
+            if(colStat->operator[](coli)->operator[](classLbli)) {
+                //update mean and var here
+              attr* at = colStat->operator[](coli)->operator[](classLbli);
+              //printf("sttrain here col %d classLbli %d cnt %d mean %f var %f vali %d\n", coli, classLbli, at->ci->cnt, at->ci->mean, at->ci->var, vali);
+              double mean = at->ci->mean;
+              double var = at->ci->var;
+              double temp = (((mean*at->ci->cnt)+(vali)) / (at->ci->cnt+1));
+              at->ci->var = (((at->ci->sumSoFar) + (vali*vali))/
+                                (at->ci->cnt+1)) - (temp*temp);
+                            //(((mean*at->ci->cnt)+(vali)) / (at->ci->cnt+1));
+              at->ci->mean = ((at->ci->mean*at->ci->cnt + vali)/(at->ci->cnt+1));
+              at->ci->sumSoFar += vali*vali;
+              at->ci->cnt = at->ci->cnt+1;
+              //printf("train here col %d classLbli %d cnt %d mean %f var %f\n", coli, classLbli, at->ci->cnt, at->ci->mean, at->ci->var);
+            }
+            else {
+              attr* at = (attr*)malloc(sizeof(attr));
+              at->ty = aCont;
+              at->ci = (contInfo*)malloc(sizeof(contInfo));
+              at->ci->mean = vali;
+              at->ci->sumSoFar = vali*vali;
+              at->ci->var = 0;
+              at->ci->cnt = 1;
+              //printf("train here col %d classLbli %d cnt %d mean %f var %f\n", coli, classLbli, at->ci->cnt, at->ci->mean, at->ci->var);
+              colStat->operator[](coli)->operator[](classLbli) = at;
+            }
+          }
+          else {
+              attr* at = (attr*)malloc(sizeof(attr));
+              at->ty = aCont;
+              at->ci = (contInfo*)malloc(sizeof(contInfo));
+              at->ci->mean = vali;
+              at->ci->sumSoFar = vali*vali;
+              at->ci->var = 0;
+              at->ci->cnt = 1;
+              //printf("train here col %d classLbli %d cnt %d mean %f var %f\n", coli, classLbli, at->ci->cnt, at->ci->mean, at->ci->var);
+              colStat->operator[](coli) = new hash_map<int, attr*, hash<int> >;
+              colStat->operator[](coli)->operator[](classLbli) = at;
+          }
+        }
+    @
+  }
+};
+
+
+CAggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  @
+    /* global c stuff here */
+    static hash_map<int, double, hash<int> >* tclassStat = new hash_map<int, double, hash<int> >;
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+      if(coli == 1) {
+        for(hash_map<int, int, hash<int> >::iterator iter = classStat->begin();
+              iter != classStat->end(); ++iter) {
+          pair<int, int> p(*iter);
+          tclassStat->operator[](p.first) = ((double)p.second)/cnt;
+        }
+      }
+      for(hash_map<int, int, hash<int> >::iterator iter = classStat->begin();
+            iter != classStat->end(); ++iter) {
+        pair<int, int> p(*iter);
+        if(colStat->operator[](coli)) {
+          if(colStat->operator[](coli)->operator[](p.first)) {
+            if(aTypes[coli-1] == aDisc) {
+              if(colStat->operator[](coli)->operator[](p.first)->di->operator[](vali)) {
+                tclassStat->operator[](p.first) = tclassStat->operator[](p.first)*
+                                                    colStat->operator[](coli)->operator[](p.first)->di->operator[](vali)/classStat->operator[](p.first);
+              }
+              else {
+                tclassStat->operator[](p.first) = 0;
+              }
+            }
+            else if(aTypes[coli-1] == aCont) {
+                //computing probability for continuous case
+                double mean = colStat->operator[](coli)->operator[](p.first)->ci->mean;
+                double var = colStat->operator[](coli)->operator[](p.first)->ci->var;
+                double temp;
+                if(var != 0) {
+                  temp = (1/(sqrt(2*3.14159)))*exp(-((vali-mean)*(vali-mean))/(2*var*var));
+                }
+                else {
+                  if(vali == (int)mean) {
+                    temp = 1;
+                  }
+                  else {
+                    temp =0;
+                  }
+                }
+                //printf("here col %d vali %d classLbli %d mean %f var %f tval %f mval %f\n", coli, vali, p.first, mean, var, tclassStat->operator[](p.first), temp);
+
+                tclassStat->operator[](p.first) = 
+                        tclassStat->operator[](p.first)*temp;
+            }
+          }
+          else {
+            tclassStat->operator[](p.first) = 0;
+          }
+        }
+        else {
+          tclassStat->operator[](p.first) = 0;
+        }
+      }
+      if(coli == numColsi) {
+        double mx=0;
+        int cls=-1;
+        for(hash_map<int, double, hash<int> >::iterator iter = tclassStat->begin();
+              iter != tclassStat->end(); ++iter) {
+          pair<int, double> p(*iter);
+          //printf("here first %d, second %f\n", p.first, p.second); 
+          if(p.second > mx) {
+            mx = p.second;
+            cls = p.first;
+          }
+        }
+        if(mx==0) cls = -1;
+        /* output results here */
+        memset(&key, 0, sizeof(key));
+        memset(&data, 0, sizeof(data));
+        data.data = datadata;
+        key.data = keydata;
+        memcpy((char*)data.data+0, &idi, sizeof(int));
+        memcpy((char*)data.data+4, &classLbli, sizeof(int));
+        memcpy((char*)data.data+8, &cls, sizeof(int));
+        data.size = 12;
+        key.size = 0;
+        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+          adlabort(rc, "IM_REL->put()");
+        }
+
+      }
+    @
+  }
+};
+
+table mt(id int, c int, d int) memory;
+
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into iris;
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into iris1;
+
+/*select a1/2, b1, c1, d1/5, e1/5, f1, g1, h1/5, i1, j1, k1, l1, m1, classLbl from hd;
+*/
+
+
+
+select learnClassifier(d.col, d.val, d.classLbl, 4)
+from iris, table(dissemble(a1, b1, c1, d1, e1)) as d;
+
+insert into mt select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from iris1, table(dissemble(a1, b1, c1, d1, e1)) as d;
+
+select 'total', count(1) from mt;
+select 'correct', count(1) from mt where c=d;
+
+/*select learnClassifier(d.col, d.val, d.classLbl, 4)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d;
+
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d;
+*/
+

@@ -1,0 +1,2 @@
+javac -classpath /usr/lib/hadoop/hadoop-0.20.1+152-core.jar:/usr/lib/hadoop/lib/commons-cli-1.2.jar StaticHashing.java
+jar cf hashing.jar StaticHashing*.class

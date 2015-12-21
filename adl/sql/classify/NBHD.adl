@@ -1,0 +1,158 @@
+table hd(id int, a1 int, b1 int, c1 int, d1 int, e1 int, f1 int, g1 int, h1 int,
+         i1 int, j1 int, k1 int, l1 int, m1 int, classLbl int) memory;
+table hd1(id int, a1 int, b1 int, c1 int, d1 int, e1 int, f1 int, g1 int,
+         h1 int, i1 int, j1 int, k1 int, l1 int, m1 int, classLbl int) memory;
+
+function dissemble(id int, a1 int, b1 int, c1 int, d1 int, e1 int, f1 int,
+         g1 int, h1 int, i1 int, j1 int, k1 int, l1 int, m1 int, classLbl int) :
+           (id int, col int, val int, classLbl int)
+{
+   INSERT INTO RETURN VALUES (id, 1, a1/20, classLbl), (id, 2, b1, classLbl),
+                             (id, 3, c1, classLbl), (id, 4, d1/50, classLbl),
+                             (id, 5, e1/50, classLbl), (id, 6, f1, classLbl),
+                             (id, 7, g1, classLbl), (id, 8, h1/50, classLbl),
+                             (id, 9, i1, classLbl), (id, 10, j1, classLbl),
+                             (id, 11, k1, classLbl), (id, 12, l1, classLbl),
+                             (id, 13, m1, classLbl);
+   /*INSERT INTO RETURN VALUES (1, a1/10, classLbl), (2, b1, classLbl),
+                             (3, c1, classLbl), (4, d1/30, classLbl),
+                             (5, e1/40, classLbl), (6, f1, classLbl),
+                             (7, g1, classLbl), (8, h1/30, classLbl),
+                             (9, i1, classLbl), (10, j1, classLbl),
+                             (11, k1, classLbl), (12, l1, classLbl),
+                             (13, m1, classLbl);
+   */
+};
+
+table classStat(classLbl int, cnt real) memory;
+/*
+table colStat(col int, val int, classLbl int, cnt real) memory;
+table classStat(classLbl int, cnt int,0) hash(classLbl) memory;
+*/
+table colStat(col int, val int, classLbl int, cnt int) hash(col, val, classLbl) memory;
+
+
+
+Aggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  initialize:
+  iterate: {
+    update classStat set cnt = cnt + 1 where classLbl = classLbli and coli = numColsi;
+    /* if first instance of classLbl */
+    /*insert into classStat values (classLbli, 1) where SQLCODE <> 0 and coli = numColsi; */
+ 
+    update colStat set cnt = cnt + 1
+      where col = coli and val = vali and classLbl = classLbli;
+    
+    /* if first instance of classLbl for this coli, vali combination */
+    /*insert into colStat values (coli, vali, classLbli, 1) where SQLCODE <> 0;*/
+  }
+};
+
+Aggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  table classes(cls int, p real) memory;
+
+  Aggregate updateP(clsi int, coli int, vali int):(o real) {
+    initialize: iterate: {
+      update classes set p = p * (select cnt from colStat where col = coli and val = vali and classLbl = clsi)/(select cnt from classStat where classLbl = clsi) 
+         where exists (select cnt from colStat where col = coli and val = vali and classLbl = clsi) and cls = clsi;
+
+      /* if this combo of coli, vali, classLbli is not seen before then
+         not clear what to do? (options)
+         - set p = 0*
+         - devide p by total number of classes
+      */
+      update classes set p = 0 where cls = clsi and SQLCODE <> 0;
+    }
+  };
+
+  initialize: iterate: {
+    insert into classes select distinct classLbl, 0 from classStat where coli = 1;
+    update classes set p = (select cnt from classStat where classLbl = classes.cls)
+                                /(select sum(cnt) from classStat)
+      where coli = 1;
+
+    select updateP(cls, coli, vali)
+    from classes;
+
+    insert into return select idi, classLbli, cls from classes where coli = numColsi and p = (select maxr(p) from classes) and p > 0;
+    insert into return values(idi, classLbli, -1) where coli = numColsi and SQLCODE <> 0;
+    
+    delete from classes where coli = numColsi;
+  }
+};
+
+table dis(id int, col int, val int, cLbl int) memory;
+
+
+insert into classStat values(1, 0), (2, 0), (3, 0), (4, 0), (0, 0);
+load from 'hd1.txt' into hd;
+insert into colStat values
+                          (1, 1, 0,0), (1, 1, 1,0), (1, 1, 2,0), (1, 1, 3,0), (1, 1, 4,0),
+                          (1, 2, 0,0), (1, 2, 1,0), (1, 2, 2,0), (1, 2, 3,0), (1, 2, 4,0),
+                          (1, 3, 0,0), (1, 3, 1,0), (1, 3, 2,0), (1, 3, 3,0), (1, 3, 4,0),
+                          (2, 0, 0,0), (2, 0, 1,0), (2, 0, 2,0), (2, 0, 3,0), (2, 0, 4,0),
+                          (2, 1, 0,0), (2, 1, 1,0), (2, 1, 2,0), (2, 1, 3,0), (2, 1, 4,0),
+                          (3, 1, 0,0), (3, 1, 1,0), (3, 1, 2,0), (3, 1, 3,0), (3, 1, 4,0),
+                          (3, 2, 0,0), (3, 2, 1,0), (3, 2, 2,0), (3, 2, 3,0), (3, 2, 4,0),
+                          (3, 3, 0,0), (3, 3, 1,0), (3, 3, 2,0), (3, 3, 3,0), (3, 3, 4,0),
+                          (3, 4, 0,0), (3, 4, 1,0), (3, 4, 2,0), (3, 4, 3,0), (3, 4, 4,0),
+                          (4, 1, 0,0), (4, 1, 1,0), (4, 1, 2,0), (4, 1, 3,0), (4, 1, 4,0),
+                          (4, 2, 0,0), (4, 2, 1,0), (4, 2, 2,0), (4, 2, 3,0), (4, 2, 4,0),
+                          (4, 3, 0,0), (4, 3, 1,0), (4, 3, 2,0), (4, 3, 3,0), (4, 3, 4,0),
+                          (4, 4, 0,0), (4, 4, 1,0), (4, 4, 2,0), (4, 4, 3,0), (4, 4, 4,0),
+                          (5, 2, 0,0), (5, 2, 1,0), (5, 2, 2,0), (5, 2, 3,0), (5, 2, 4,0),
+                          (5, 3, 0,0), (5, 3, 1,0), (5, 3, 2,0), (5, 3, 3,0), (5, 3, 4,0),
+                          (5, 4, 0,0), (5, 4, 1,0), (5, 4, 2,0), (5, 4, 3,0), (5, 4, 4,0),
+                          (5, 5, 0,0), (5, 5, 1,0), (5, 5, 2,0), (5, 5, 3,0), (5, 5, 4,0),
+                          (5, 6, 0,0), (5, 6, 1,0), (5, 6, 2,0), (5, 6, 3,0), (5, 6, 4,0),
+                          (5, 7, 0,0), (5, 7, 1,0), (5, 7, 2,0), (5, 7, 3,0), (5, 7, 4,0),
+                          (5, 8, 0,0), (5, 8, 1,0), (5, 8, 2,0), (5, 8, 3,0), (5, 8, 4,0),
+                          (5, 9, 0,0), (5, 9, 1,0), (5, 9, 2,0), (5, 9, 3,0), (5, 9, 4,0),
+                          (5, 10, 0,0), (5, 10, 1,0), (5, 10, 2,0), (5, 10, 3,0), (5, 10, 4,0),
+                          (5, 11, 0,0), (5, 11, 1,0), (5, 11, 2,0), (5, 11, 3,0), (5, 11, 4,0),
+                          (6, 0, 0,0), (6, 0, 1,0), (6, 0, 2,0), (6, 0, 3,0), (6, 0, 4,0),
+                          (6, 1, 0,0), (6, 1, 1,0), (6, 1, 2,0), (6, 1, 3,0), (6, 1, 4,0),
+                          (7, 0, 0,0), (7, 0, 1,0), (7, 0, 2,0), (7, 0, 3,0), (7, 0, 4,0),
+                          (7, 1, 0,0), (7, 1, 1,0), (7, 1, 2,0), (7, 1, 3,0), (7, 1, 4,0),
+                          (7, 2, 0,0), (7, 2, 1,0), (7, 2, 2,0), (7, 2, 3,0), (7, 2, 4,0),
+                          (8, 1, 0,0), (8, 1, 1,0), (8, 1, 2,0), (8, 1, 3,0), (8, 1, 4,0),
+                          (8, 2, 0,0), (8, 2, 1,0), (8, 2, 2,0), (8, 2, 3,0), (8, 2, 4,0),
+                          (8, 3, 0,0), (8, 3, 1,0), (8, 3, 2,0), (8, 3, 3,0), (8, 3, 4,0),
+                          (8, 4, 0,0), (8, 4, 1,0), (8, 4, 2,0), (8, 4, 3,0), (8, 4, 4,0),
+                          (9, 0, 0,0), (9, 0, 1,0), (9, 0, 2,0), (9, 0, 3,0), (9, 0, 4,0),
+                          (9, 1, 0,0), (9, 1, 1,0), (9, 1, 2,0), (9, 1, 3,0), (9, 1, 4,0),
+                          (10, 0, 0,0), (10, 0, 1,0), (10, 0, 2,0), (10, 0, 3,0), (10, 0, 4,0),
+                          (10, 1, 0,0), (10, 1, 1,0), (10, 1, 2,0), (10, 1, 3,0), (10, 1, 4,0),
+                          (10, 2, 0,0), (10, 2, 1,0), (10, 2, 2,0), (10, 2, 3,0), (10, 2, 4,0),
+                          (10, 3, 0,0), (10, 3, 1,0), (10, 3, 2,0), (10, 3, 3,0), (10, 3, 4,0),
+                          (10, 4, 0,0), (10, 4, 1,0), (10, 4, 2,0), (10, 4, 3,0), (10, 4, 4,0),
+                          (10, 5, 0,0), (10, 5, 1,0), (10, 5, 2,0), (10, 5, 3,0), (10, 5, 4,0),
+                          (10, 6, 0,0), (10, 6, 1,0), (10, 6, 2,0), (10, 6, 3,0), (10, 6, 4,0),
+                          (11, 1, 0,0), (11, 1, 1,0), (11, 1, 2,0), (11, 1, 3,0), (11, 1, 4,0),
+                          (11, 2, 0,0), (11, 2, 1,0), (11, 2, 2,0), (11, 2, 3,0), (11, 2, 4,0),
+                          (11, 3, 0,0), (11, 3, 1,0), (11, 3, 2,0), (11, 3, 3,0), (11, 3, 4,0),
+                          (12, 0, 0,0), (12, 0, 1,0), (12, 0, 2,0), (12, 0, 3,0), (12, 0, 4,0),
+                          (12, 1, 0,0), (12, 1, 1,0), (12, 1, 2,0), (12, 1, 3,0), (12, 1, 4,0),
+                          (12, 2, 0,0), (12, 2, 1,0), (12, 2, 2,0), (12, 2, 3,0), (12, 2, 4,0),
+                          (12, 3, 0,0), (12, 3, 1,0), (12, 3, 2,0), (12, 3, 3,0), (12, 3, 4,0),
+                          (13, 0, 0,0), (13, 0, 1,0), (13, 0, 2,0), (13, 0, 3,0), (13, 0, 4,0),
+                          (13, 1, 0,0), (13, 1, 1,0), (13, 1, 2,0), (13, 1, 3,0), (13, 1, 4,0),
+                          (13, 2, 0,0), (13, 2, 1,0), (13, 2, 2,0), (13, 2, 3,0), (13, 2, 4,0),
+                          (13, 3, 0,0), (13, 3, 1,0), (13, 3, 2,0), (13, 3, 3,0), (13, 3, 4,0),
+                          (13, 4, 0,0), (13, 4, 1,0), (13, 4, 2,0), (13, 4, 3,0), (13, 4, 4,0),
+                          (13, 5, 0,0), (13, 5, 1,0), (13, 5, 2,0), (13, 5, 3,0), (13, 5, 4,0),
+                          (13, 6, 0,0), (13, 6, 1,0), (13, 6, 2,0), (13, 6, 3,0), (13, 6, 4,0),
+                          (13, 7, 0,0), (13, 7, 1,0), (13, 7, 2,0), (13, 7, 3,0), (13, 7, 4,0);
+/*
+load from 'iris1.data' into flowers1;
+*/
+select learnClassifier(d.col, d.val, d.classLbl, 13)
+from  hd, table(dissemble(id, a1, b1, c1, d1, e1, f1, g1, h1, i1, j1, k1, l1, m1, classLbl)) as d; 
+
+insert into stdout select 'clsStat', classLbl, cnt from classStat;
+insert into stdout select 'colStat', col, val, classLbl, cnt from colStat;
+
+/*
+select evaluateClassifier(id, d.col, d.val, 13, d.cLbl)
+from  dis AS d; 
+*/

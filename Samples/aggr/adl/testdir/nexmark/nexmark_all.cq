@@ -1,0 +1,26 @@
+select auction_id, 0.8239*price, bidder_id, bid_time from bid;
+
+select auction_id, price from bid where auction_id = 1 OR auction_id = 2 OR auction_id = 3;
+
+insert into query3
+select 0, auction_id, seller_id, initial_price, -1, '', '', '', input_time from auction
+union
+select 1, -1, -1, -1, person_id, name, city, state, reg_time from person;
+
+select local_items(tuple_type, auction_id, seller_id, person_id, name, city, state) from query3 where tuple_type = 0 or (tuple_type = 1 and state = 'KS' or state= 'NY' or state = 'SD');
+
+insert into query4
+select 1, -1, -1, -1, -1, bid_time, auction_id, price, bid_time from bid
+union
+select 0, auction_id, initial_price, category_id, seller_id, expire_date, -1, -1, input_time from auction;
+
+select cat_avg(tuple_type, auction_id, initial_price, category_id, expire_date, b_auc_id, bid_price, in_time) from query4;
+
+select hot_items(auction_id, bid_time) from bid;
+
+#error in aggregate
+select seller_avg(tuple_type, auction_id, initial_price, seller_id, expire_date, b_auc_id, bid_price, in_time) from query4;
+
+select high_bid(auction_id, price, bidder_id, bid_time) from bid;
+
+select new_user(tuple_type, seller_id, initial_price, person_id, name, in_time) from query3;

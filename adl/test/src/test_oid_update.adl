@@ -1,0 +1,17 @@
+table tab(a int, b int) memory;
+table tab2(a int, refb ref(tab)) memory;
+
+insert into tab values (1,2);
+
+insert into tab2
+select 100, OID
+from tab;
+
+
+insert into stdout
+select a, refb->a from tab2;
+
+update tab2 set refb->a = refb->a+1013;
+
+insert into stdout
+select a,b from tab;

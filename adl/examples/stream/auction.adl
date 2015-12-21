@@ -1,0 +1,276 @@
+/* Online Auction system on ATLaS
+Chang Richard Luo
+lc@cs.ucla.edu
+http://wis.cs.ucla.edu/atlas
+2003/4
+
+reference:
+http://www-db.stanford.edu/stream/sqr/onauc.html
+*/
+
+/* Category: Relation containing information about various categories (e.g., books, toys) of auctioned items. */
+table Category(id int         /* unique identifier */,
+         name char(100)       /* name of the category */,
+         description char(100)/* description of the category */) memory; 
+
+
+
+/*Item: Relation containing information about each item that is auctioned. */
+table Item(id int              /* unique identifier */,
+     name char(100)            /* name of the item */,
+     description char(100)     /* description of the item */, 
+     categoryID ref(Category)      /* category that this item belongs to. 
+                         References Category.id  */,
+     registrationTime int/* time when this item was registered */) memory; 
+
+
+
+/* Person: Relation containing information about registered users who are allowed to start and bid for auctions. */
+table Person(id  int             /* unique identifier */,
+       name   char(100)          /* name of this person */,
+       emailAddress    char(100) /* registered email address */,
+       city   char(100)          /* city of residence */, 
+       state  char(20)          /* state of residence */,
+       registrationTime int/* time when this user registered */) memory; 
+
+
+
+/* OpenAuction: Stream of openings of auctions. */
+table OpenAuction(itemID  ref(Item)    /* id of the item being auctioned. Key attribute of
+                           this stream. References Item.id */,
+            sellerID  ref(Person)  /* seller of the item being auctioned. References
+                           Person.id */,
+            start_price real /* starting price of the item */, 
+            timestamp   int /* time when the auction started */) memory; 
+
+
+
+/* ClosedAuction: Stream of auction closings. */
+table ClosedAuction(itemID     ref(Item)/* id of the item in this auction. Key attribute 
+                            of this stream. References Item.id */,
+              buyerID    ref(Person)/* buyer of this item. References Person.id. 
+                            Could be NULL if there was no buyer. */,
+              timestamp  int /* time when the auction closed */) memory; 
+
+
+
+/* Bid: Stream of bids for items. A bid for itemID appears only after the OpenAuction tuple for itemID and before the ClosedAuction tuple for itemID. */
+table Bid(itemID   ref(Item)  /* the item being bid for. References Item.id */,
+    bid_price real /* bid price */,    
+    bidderID  ref(Person) /* id the bidder. References Person.id */,
+    timestamp int /* time when bid was registered */) memory; 
+
+/********************************/
+aggregate DolToEuro(price real):real
+{
+initialize:iterate:
+{
+	insert into return values(price*1.2);
+}
+};
+
+aggregate mymax(price real, tag char(20)):real{
+table memo(mprice int) memory;
+initialize:iterate:{
+	update memo
+	set mprice = price
+	where price < mprice;
+	insert into return
+		select mprice from memo
+	where tag = 'end';
+}
+};
+/********************************/
+
+insert into Category values(0,'Book', 'Book desc'), (1, 'Notebook', 'Notebook desc');
+/*
+insert into Item values(0,'Algorithm', 'Computer Algorithm', 0, 0);
+*/
+insert into Item 
+	select 0,'Algorithm', 'Computer Algorithm', c.OID, 0
+	from Category c
+	where c.name = 'Book';
+insert into Item
+	select 1, 'IBM ThinkPad', 'IBM TP desc', c.OID,0
+	from Category c
+	where name = 'Notebook';
+insert into Person values(0,'Chang Luo', 'lc@cs.ucla.edu', 'Los Angeles', 'CA', 0);
+
+insert into OpenAuction
+	select i.OID, p.OID, 1, 0
+	from Item i, Person p
+	where i.id = 0 and p.id = 0;
+
+insert into ClosedAuction
+	select i.OID, p.OID, 10
+	from Item i, Person p
+	where i.id = 0 and p.id = 0;
+insert into Bid
+	select i.OID, 2, p.OID, 1
+	from Item i, Person p
+	where i.id = 0 and p.id = 0;
+/*insert into Bid values(null,3,null,3), (null,4,null,4);*/
+
+/* 1. Currency Conversion Query: Convert the prices of incoming bids from U.S. dollars into Euros. 
+Comments: This query relies on two CQL defaults: the default Unbounded window on Bid stream, and the default outermost Istream operator. DolToEuro is an user-defined function to convert a dollar price to euro. */
+Select  itemID->name, DolToEuro(bid_price), bidderID->name
+From    Bid
+group by itemID->name, bidderID->name;
+
+/*
+Selection Query: Select all bids on a specified set of 5 items. 
+*/
+
+Select  itemID->name, bid_price
+From    Bid
+Where   itemID->id = 0 or itemID->id = 1020 or itemID->id = 2001 or itemID->id = 2019 or itemID->id = 1087;
+
+/*
+Local Item Suggestion Query: Report all items in category 10 that are put up for auction by some seller in Oregon. 
+Comments: This query returns items that were put up for auction by some seller who lived in Oregon when the auction started. Changes in the seller's address after the start of an auction will not affect the result of this query. 
+
+*/
+
+/* Window -- last tuple
+Select  P.name, P.city, O.itemID
+From    OpenAuction [Now] O, Person P, Item I
+Where   O.sellerID = P.id and P.state = 'OR' and O.itemID = I.id 
+        and I.categoryID = 10 
+*/
+
+/*
+Open Auctions Query: Maintain a table of the currently open auctions. 
+
+CQL:
+Select * 
+From   OpenAuction 
+Where  itemID Not In (Select itemID 
+                      From   ClosedAuction)
+
+This CQL statement doesn't seems correct.  The result should be a table instead of a stream.
+*/
+insert into CurrentOpen
+	select itemID, sellerID
+	from OpenAuction;
+delete from CurrentOpen current
+where exists (select itemID 
+		from ClosedAuction ca [now]
+		where ca.itemID->id = current.itemID->id);
+
+
+/*
+Closing Price Query: Report the closing price of each auction. 
+
+
+CurrentPrice: 
+    Select    P.itemID, Max(P.price) as price
+    From      ((Select itemID, bid_price as price 
+                From   Bid) Union All
+               (Select itemID, start_price as price 
+                From OpenAuction)) P
+    Group By  P.itemID
+
+Select   Rstream(C.itemID, P.price)
+From     ClosedAuction [Now] C, CurrentPrice P
+Where    C.itemID = P.itemID
+
+
+Comments: We assume that the closing price in an auction is the price of the maximum bid, or the starting price of the auction in case there were no bids. 
+*/
+/*
+Hot Item Query: Select the item(s) with the most bids in the past hour. Update the results every minute. 
+
+
+HotItemStream: 
+    Select Rstream(itemID)
+    From   (Select   B1.itemID as itemID, Count(*) as num
+            From     Bid [Range 60 Minute
+                          Slide 1 Minute] B1
+            Group By B1.itemID) 
+    Where   num >= All (Select   Count(*)
+                        From     Bid [Range 60 Minute
+                                      Slide 1 Minute] B2
+                        Group By B2.itemID)
+
+Select *
+From   HotItemStream [Range 1 Minute]
+
+*/
+table hotItem(itemID ref(Item), hotCount int);
+delete from hotItem;
+insert into hotItem
+	select itemID, count(itemID)
+	from Bid[Range 1 hour slide 1 min];
+select itemID, max(hotCount)
+from hotItem
+group by itemID;
+
+/*Average Selling Price By Seller Query: For each seller, maintain the average selling price over the last 10 items sold. 
+
+
+CurrentPrice: 
+    Select    P.itemID, Max(P.price) as price
+    From      ((Select itemID, bid_price as price 
+                From   Bid) Union All
+               (Select itemID, start_price as price 
+                From OpenAuction)) P
+    Group By  P.itemID
+
+ClosingPriceStream:
+    Select   Rstream(O.sellerID as sellerID, P.price as price)
+    From     ClosedAuction [Now] C, CurrentPrice P, 
+             OpenAuction O
+    Where    C.itemID = P.itemID and C.itemID = O.itemID
+
+AvgSellingPrice:
+    Select   sellerID, Avg(price)
+    From     ClosingPriceStream [Partition By sellerID Rows 10] 
+    Group By sellerID 
+*/
+
+/*
+Highest Bid Query: Every 10 minutes return the highest bid(s) in the recent 10 minutes. 
+
+
+Select  Rstream(itemID, bid_price)
+From    Bid [Range 10 Minute
+             Slide 10 Minute]
+Where   bid_price = (Select  Max(bid_price)
+                     From    Bid [Range 10 Minute]
+                                  Slide 10 Minute]
+*/
+aggregate maxbid(iItemID ref(Item), iPrice real):(item ref(Item), price real){
+table maxItem(itemID ref(Item))
+table maxPrice(price real);
+initialize:{
+	insert into maxItem values(iItemID);
+	insert into maxPrice values(iPrice);
+}
+iterate:{
+	update maxPrice set price = iPrice where iPrice < price;
+	delete from maxItem where SQLCODE=0;
+	insert into maxItem values(iItemID)
+	where SQLCODE = 0 or exists (select itemID 
+				from memo 
+				where price = iPrice);
+
+
+}
+};
+
+
+stream allprice(itemID int, price real, timestamp, tag char(20)) ASCENDING_TIME(timestamp);
+
+insert into allprice
+	(select itemID, start_price, timestamp, 'start'
+	from OpenAuction
+	UNION ALL
+	select itemID, bid_price, timestamp, 'bid'
+	from Bid
+	UNION ALL
+	select itemID, -1, timestamp, 'end'
+	from ClosedAuction)
+
+select mymax(price, tag)
+from allprice
+group by itemID;

@@ -1,0 +1,17 @@
+table temp(a int);
+
+AGGREGATE mcount(d int) : int
+{
+    TABLE tmp(i int) ;
+    INITIALIZE : ITERATE :
+    {
+
+        INSERT INTO tmp values(d);
+	INSERT INTO return SELECT i*2 FROM tmp;
+        delete from tmp WHERE 1=1;
+    }
+}
+
+insert into temp values(5),(4),(3),(2),(1); 
+
+insert into stdout SELECT mcount(a) FROM temp;

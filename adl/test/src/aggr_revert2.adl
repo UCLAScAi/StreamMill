@@ -1,0 +1,31 @@
+table dataset(v1 int, v2 int, v3 int, v4 int);
+
+aggregate revert(v1 int, v2 int, v3 int, v4 int) : (col int, val int)
+{
+	initialize: iterate:
+	{
+		insert into return values(1,v1),(2,v2),(3,v3),(4,v4);
+	}
+};
+
+AGGREGATE mcount() : int
+{
+    TABLE tmp(i int);
+    INITIALIZE :
+    {
+	INSERT INTO tmp VALUES(1); 
+	INSERT INTO return VALUES(1);
+    }
+    ITERATE :
+    {
+	UPDATE tmp SET i=i+1;
+	INSERT INTO return SELECT i FROM tmp;
+    }
+};
+
+insert into dataset values(10,20,30,40),(50,60,70,80);
+
+insert into stdout
+SELECT t.c, t.Col,t.Val
+FROM (	select mcount() as c, revert(v1,v2,v3,v4) as (Col, Val)
+	from dataset) as t;

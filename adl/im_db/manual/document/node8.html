@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>IM_REL-&gt;get</TITLE>
+<META NAME="description" CONTENT="IM_REL-&gt;get">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node9.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html117"
+ HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html114"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html108"
+ HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html116"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html118"
+ HREF="node9.html">IM_REL-&gt;put</A>
+<B> Up:</B> <A NAME="tex2html115"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html109"
+ HREF="node7.html">IM_REL-&gt;del</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00035000000000000000">
+<FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get</A>
+</H2>
+<PRE>
+#include &lt;im_db.h&gt;
+int IM_REL-&gt;get(IM_REL *rel, DBT *key, DBT *data, u_int32_t flags);
+</PRE><DL>
+<DT><STRONG>Description</STRONG>
+<DD> <BR>
+The <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get function retrieves key/data pairs from the database. The
+  address and length of the data associated with the specified key are
+  returned in the structure referenced by data.
+
+<P>
+In the presence of duplicate key values, <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get will return the
+  first data item for the designated key. Duplicates are reversely
+  sorted by storing order (Inserting at head of a hash-chain is
+  faster, thus tuples are reversely sorted by storing order).
+  Retrieval of duplicates requires the use of cursor operations. See
+  <FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_get for details.
+
+<P>
+The flags parameter must be set to 0 or one of the following values: 
+  <DL>
+<DT><STRONG><FONT SIZE="-1"><I>DB_GET_BOTH</I></FONT></STRONG>
+<DD> <BR>
+Retrieve the key/data pair only if both the key and data match the
+    arguments.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_SET_RECNO</I></FONT></STRONG>
+<DD> <BR>
+Retrieve the specified numbered key/data pair from a
+    database. Upon return, both the key and data items will have been
+    filled in, not just the data item as is done for all other uses of
+    the <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get function.
+
+<P>
+The `data' field of the specified key must be a pointer to a
+    logical record number (i.e., a <FONT SIZE="-1"><I>db_recno_t</I></FONT>). This record number
+    determines the record to be retrieved.
+
+<P>
+The `size' field of the specified key must indicate the length of
+    the key field instead of <FONT SIZE="-1"><I>db_recno_t</I></FONT>.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_GET_OID</I></FONT></STRONG>
+<DD> <BR>
+Given an OID, retrieve the key/data pair from a database.  The OID
+    is passed in `key' argument.  Upon return, both the key and data
+    items will have been filled in, as <FONT SIZE="-1"><I>DB_SET_RECNO</I></FONT> does.
+  <DT><STRONG><FONT SIZE="-1"><I>DB_GET_OIDOFKEY</I></FONT></STRONG>
+<DD> <BR>
+Retrieve OID of a given key.  If there are duplications in key
+    values, the OID of the first one is returned.  The returned OID is
+    place in `data' argument.
+  </DL>  
+<DT><STRONG>Return Value</STRONG>
+<DD> <BR>
+Returned data is placed in a system-allocated buffer, just as what
+  BerkeleyDB does.  Users only need to take care of input arguments.
+
+<P>
+If the requested key is not in the database, the <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get
+  function returns <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>.
+
+<P>
+Otherwise, the <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get function returns a non-zero error
+  value on failure and 0 on success. 
+
+<P>
+<DT><STRONG>Errors</STRONG>
+<DD> <BR>
+The <FONT SIZE="-1"><I>IM_REL</I></FONT>-&gt;get function may fail and return a non-zero error
+  for errors specified for other Berkeley DB and C library or system
+  functions.
+
+<P>
+<DT><STRONG>Sample Calls</STRONG>
+<DD> 
+<PRE>
+DBT key, data;
+db_recno_t i;
+
+/* demo of DB_SET_RECNO */
+i = 10;   /* retrieve 10th record */
+key.data = &amp;i, key.size = sizeof(db_recno_t);
+if((ret = im_rel-&gt;get(relp, &amp;key, &amp;data, DB_SET_RECNO)) != 0)
+    return ERROR;
+
+/* demo of DB_GET_OIDOFKEY / DB_GET_OID */
+key.data = "a-key", key.size = sizeof("a-key");
+if((ret = im_rel-&gt;get(relp, &amp;key, &amp;data, DB_GET_OIDOFKEY)) != 0)
+    return ERROR;
+key.data = data.data, key.size = data.size;
+if((ret = im_rel-&gt;get(relp, &amp;key, &amp;data, DB_GET_OID)) != 0)
+    return ERROR;
+</PRE></DL>
+<P>
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html117"
+ HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html114"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html108"
+ HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html116"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html118"
+ HREF="node9.html">IM_REL-&gt;put</A>
+<B> Up:</B> <A NAME="tex2html115"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html109"
+ HREF="node7.html">IM_REL-&gt;del</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

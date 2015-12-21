@@ -1,0 +1,69 @@
+
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+
+AGGREGATE TopkNoOrder (k INT, W INT, Next INT): REAL
+{
+	TABLE state (max Int, sum Real);
+	TABLE myWin (id Int, val Real, cnt int);
+	TABLE resu (id Int, val Real);
+INITIALIZE:
+	{
+		INSERT INTO state VALUES (1, 1);
+		INSERT INTO myWin VALUES (1, Next, 0);
+		INSERT INTO resu VALUES (1, Next);
+	}
+ITERATE:
+	{
+		UPDATE     state   SET    max=max+1, sum=sum+(SELECT count(val) FROM myWin);
+
+		/* Expiring the window */
+		DELETE FROM  myWin  WHERE  id+W = (SELECT max FROM state);
+		DELETE FROM  resu    WHERE  id+W = (SELECT max FROM state);
+
+		/* Inserting the new value in to the window */
+		INSERT INTO       myWin  VALUES  ((SELECT max FROM state), Next, 0);
+
+		/* Replacing the new tuple in topk result if its greater than the minimum*/
+		UPDATE    resu SET id=(SELECT max FROM state), val=Next
+			WHERE
+			(Next > (SELECT min(val) FROM resu)) AND
+			(val = (SELECT min(val) FROM resu));
+
+		
+		/* Insert a new item from myWin into result table if it has less than k items */
+		INSERT INTO       resu   SELECT  myWin.id, myWin.val FROM myWin
+			WHERE
+			(select count(id) from resu) < k  AND
+			myWin.val = (SELECT MAX(val) FROM myWin
+					WHERE
+					not exists (SELECT id FROM resu WHERE resu.id = myWin.id));
+
+		/* pruning the window */
+		UPDATE                myWin  SET  cnt=cnt+1 WHERE val <= Next and (id <> (SELECT max FROM state));
+		DELETE FROM   myWin  WHERE  cnt >= k;
+
+
+		/* Reporting the results */
+		/*  INSERT INTO     return   values (11111.111111); */
+		/*  INSERT INTO     return   SELECT  count(val) FROM myWin;  */ /*window size */
+		/*  INSERT INTO     return   SELECT  count(val) FROM resu; */
+		/*  INSERT INTO     return   values (11111.111111);*/
+		/*  INSERT INTO     return   SELECT  val FROM resu; */
+		INSERT INTO       return   SELECT  sum/max FROM state; /*average window size */
+	}
+TERMINATE:
+	{}
+};
+
+LOAD FROM './test' INTO traffic;
+
+select TopkNoOrder(5, 100, in1) from traffic;
+
+
+
+
+
+
+
+
+

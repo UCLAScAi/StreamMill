@@ -1,0 +1,16 @@
+TABLE A(a int, b timestamp) BTREE(a, b);
+
+INSERT INTO A VALUES(1, timestamp '01:08:33 PM 10/6/92.2332');
+INSERT INTO A VALUES(2, timestamp '02:09:43 PM 09/6/92.2433');
+
+SELECT a, b
+FROM A
+ORDER BY a ASC;
+
+SELECT a, b
+FROM A
+ORDER BY b ASC;
+
+SELECT a, b
+FROM A
+ORDER BY b DESC;

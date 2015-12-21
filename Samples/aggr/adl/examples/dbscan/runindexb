@@ -1,0 +1,14 @@
+rm index.input
+cp $1 index.input
+start=$(date "+%s")
+start_date=$(date "+%Y%m%d")
+filename=index.$start_date.$1.btree.out;
+
+echo B-TREE index testing starting at $(date)
+
+./btree_index>>$filename
+end=$(date "+%s")
+echo "B-TREE Running Time(sec):">>$filename
+expr $end - $start>>$filename
+
+tail $filename

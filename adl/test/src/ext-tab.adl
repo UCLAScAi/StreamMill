@@ -1,0 +1,12 @@
+/* linux */
+external table (i int, f int) fib(k int) in 'tabf.so';
+
+/* windows */
+/*
+external table (i int, f int) fib(k int) in 'tabf.dll';
+*/
+
+insert into stdout
+select t.i, t.f
+from table (fib(10)) as t;
+

@@ -1,0 +1,30 @@
+TABLE A(a int, b char(10), c timestamp, d real);
+
+aggregate test(a int, b char(10), c timestamp, d real, ae iExt, be cExt, ce tExt, de rExt):int {
+  initialize:
+  iterate: {
+    select 'we got ints', a, b, c, d, col, val
+    from table(iextvert(ae)) as X;
+    select 'we got reals', a, b, c, d, col, val
+    from table(rextvert(de)) as X;
+    select 'we got chars', a, b, c, d, col, val
+    from table(cextvert(be)) as X;
+    select 'we got tsps', a, b, c, d, col, val
+    from table(textvert(ce)) as X;
+  }
+};
+
+aggregate test2(id int, items iExt):int {
+  initialize:
+  iterate: {
+    select id, ' we got items', col, val
+    from table(iextvert(items)) as X;
+  }
+}
+
+INSERT INTO A VALUES(1, 'ahshs', timestamp '02:08:43 PM 10/7/98.2332', 4.65);
+INSERT INTO A VALUES(2, 'akadfd', timestamp '01:08:33 PM 10/6/92.2332', 3.45);
+
+select test(a, b, c, d, newiext(a, a*a), newcext(b, b), newtext(c, c+5 minute), newrext(d, d+d))
+from A;
+

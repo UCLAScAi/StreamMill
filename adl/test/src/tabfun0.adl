@@ -1,0 +1,8 @@
+FUNCTION tabf(a int): (r int)
+{
+	insert into return values(a+10),(a-10);
+}
+
+insert into stdout
+select t.r
+from table (tabf(10)) t;

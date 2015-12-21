@@ -1,0 +1,9 @@
+table test(a int);
+
+insert into test values(1);
+
+insert into stdout 
+	select a from test 
+	union all
+	select a+2 from test;
+     

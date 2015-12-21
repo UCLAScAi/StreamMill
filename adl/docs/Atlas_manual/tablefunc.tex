@@ -1,0 +1,132 @@
+\clearpage
+\section{Table Functions}
+
+Table functions play a critical role in rearranging data and
+allowing the composition of aggregates. As an example of the
+second role, for instance, say that we want to count the number
+of the local minima found in the execution of {\tt minpair}.
+For instance,
+
+\paragraph{Cascading of Aggregates via T-functions}
+\begin{codedisplay}
+\> {AGGREGATE} minpair  ... /*include here the minpair declaration*/\\
+\> TABLE stock\_prices(Day Int, Stock char(4), Cprice Real)\\
+\>\>\>\>\>\>\>\>\>\>\>source  C:$\backslash$mydabase$\backslash$stock\_prices ;\\
+
+\>FUNCTION localmins():(Stock Int, Point Int, Value Int)\\
+\>\> \{ \> insert into RETURN\\
+\>\>\>select Stock, minpair(Day, Cprice)\\
+\>\>\>\>from stock\_prices\\
+\> \>\> \} \\
+\>\\
+\>select  L.Stock,  count(L.Point)\\
+\>\>from  stock\_prices, TABLE(localmins()) AS L\\
+\>\>group by Stock; \\
+\>\\
+\end{codedisplay}
+
+Here the table function does little more than calling the {\tt minpair}
+aggregate on the {\tt stock\_prices} table, and returning the results
+in a table on the three attributes  {\tt (Stock, Point, Value)}. Then,
+these values can be passed to the aggregate {\tt count} (while the direct
+composition of two aggregates is not supported in SQL, or ATLaS).
+
+Also observe the notation
+{\tt TABLE( ...)} is used when invoking table functions---this is
+to conform to SQL standards.
+Also observe that we
+wrote {\tt L.Point} (thus we use the `dot' notation to identify
+different attributes produced by table functions, whereas we use
+``$\rightarrow$'' for the results of aggregates).
+
+\paragraph{Pre-Sorting the Data}
+The correctness of the $\tt minpair$ is predicated upon the data
+being sorted by increasing time. If that is not the case, we can
+use another table function to pre-sort the data. Then, our program
+becomes:
+\begin{codedisplay}
+\> {AGGREGATE} minpair  ... /*include here the minpair declaration*/\\
+\> TABLE stock\_prices(Day Int, Stock char(4), Cprice Real)\\
+\>\>\>\>\>\>\>\>\>\>\>source  C:$\backslash$mydabase$\backslash$stock\_prices ;\\
+\>\\
+\>FUNCTION sort():(Stock Int, Point Int, Value Int)\\
+\>\> \{ \> insert into RETURN\\
+\>\>\>select Day, Stock, Cprice)\\
+\>\>\>\>from stock\_prices\\
+\>\>\>\> ORDERED BY DAY\\
+\> \>\> \} \\
+\>\\
+\>FUNCTION localmins():(Stock Int, Point Int, Value Int)\\
+\>\> \{ \> insert into RETURN\\
+\>\>\>select srtd.Stock, minpair(srtd.Day, srtd.Cprice)\\
+\>\>\>\>from TABLE(sort()) AS srtd\\
+\> \>\> \} \\
+\>\\
+\>select  L.Stock,  count(L.Point)\\
+\>\>from  stock\_prices, TABLE(localmins()) AS L\\
+\>\>group by Stock; \\
+\>\\
+\end{codedisplay}
+
+\paragraph{Exercise:} write a program that start computing the minpair aggregate assuming
+that the data is sorted in input. But while scanning the data we find this
+is not the case, the it sorts the data before before returning them to
+the aggregate performing the computation.
+
+\paragraph{Column Value Pair}The first step for most scalable classifiers
+is to convert the training set into column/value pairs. For instance,
+say that our training set is as follows:
+
+\begin{table}[htb]
+\begin{center}
+{\footnotesize
+\begin{tabular}{|c|l|l|l|l|c|} \hline
+{\bf RID}&{\bf Outlook}&{\bf Temp}&{\bf Humidity}&{\bf Wind}&{\bf Play}\\
+\hline
+1&Sunny&Hot&High&Weak&No\\
+2&Sunny&Hot&High&Strong&No\\
+3&Overcast&Hot&High&Weak&Yes\\
+4&Rain&Mild&High&Weak&Yes\\
+5&Rain&Cool&Normal&Weak&Yes\\
+6&Rain&Cool&Normal&Strong&Yes\\
+7&Overcast&Cool&Normal&Strong&No\\
+8&Sunny&Mild&High&Weak&No\\
+9&Sunny&Cool&Normal&Weak&Yes\\
+10&Rain&Mild&Normal&Weak&Yes\\
+11&Sunny&Mild&Normal&Strong&Yes\\
+12&Overcast&Mild&High&Strong&Yes\\
+13&Overcast&Hot&Normal&Weak&Yes\\
+14&Rain&Mild&High&Strong&No\\ \hline
+\end{tabular}
+}
+\caption{The relation \bf PlayTennis\inv \inv} \label{tab:tennis}
+\end{center}
+\end{table}
+
+Then, we want to convert {\bw PlayTennis} into a new
+stream of three columns {\bw (Col, Value, YorN)} by breaking down each
+tuple into four records, each record representing one column in the
+original tuple, including the column number, column value and the
+class label {\bw YorN}.
+
+Our next table function, called
+{\bw dissemble}  can be used to solve the problem.
+(In the next section we will show that,
+using this table function and specialized aggregates we can
+express Naive Bayesian classifiers and Decision Tree Classifiers in
+very few statements):
+
+%\begin{figure}[b]
+%\begin{example}{Dissemble a relation into column/value pairs.}
+\begin{codedisplay}
+\kw{FUNCTION} dissemble (v1 \kw{Int}, v2 \kw{Int}, v3 \kw{Int},
+v4 \kw{Int}, YorN \kw{Int}): (col \kw{Int}, val \kw{Int}, YorN \kw{Int}); \\[0.2cm]
+%\> \>  \> \>\kw{}: (col \kw{Int}, val \kw{Int}, YorN \kw{Int}); \\
+ \{\>\kw{INSERT} \kw{INTO} \kw{RETURN} \kw{VALUES} (1, v1, YorN),
+ (2, v2, YorN), \kw{}(3, v3, YorN), (4, v4, YorN);
+\}
+\end{codedisplay}
+%\end{example}
+ The mapping expressed by {\tt dissemble} could be expressed in standard
+ SQL via the union of several statements, but such a formulation could
+ lead to inefficient execution.

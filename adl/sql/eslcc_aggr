@@ -1,0 +1,56 @@
+#!/bin/sh
+
+echo "prefix="$ATLAS_HOME>Makefile.eslcc_aggr
+touch $1
+if test "$#" -eq 0
+then
+  echo 'Usage: eslcc_aggr filename'
+  exit 1
+fi
+#
+# See if the filename exists:
+
+if [ ! -f "$1" ] 
+then
+    echo "Cannot find $1"
+    exit 1
+else # We found $1.
+    BASE_NAME=`echo $1`
+    FULL_NAME=$1
+fi
+
+    if [ "$WINDIR" = "" ]
+    then 
+	extralib="-ldl"
+    else 
+        extralib=""
+    fi
+
+#
+echo "AXLDIR=\$(prefix)" >> Makefile.eslcc_aggr
+echo "LIBDIR=\$(AXLDIR)/lib/">>Makefile.eslcc_aggr
+echo "BERKELEY_INC=\${prefix}/include" >> Makefile.eslcc_aggr
+echo "BERKELEY_LIB=\${prefix}/lib/libdb.a" >> Makefile.eslcc_aggr
+echo "ADL_INC=\${AXLDIR}/include" >> Makefile.eslcc_aggr
+echo "ADL_LIB=\$(LIBDIR)/libatlas.a" >> Makefile.eslcc_aggr
+echo "IMDB_LIB=\$(LIBDIR)/libimdb.a" >> Makefile.eslcc_aggr
+echo "RTREE_LIB=\$(LIBDIR)/librtree.a" >> Makefile.eslcc_aggr
+#############################
+
+echo "CXX=g++" >> Makefile.eslcc_aggr
+#
+#
+#echo "${BASE_NAME}: ${BASE_NAME}.so" >> Makefile.eslcc_aggr
+echo "TARGET: " >> Makefile.eslcc_aggr
+echo "	\${CXX} -g -shared -fPIC -m32 -Iesl -I../rtree -I../im_db -I. -I.. -Iuda-swim -Iuda-swim/common -o ${BASE_NAME}.so ${BASE_NAME}.cc \${ADL_LIB} ../sql/libatlas.a \${BERKELEY_LIB} \${IMDB_LIB} ../dbug/libdbug.a -ldl -lmm $extralib" >> Makefile.eslcc_aggr
+echo "	cp ${BASE_NAME}.so ../exe/" >> Makefile.eslcc_aggr
+
+echo "">> Makefile.eslcc_aggr
+
+
+make -f Makefile.eslcc_aggr
+
+exit 0
+
+
+

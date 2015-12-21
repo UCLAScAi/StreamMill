@@ -1,0 +1,13 @@
+AGGREGATE hamidmou$HamidAVG (Next INT) : (out1 INT)
+{	TABLE state(Sum INT, cnt INT)  MEMORY;
+
+	INITIALIZE: {
+		INSERT INTO state VALUES (Next,1);
+	}
+	ITERATE: {
+		UPDATE state SET Sum= 0.9 * Sum + 1.1 * Next, cnt = cnt + 1;
+INSERT INTO RETURN VALUES ( Sum/cnt ) ;
+	}
+	TERMINATE: 
+}
+

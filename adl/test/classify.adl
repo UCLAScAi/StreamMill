@@ -1,0 +1,107 @@
+TABLE tset(Outlook int, Temp int, Humidity int, Wind int, YorN int) GLOBAL;
+
+TABLE summary(Node int, Col int, Value int, Yc int, Nc int);
+TABLE ginitable(Node int, Col int, Gini int);
+TABLE mincol(Node int, Col int);
+
+aggregate revert(v1 int, v2 int, v3 int, v4 int) : (col int, val int)
+{
+    initialize: 
+    {
+        insert into return values(1,v1),(2,v2),(3,v3),(4,v4);
+    }
+    iterate:
+    {
+        insert into return values(1,v1),(2,v2),(3,v3),(4,v4);
+    }
+}
+
+AGGREGATE mcount() : int
+{
+    TABLE tmp(i int);
+    INITIALIZE :
+    {
+        INSERT INTO tmp VALUES(1); 
+        INSERT INTO return VALUES(1);
+    }
+    ITERATE :
+    {
+        UPDATE tmp SET i=i+1;
+        INSERT INTO return SELECT i FROM tmp;
+    }
+}
+
+AGGREGATE leastcol(iCol int, iValue int) : int
+{
+    TABLE tmp(col int, value int);
+
+    INITIALIZE:
+    {
+        INSERT INTO tmp VALUES(iCol, iValue);
+    }
+    ITERATE:
+    {
+        UPDATE tmp SET col=iCol, value=iValue WHERE value > iValue;     
+    }
+    TERMINATE:
+    {
+        INSERT into return SELECT col FROM tmp;
+    }                
+}
+
+AGGREGATE classify(RecId int, iNode int, iCol int, iValue int, iYorN int) : int
+{
+    TABLE treenodes(RecId, NodeNo, Col, Value, YorN);
+
+    INITIALIZE :
+    {
+        INSERT INTO treenodes VALUES(RecId, iNode, iCol, iValue, iYorN);
+        INSERT INTO summary
+            VALUES (iNode, iCol, iValue, iYorN, 1-iYorN);
+    }
+    ITERATE :
+    {
+        INSERT INTO treenodes VALUES(RecId, iNode, iCol, iValue, iYorN);
+        UPDATE summary SET Yc=Yc+iYorN, Nc=Nc+1-iYorN
+                       WHERE Node = iNode 
+                       AND Col = iCol
+                       AND Value = iValue;
+        INSERT INTO summary 
+                       VALUES(iNode, iCol, iValue, isyes(iYorN), isno(iYorN))
+                       WHERE (iNode, iCol, iValue) NOT IN 
+                        (SELECT Node, Col, Value FROM summary);
+    }
+    TERMINATE :
+    {
+        DELETE FROM ginitable;
+        INSERT INTO ginitable
+               SELECT Node, Col, sum(gf(Yc,Nc))/count(Yc+Nc)
+               FROM summary
+               GROUP BY Node, Col;
+        DELETE FROM summary;
+        DELETE FROM mincol;
+        INSERT INTO mincol
+               SELECT Node, leastcol(Col, Gini)
+               FROM ginitable;
+               GROUP BY Node;
+
+        CREATE VIEW tmp AS 
+               SELECT t.Node, t.RecId, t.Value
+               FROM treenodes t, mincol m
+               WHERE t.Node=m.Node AND t.Col=m.Col;
+
+        SELECT classify(Node*MAXVAL+m.Value, t.RecId, t.Col, t.Value, t.YorN)
+        FROM treenodes AS t, tmp AS m
+            WHERE t.Node = m.Node AND t.RecId = m.RecId
+            GROUP BY Node*MAXVAL+m.Value;
+    }
+}
+
+
+CREATE VIEW CVtable(RecId, Col,Val,YorN) AS 
+       SELECT mcount(), revert(Outlook,Temp,Humidity,Wind), YorN 
+       FROM tset;
+ 
+SELECT classify(RecId, 0, Col, Val, YorN)
+FROM CVtable;
+

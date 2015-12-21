@@ -1,0 +1,8 @@
+insert into stdout
+values('hello world');
+
+
+insert into stdout
+values('hello world', 'jimmy');
+
+

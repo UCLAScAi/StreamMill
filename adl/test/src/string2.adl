@@ -1,0 +1,8 @@
+table test(a1 char(10), a2 char(20));
+
+insert into test
+values('hello world', 'hello world');
+
+insert into stdout
+SELECT a1,a2 FROM test;
+

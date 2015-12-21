@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>IM_REL_cursor-&gt;c_put</TITLE>
+<META NAME="description" CONTENT="IM_REL_cursor-&gt;c_put">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node13.html">
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="node3.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html161"
+ HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html158"
+ HREF="node3.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html152"
+ HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html160"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html162"
+ HREF="node13.html">IM_REL_cursor-&gt;c_del</A>
+<B> Up:</B> <A NAME="tex2html159"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Previous:</B> <A NAME="tex2html153"
+ HREF="node11.html">IM_REL_cursor-&gt;c_get</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00039000000000000000">
+<FONT SIZE="-1"><I>IM_REL_cursor</I></FONT>-&gt;c_put</A>
+</H2>
+<PRE>
+#include &lt;im_db.h&gt;
+int IM_RELcursor-&gt;c_put(IM_RELC *cursorp, DBT *key, DBT *data, u_int32_t flags);
+</PRE><DL>
+<DT><STRONG>Description</STRONG>
+<DD> <BR>
+<P>
+The IM_RELcursor-&gt;c_put function stores key/data pairs into the
+  database.
+
+<P>
+The flags parameter must be set to one of the following values: 
+  <DL>
+<DT><STRONG><FONT SIZE="-1"><I>DB_CURRENT</I></FONT></STRONG>
+<DD> <BR>
+Overwrite the data of the key/data pair referenced by the cursor
+    with the specified data item. The input parameters are ignored. 
+  </DL>
+<P>
+<DT><STRONG>Return Value</STRONG>
+<DD> <BR>
+If the cursor is not yet initialized, the IM_RELcursor-&gt;c_put
+  function will return <FONT SIZE="-1"><I>DB_NOTFOUND</I></FONT>. Otherwise, the
+  IM_RELcursor-&gt;c_put function returns 0 on success. 
+</DL>
+<P>
+
+<BR><HR>
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

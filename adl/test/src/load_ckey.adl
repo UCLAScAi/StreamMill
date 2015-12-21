@@ -1,0 +1,13 @@
+table idsalaryseg3(segno int, id int, salary int, tstart int, tend  int)
+btree(segno, id);
+
+load from 'src/load_ckey.dat' into idsalaryseg3;
+SELECT count(id) FROM idsalaryseg3;
+
+select segno, id, salary, tstart, tend
+from idsalaryseg3;
+
+
+select segno, id, salary, tstart, tend 
+from idsalaryseg3
+where segno = 4;

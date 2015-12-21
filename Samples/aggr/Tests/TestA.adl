@@ -1,0 +1,43 @@
+/****
+
+  create function aggregatetesta(a int)
+  returns INTEGER 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!AggregateTestA!F!aggregatetesta';
+
+  replace function aggregatetesta(a int, b real, c real, d int)
+  returns REAL 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!AggregateTestA!F!aggregatetesta';
+
+ ***/
+
+AGGREGATE aggregatetesta(Next INT, bin real, cin real, din int):
+real
+{
+		TABLE state (sum INT, b real, c real, d int) memory;
+
+AGR_INIT:
+	{
+		insert into state values (0, 0, 0, 0);
+	}  
+AGR_DETAIL:
+	{
+		insert into state select max(sum+Next), max(b+bin), max(c+cin), max(d+din) from state; 
+	}
+AGR_FINAL:
+	{
+		INSERT INTO return  select max(b) from state;
+	}
+
+};

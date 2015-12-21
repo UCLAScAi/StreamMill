@@ -1,0 +1,9 @@
+table test(i int, j int);
+
+insert into test values (1,2);
+
+insert into stdout select i,j from test;
+
+update test set i=2, j=3;
+
+insert into stdout select i,j from test;

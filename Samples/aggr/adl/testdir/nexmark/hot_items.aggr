@@ -1,0 +1,17 @@
+AGGREGATE hot_items(auction_id int, bid_time timestamp) : int
+{
+    TABLE window_tmp(aid int, btime timestamp) MEMORY;
+    TABLE bid_counts(id int, bcount int) MEMORY;
+
+    INITIALIZE :
+    ITERATE :
+    {
+	insert into window_tmp values(auction_id, bid_time);
+
+	delete from window_tmp where (btime+60 minutes) < bid_time;
+
+	insert into bid_counts select aid, count(aid) from window_tmp group by aid;
+	insert into return select b1.id from bid_counts b1 where b1.bcount = (select max(b2.bcount) from bid_counts b2);
+	delete from bid_counts;
+    }
+};

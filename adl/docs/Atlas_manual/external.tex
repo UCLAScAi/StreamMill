@@ -1,0 +1,158 @@
+
+
+\chapter{External Functions}
+ATLaS supports both scalar external functions and table external
+functions.
+
+(For latest update, please refer to our website.)
+
+\section{Scalar Functions}
+
+To declare an external function to be dynamically loaded into ATLaS, we
+use the following syntax:
+
+\begin{verbatim}
+external int ginif(a int) in 'gini.so';
+\end{verbatim}
+
+The above statement declares a UDF {\it ginif} which takes one
+integer-type parameter and returns an integer result. This function is
+supported by a shared library, 'gini.so'.
+
+We can use C or any other language to create functions in shared
+libraries. On a UNIX system, the following command compiles C source
+code to dynamical libraries.
+
+\begin{verbatim}
+gcc -shared -o gini.so -fPIC gini.c
+\end{verbatim}
+
+Once defined, the UDF can be used in ATLaS. For instance:
+
+\begin{verbatim}
+select gini(a) from test;
+\end{verbatim}
+
+In order to dynamically load the library, the OS must be able to
+find it. In UNIX, the OS searchs for the library in all the paths
+specified by the environment variable LD\_LIBRARY\_PATH.
+
+\section{Table Functions}
+In much the same way, we can use external UDF as table functions.
+
+For instance, we want to stream through the first K Fibonacci numbers.
+It is not difficult to write a C function to generate the Fibonacci
+numbers. The following ATLaS program demonstrates how to use such an
+external table function.
+
+\begin{verbatim}
+external table (i int, f int) fib(k int) in 'tabf.so';
+
+select t.i, t.f
+from table (fib(10)) as t;
+\end{verbatim}
+
+In order to declare an external table function, we must use TABLE as
+the return type. The above declaration indicates 'fib' is an external
+function found in shared library 'tabf.so', and 'fib' returns a stream
+of tubples (i,f), where f is the i-th Fibonacci number. Then, in the
+following query, we stream through the first 10 Fibonacci numbers by
+calling 'table (fib(10))'.
+
+How do we implement a table function in C? Unlike stateless scalar
+functions, table functions must keep their internal state between
+calls. More specifically, the function must be able to: i) determine
+the first call from subsequent calls; ii) tell the caller whether a
+tuple is successfully returned; iii) use a mechanism to return tuples
+to the caller. As an example, the following code implements function
+'fib':
+
+\begin{verbatim}
+#include <db.h>
+
+struct result {
+  int a;
+  int b;
+};
+
+int fib(int first_entry, struct result *tuple, int k)
+{
+  static int count;
+  static int last;
+  static int next;
+
+  if (first_entry == 1) {
+    count = 0;
+    next=1;
+    last=0;
+  }
+  if (count++ <k) {
+    tuple->a = count;
+    tuple->b = last;
+
+    last = next;
+    next = next+tuple->b;
+    return 0;
+  } else {
+    return DB_NOTFOUND;
+  }
+}
+\end{verbatim}
+
+In addition to the arguments (here is 'k') passed to the table
+function, we have 2 extra arguments: i) $first\_entry$, if
+first\_entry=1 then it is the first call; ii) tuple, which is a
+pointer to a structure where results are to be stored. External
+table functions always return an integer value, 0 if successful,
+DB\_NOTFOUND otherwise.
+
+A possible use of table functions is to scan file system data, and
+return results to the database system after filtering. Our test
+indicates that on a linux system, external table functions accessing
+file system data is almost 100 times faster than accessing the same
+data in the Berkeley DB format.
+
+
+\section{Built-in Aggregates and Functions}
+ATLaS supports the standard builtin aggregates: {\bf min()}, {\bf
+  max()}, {\bf sum()}, {\bf avg()}, and {\bf count()}.
+
+ATLaS supports the following builtin functions: (they are being added
+constantly.)
+
+\begin{itemize}
+\item {\bf srand(INT) : INT} \\
+  The srand() function sets its argument as the seed for a new
+  sequence of pseudo-random integers to be returned by rand().  These
+  sequences are repeatable by calling srand() with the same seed
+  value. srand() always returns 0.
+
+\item {\bf rand() : REAL} \\
+  The rand() function returns a pseudo-random real between 0 and 1.
+  The following code set 10 as a random seed, and displays two random
+  values.
+\begin{verbatim}
+    VALUES(srand(10));
+
+    VALUES(rand(), rand());
+\end{verbatim}
+
+\item {\bf sqrt(REAL) : REAL}\\
+  The sqrt(x) function returns the non-negative square root of x.  \\
+
+\item {\bf timeofday() : CHAR(20)}\\
+  The gettimeofday function gets the system's notion of the current
+  time. The current time is expressed in elapsed seconds and
+  microseconds since 00:00 Universal Coordinated Time, January 1,
+  1970. It returns a string in the form of x'y'', where x is the
+  seconds and y is the microseconds. This function is maily used to
+  measure the performance of ATLaS queries, as in the following example:
+
+\begin{verbatim}
+    INSERT INTO stdout VALUES(timeofday());
+
+    ... some ATLaS queries ...
+
+    INSERT INTO stdout VALUES(timeofday());
+\end{verbatim}
+\end{itemize}

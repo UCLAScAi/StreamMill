@@ -1,0 +1,44 @@
+AGGREGATE seller_avg(tuple_type int, auction_id int, initial_price int, seller_id int, expire_date timestamp, b_auc_id int, bid_price int, in_time timestamp): (sellerid int, avg_price int)
+{	
+
+	AGGREGATE ten_recent_expired(a_id int, s_price int, s_id int, e_date timestamp, i_time timestamp): (auct_id int, sprice int, sell_id int, auct_expire timestamp, auct_in_time timestamp)
+	{
+	    TABLE auc_counter(counter int);
+
+	    INITIALIZE : 
+	    {
+		insert into auc_counter values(0);
+		insert into return values (a_id, s_price, s_id, e_date, i_time) 	
+		where (select counter from auc_counter) < 10;
+	    }
+	    ITERATE :
+	    {
+		update auc_counter set counter=counter+1;
+		insert into return values (a_id, s_price, s_id, e_date, i_time) 	
+		where (select counter from auc_counter) < 10;
+	    }
+	};
+
+    TABLE seller_auctions(aid int, price int, sid int, expire timestamp, input_time timestamp);
+    TABLE tmp_auctions(auc_id int, sale_price int, sel_id int, auc_expire timestamp, auc_in_time timestamp);
+
+    INITIALIZE :
+    ITERATE :
+    {
+	insert into seller_auctions values(auction_id, initial_price, seller_id, expire_date, in_time) where tuple_type = 0;
+
+	update seller_auctions set price = bid_price where tuple_type = 1 and expire >= in_time and price < bid_price and aid = b_auc_id;
+
+	insert into tmp_auctions select ten_recent_expired(aid, price, sid, expire, input_time) from seller_auctions where expire < in_time group by sid order by input_time desc;
+
+	insert into stdout select auc_id, sale_price, sel_id, auc_expire, auc_in_time from tmp_auctions;
+	
+	insert into return select sel_id, avg(sale_price) from tmp_auctions where auc_expire < in_time group by sel_id;
+
+	delete from seller_auctions where expire < in_time;
+	
+	insert into seller_auctions select auc_id, sale_price, sel_id, auc_expire, auc_in_time from tmp_auctions;
+	
+	delete from tmp_auctions;
+    }
+};

@@ -1,0 +1,16 @@
+AGGREGATE high_bid(auction_id int, price int, bidder_id int, bid_time timestamp) : (auction int, bidder int, max_price int)
+{
+    TABLE window_tmp(aid int, bprice int, b_id int, btime timestamp);
+
+    INITIALIZE :
+    ITERATE :
+    {
+	insert into window_tmp values(auction_id, price, bidder_id, bid_time);
+
+	delete from window_tmp where (btime+10 minutes) < bid_time;
+
+	insert into return select aid, b_id, bprice from window_tmp where bprice = (select max(bprice) from window_tmp);
+
+	delete from window_tmp where btime < (select w1.btime from window_tmp w1 where w1.bprice = (select max(w2.bprice) from window_tmp w2));
+    }
+};

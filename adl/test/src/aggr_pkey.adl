@@ -1,0 +1,15 @@
+table t(a int, b int, c char) btree(a,b);
+aggregate testPK(pk int):int
+{
+initialize:iterate:{
+	select a,b,c from t 
+	where a >= pk;
+	select a,b,c from t
+	where a <=pk;
+}
+};
+insert into t values(1,1,'1'), (1,1,'2'),(3,3,'3'),(4,4,'4');
+
+
+select testPK(a)
+from t;

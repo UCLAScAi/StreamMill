@@ -1,0 +1,902 @@
+#include "stmt.h"
+#include "strategy.h"
+#include "querySchdl.h"
+
+using namespace ESL;
+using namespace std;
+
+/*
+mantIF::~mantIF() 
+{  
+}
+*/
+
+namespace ESL {
+  
+stmt::stmt():weight(WeightProfile::WEIGHT_MIN), monitor_src_stat(false),monitor_sink_stat(false), /*monitor_stmt_stat(false),*/ valid(true),rankSet(false),weightSet(false),deadline(0),quota(0),quota_left(0),deadline_quota(0),empty(true)
+{  
+  this->rank.priority = OperatorPriorityStrategy::MAX_PRIORITY;
+  this->stmtEntry = NULL;
+}
+
+stmt::~stmt() 
+{  
+}
+
+//nStmt::nStmt() 
+//{
+//  type = stmt_normal;
+//}
+
+nStmt::nStmt(char *name, buffer* i, buffer* o, bool sub_stmt, bool mantOp)
+{
+  type = stmt_normal;
+  strcpy(this->name, name);
+  in = i;
+  out = o;
+  strcpy(this->inBufName, i->name);  
+  strcpy(this->outBufName, o->name);  
+  this->sub_stmt = sub_stmt;
+  this->mantOp = mantOp;
+}
+
+nStmt::~nStmt() 
+{  
+}
+
+stmt_rc nStmt::exe(int freeVar) 
+{
+  if (querySchdl::verbose) cout << "enter exe of stmt " << name << endl;
+  
+  if (func) {
+    if (querySchdl::verbose) cout << "execute stmt: " << name << endl;
+    //printf("debug execute stmt: %s, freeVar %d\n", name, freeVar); fflush(stdout);
+    stmt_rc rc = (stmt_rc) ((*func)(bufferMngr::getInstance(), freeVar, NULL, getInMemTables()));
+    if (querySchdl::verbose) cout << "finish stmt, return code " << (int) rc << endl;
+    return rc;
+  } else {
+    cerr<<"Warning: stmt not ready"<<endl;
+    return s_failure;
+  }
+  
+  /*
+  //for testing only, just move the tuple over
+  struct timeval tv1;  
+  dbt *d = new cDBT("ddd", MAX_STR_LEN, &tv1);
+  //dbt* d = 0;
+  if (in == 0) {
+    cout << "in buffer is null in statememt " << name << endl;
+    return s_failure;
+  } else if (in->empty()) {
+    cout << "buffer has no input in statement " << name << endl;
+    return s_no_input;
+  } else {
+    cout << "in buffer is " << in->name << endl;
+    in->get(d);
+    if (d == 0) {
+      cout << "buffer has no input in statement " << name << endl;
+      return s_no_input;
+    }    
+  }
+
+  if (out == 0) {
+    cout << "out buffer is null in statememt " << name << endl;
+    return s_failure;
+  } else {
+    cout << "out buffer is " << out->name << endl;
+    out->put(d);
+  }
+  delete d;
+
+  cout << "stmt executed: " << name << endl;
+    
+  return s_success;
+  */
+}
+
+uStmt::uStmt()
+{
+}
+
+uStmt::~uStmt() 
+{  
+}
+
+
+//utStmt::utStmt() 
+//{
+//  type = stmt_t_union;
+//  in = 0;
+//}
+
+utStmt::utStmt(char *name, /*buffer* i,*/ buffer* o, bool sub_stmt, bool mantOp)
+{
+  type = stmt_t_union;
+  strcpy(this->name, name);
+  in = NULL;
+  out = o;
+  this->inBufName[0] = '\0';
+  strcpy(this->outBufName, o->name);  
+  this->sub_stmt = sub_stmt;  
+  this->mantOp = mantOp;
+}
+
+utStmt::~utStmt() 
+{  
+}
+
+static bool mant_testing = false;
+static double mant_testing_total_lat_sec = 0;
+static int mant_testing_total_count = 0;
+
+static bool one_empty_testing = false;
+static double one_empty_total = 0;
+static struct timeval *last_one_empty_start = NULL;
+static struct timeval *first_measure_time = NULL;
+static struct timeval last_measure_time;
+static struct timeval last_throughput_time;
+static struct timezone tz;
+static bool hb_tuple_testing = false;
+
+extern int NUM_TUPS_PER_CALL;
+
+//handle ondemand_hbtuple experiments are only done for the single tuple processing mode (not for BFS).
+stmt_rc utStmt::exe_set_in() 
+{
+  if (1) { /* Hetal 05/13/08 (NUM_TUPS_PER_CALL <= 1) { */
+  
+  if (querySchdl::verbose) cout << "enter exe of timed union stmt " << name << endl;
+ 
+  if (out == 0) {
+    cerr << "out buffer is null in statememt " << name << endl;
+    return s_failure;
+  }
+
+  bool minTupleODHB = true;
+
+  do {
+  //while (ondemand_hbtuple && minTupleODHB)   //change to do-while, to make sure it is done once when not doing on-demand hbtuple
+    //repeat the following, if the minTuple turns out to be a on-demand heartbeat tuple
+    if (querySchdl::verbose) cout << "utstmt, enter while loop to look for tuples " << endl;    
+  
+  struct timeval tv1;  
+  //dbt *d = new cDBT("ddd", MAX_STR_LEN, &tv1);
+  cDBT d(MAX_STR_LEN, &tv1);
+  bool noTuple = true;
+
+  //current MIN(MANT) from all the empty buffers
+  struct timeval* minMant = NULL;
+  cDBT minTuple(MAX_STR_LEN, &tv1);
+  buffer* minTupleBuf = NULL;
+  buffer* minMantBuf = NULL;
+  buffer* nullMantBuf = NULL;
+  
+  this->empty = false;      
+
+  //distinguish between the cases of no MANT set on empty buffers, and all buffers are non-empty
+  bool hasEmptyBuf = false;
+
+  bool hb_stream_empty = false;
+  
+  //testing to see which input buffer can be used to take next tuple.
+  for (list<buffer*>::iterator itr = union_bufs.begin(); itr != union_bufs.end(); itr++) {
+    if ((*itr)->empty()) {
+      
+      //for one-empty testing with hb tuples
+      if(one_empty_testing && hb_tuple_testing) {
+	if (strcmp((*itr)->name, "a131_179_64_67_5796990") == 0) {
+	  hb_stream_empty = true;
+	}
+      }
+      
+      hasEmptyBuf = true;
+      
+      if ((*itr)->mant != NULL) {
+	if (nullMantBuf == NULL) {
+	  
+	  //the above conditions says that, if any of the buffers are not set for MANT, then there is no need to do this comparison
+	  if (minMant == NULL) {
+	    minMant = (*itr)->mant;
+	    minMantBuf = *itr;
+	  } else {
+	    if (timeval_cmp(*minMant, *((*itr)->mant)) > 0) {
+	      minMant = (*itr)->mant;
+	      minMantBuf = *itr;
+	    }
+	  }
+	}
+      } else {
+	nullMantBuf = *itr;
+      }
+    } else {
+      (*itr)->get(&d);
+      if (querySchdl::verbose) {
+	cout << "tuple in timed union: ";
+	d.print();
+      }
+
+      if (noTuple) {
+	minTuple.copy(&d);
+	minTupleBuf = *itr;
+	if (querySchdl::verbose) {
+	  cout << "earliest tuple so far: ";
+	  minTuple.print();
+	}
+	noTuple = false;
+      } else if(timeval_cmp(*(minTuple.atime), *(d.atime)) > 0) {
+	//take the smallest timestamp
+	minTuple.copy(&d);
+	minTupleBuf = *itr;
+	if (querySchdl::verbose) {
+	  cout << "earliest tuple so far: ";
+	  minTuple.print();
+	}
+      }
+    }
+  }
+
+  if (first_measure_time == NULL) {
+    first_measure_time = new struct timeval();
+    gettimeofday(first_measure_time, &tz);
+  }
+  gettimeofday(&last_measure_time, &tz);
+  
+  if (noTuple) { //have not found any tuple
+    if (querySchdl::verbose) cout << "timed union, all buffer empty, will backtrack for tuples but not for another MANT value." << endl;
+
+    /* remove this, since it is possible to get into a loop of MANT generation
+    //first priority to backtrack on buffers that never had MANT set
+    if (nullMantBuf != NULL) {
+      in = nullMantBuf;
+    } else {
+
+      in = minMantBuf;
+
+      //if (out->mant == NULL) out->mant = new struct timeval;
+      //memcpy(out->mant, minMant, TS_SZ);
+      if (minMant != NULL)
+	out->setMant(minMant);
+    }
+    */
+
+    //following two lines replace the above commented out portion
+    if (in == NULL) in = (nullMantBuf == NULL) ? minMantBuf : nullMantBuf;
+    if (nullMantBuf != NULL && minMant != NULL) out->setMant(minMant);
+    
+    this->empty = true;
+    
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+    //cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+
+    return s_no_input;
+  } else if (hasEmptyBuf && (minMant == NULL || nullMantBuf != NULL || timeval_cmp(*(minTuple.atime), *minMant) > 0)) {
+
+    if(hb_tuple_testing && !hb_stream_empty) {
+      //skip processing on hbtuples, even if the other buffer is empty
+      in = minTupleBuf;
+      in->setMant(minTuple.atime);
+      return s_success;      
+    }
+    
+    /* Hetal 05/13/08 
+    if (ondemand_hbtuple) {
+      int value;
+      
+      memcpy(&value, minTuple.data, sizeof(int));
+      if (querySchdl::verbose) cout << "minTuple value is: " << value << endl;
+      
+      //skip if it is on-demand hbtuple, for experiments only
+      //if to propagate, actually should have put it into output
+      if (value == HBSZ) {
+	in = minTupleBuf;
+	in->setMant(minTuple.atime);
+	if (querySchdl::verbose && ondemand_hbtuple) cout << "skipping on-demand hbtuple" << endl;
+	//return s_no_output;
+	in->pop();
+	if (querySchdl::verbose && ondemand_hbtuple) cout << "popped on-demand hbtuple, buffer size is " << in->bufSize() << endl;
+	//goto ondemand; //continue the while minTupleODHB
+	continue;
+	
+      } else{
+	minTupleODHB = false;
+      }
+      
+    }
+    */
+      
+    //one-empty testing
+    if(one_empty_testing && (!hb_tuple_testing || hb_stream_empty)) {
+      if(last_one_empty_start == NULL) {
+	last_one_empty_start = new struct timeval();
+	gettimeofday(last_one_empty_start, &tz);
+      }
+    }
+    
+    //by now I have the minTuple and possibly the minMant values
+    //we can not push through any tuple, since MANT value is not set for all empty buffers yet, or the MANT values are not late enough
+
+    //we will backtrack on the buffer with the min MANT, since this is the one that needs to be improved first.
+    //but first priority is to backtrack on buffers that never had MANT set
+
+    if (nullMantBuf != NULL) {
+      in = nullMantBuf;
+    } else {
+      in = minMantBuf;
+
+      //if (out->mant == NULL) out->mant = new struct timeval;      
+      //memcpy(out->mant, minMant, TS_SZ);
+      if (minMant != NULL)
+	out->setMant(minMant);
+    }
+
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+    //cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+    
+    return s_no_input;
+  } else {
+  //else if (!hasEmptyBuf || (minMant != NULL && timeval_cmp(minTuple.atime, *minMant) < 0))    
+    
+    //one-empty testing
+    if(one_empty_testing) {
+      if(last_one_empty_start != NULL) {
+	one_empty_total += timeval_subtract(last_measure_time, *last_one_empty_start);
+	delete last_one_empty_start;
+	last_one_empty_start = NULL;
+      }
+    }
+    
+    //either there is no empty buffers, or we can process this tuple based on later MANTs.
+    //this is the buffer that needs to be popped
+
+    in = minTupleBuf;
+
+    //for throughput
+    if (!hb_tuple_testing || strcmp(in->name, "a131_179_64_67_5796991") == 0) {
+      gettimeofday(&last_throughput_time, &tz);
+    }
+    
+    //if (out->mant == NULL) out->mant = new struct timeval;      
+    //memcpy(out->mant, minTuple.atime, TS_SZ);
+    out->setMant(minTuple.atime);
+    
+    if (querySchdl::verbose) {
+      cout << "out buffer is " << out->name << ", length " << out->bufSize()<< endl;
+      cout << "at the end of union, earliest tuple is: ";
+      minTuple.print();
+    }
+    out->put(&minTuple);
+    //cout << "out buffer is at end " << out->name << ", length " << out->bufSize()<< endl;
+      
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", return code " << s_success << endl;
+    //cout << "stmt executed: " << name << ", return code " << s_success << endl;
+
+    return s_success;
+  }
+  
+  } while (minTupleODHB); 
+  /* (ondemand_hbtuple && minTupleODHB);, Hetal 05/13/08 */
+  
+  //end if process one tuple
+  } else {
+  //begin if process more than one tuple
+
+  if (querySchdl::verbose) cout << "enter exe of timed union stmt, multiple tuple mode for experiments " << name << endl;
+  
+  if (out == 0) {
+    cerr << "out buffer is null in statememt " << name << endl;
+    return s_failure;
+  }
+    
+  struct timeval tv1;  
+  //dbt *d = new cDBT("ddd", MAX_STR_LEN, &tv1);
+  cDBT d(MAX_STR_LEN, &tv1);
+  bool noTuple = true;
+
+  //current MIN(MANT) from all the empty buffers
+  struct timeval* minMant = NULL;
+  cDBT minTuple(MAX_STR_LEN, &tv1);
+  buffer* minTupleBuf = NULL;
+  buffer* minMantBuf = NULL;
+  buffer* nullMantBuf = NULL;
+  
+  this->empty = false;      
+
+  int processed = 0;
+
+  //distinguish between the cases of no MANT set on empty buffers, and all buffers are non-empty
+  bool hasEmptyBuf = false;
+  bool hb_stream_empty = false;
+  
+  /* while (processed < NUM_TUPS_PER_CALL) { 
+     Hetal 05/13/08 */   
+  while (processed < 10000) {    
+
+  //first reset some variables
+  noTuple = true;    
+  minMant = NULL;
+  minTupleBuf = NULL;
+  minMantBuf = NULL;
+  nullMantBuf = NULL;
+  hasEmptyBuf = false;
+  hb_stream_empty = false;
+  
+  //testing to see which input buffer can be used to take next tuple.
+  for (list<buffer*>::iterator itr = union_bufs.begin(); itr != union_bufs.end(); itr++) {
+    if ((*itr)->empty()) {
+      
+      //for one-empty testing with hb tuples
+      if(one_empty_testing && hb_tuple_testing) {
+	if (strcmp((*itr)->name, "a131_179_64_67_5796990") == 0) {
+	  hb_stream_empty = true;
+	}
+      }
+      
+      hasEmptyBuf = true;
+      
+      if ((*itr)->mant != NULL) {
+	if (nullMantBuf == NULL) {
+	  
+	  //the above conditions says that, if any of the buffers are not set for MANT, then there is no need to do this comparison
+	  if (minMant == NULL) {
+	    minMant = (*itr)->mant;
+	    minMantBuf = *itr;
+	  } else {
+	    if (timeval_cmp(*minMant, *((*itr)->mant)) > 0) {
+	      minMant = (*itr)->mant;
+	      minMantBuf = *itr;
+	    }
+	  }
+	}
+      } else {
+	nullMantBuf = *itr;
+      }
+    } else {
+      (*itr)->get(&d);
+      if (querySchdl::verbose) {
+	cout << "tuple in timed union: ";
+	d.print();
+      }
+
+      if (noTuple) {
+	minTuple.copy(&d);
+	minTupleBuf = *itr;
+	if (querySchdl::verbose) {
+	  cout << "earliest tuple so far: ";
+	  minTuple.print();
+	}
+	noTuple = false;
+      } else if(timeval_cmp(*(minTuple.atime), *(d.atime)) > 0) {
+	//take the smallest timestamp
+	minTuple.copy(&d);
+	minTupleBuf = *itr;
+	if (querySchdl::verbose) {
+	  cout << "earliest tuple so far: ";
+	  minTuple.print();
+	}
+      }
+    }
+  }
+
+  if (first_measure_time == NULL) {
+    first_measure_time = new struct timeval();
+    gettimeofday(first_measure_time, &tz);
+  }
+  gettimeofday(&last_measure_time, &tz);
+  
+  if (noTuple) { //have not found any tuple
+    if (querySchdl::verbose) cout << "timed union, all buffer empty, will backtrack for tuples but not for another MANT value." << endl;
+
+    /* remove this, since it is possible to get into a loop of MANT generation
+    //first priority to backtrack on buffers that never had MANT set
+    if (nullMantBuf != NULL) {
+      in = nullMantBuf;
+    } else {
+
+      in = minMantBuf;
+
+      //if (out->mant == NULL) out->mant = new struct timeval;
+      //memcpy(out->mant, minMant, TS_SZ);
+      if (minMant != NULL)
+	out->setMant(minMant);
+    }
+    */
+
+    //following two lines replace the above commented out portion
+    if (in == NULL) in = (nullMantBuf == NULL) ? minMantBuf : nullMantBuf;
+    if (nullMantBuf != NULL && minMant != NULL) out->setMant(minMant);
+
+    this->empty = true;
+    
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", tuple processed is " << processed << ", return code " << s_no_input << endl;
+    
+    //cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+
+    return s_no_input;
+  } else if (hasEmptyBuf && (minMant == NULL || nullMantBuf != NULL || timeval_cmp(*(minTuple.atime), *minMant) > 0)) {
+
+    if(hb_tuple_testing && !hb_stream_empty) {
+      //skip processing on hbtuples, even if the other buffer is empty
+      in = minTupleBuf;
+      in->setMant(minTuple.atime);
+      return s_success;      
+    }
+
+    //one-empty testing
+    if(one_empty_testing && (!hb_tuple_testing || hb_stream_empty)) {
+      if(last_one_empty_start == NULL) {
+	last_one_empty_start = new struct timeval();
+	gettimeofday(last_one_empty_start, &tz);
+      }
+    }
+    
+    //by now I have the minTuple and possibly the minMant values
+    //we can not push through any tuple, since MANT value is not set for all empty buffers yet, or the MANT values are not late enough
+
+    //we will backtrack on the buffer with the min MANT, since this is the one that needs to be improved first.
+    //but first priority is to backtrack on buffers that never had MANT set
+
+    if (nullMantBuf != NULL) {
+      in = nullMantBuf;
+    } else {
+      in = minMantBuf;
+
+      //if (out->mant == NULL) out->mant = new struct timeval;      
+      //memcpy(out->mant, minMant, TS_SZ);
+      if (minMant != NULL)
+	out->setMant(minMant);
+    }
+
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", tuple processed is " << processed << ", return code " << s_no_input << endl;
+    //cout << "stmt executed: " << name << ", return code " << s_no_input << endl;
+    
+    return s_no_input;
+  } else {
+  //else if (!hasEmptyBuf || (minMant != NULL && timeval_cmp(minTuple.atime, *minMant) < 0))    
+    
+    //one-empty testing
+    if(one_empty_testing) {
+      if(last_one_empty_start != NULL) {
+	one_empty_total += timeval_subtract(last_measure_time, *last_one_empty_start);
+	delete last_one_empty_start;
+	last_one_empty_start = NULL;
+      }
+    }
+    
+    //either there is no empty buffers, or we can process this tuple based on later MANTs.
+    //this is the buffer that needs to be popped
+
+    in = minTupleBuf;
+
+    //for throughput
+    if (!hb_tuple_testing || strcmp(in->name, "a131_179_64_67_5796991") == 0) {
+      gettimeofday(&last_throughput_time, &tz);
+    }
+    
+    //if (out->mant == NULL) out->mant = new struct timeval;      
+    //memcpy(out->mant, minTuple.atime, TS_SZ);
+    out->setMant(minTuple.atime);
+    
+    if (querySchdl::verbose) {
+      cout << "out buffer is " << out->name << endl;
+      cout << "at the end of union mutiple mode, earliest tuple is: ";
+      minTuple.print();
+    }
+    
+    out->put(&minTuple);
+
+    //pop the tuple, and increment processed count
+    processed++;
+    if (querySchdl::verbose) cout << "stmt executed: " << name << ", tuple processed is " << processed << ", return code " << s_success << endl;
+    
+    if (in->bufSize() > 1) {
+      //need to perform mant testing latency sum here. 
+      if (mant_testing && this->monitor_sink_stat && in->timestamp_type != TS_LATENT) {
+	struct timeval tv_tarrival;
+	in->get(&tv_tarrival);
+
+	struct timeval tv_after;
+	gettimeofday(&tv_after, &tz);
+	
+	double lat = timeval_subtract(tv_after, tv_tarrival);
+	//for heartbeat tuple case, we only measure latency from the busy data tuple stream
+	if (!hb_tuple_testing || (strcmp(in->name, "a131_179_64_25_8868371") == 0)) {
+	  mant_testing_total_lat_sec += lat;
+	  mant_testing_total_count++;
+	  
+	  //printf("latency for tuple is %f\n", lat); fflush(stdout);
+	  if (querySchdl::verbose) cout << "latency for tuple is " << lat << endl;
+	}
+      }
+      
+      in->pop();
+      if (querySchdl::verbose) cout << "pop tuple inside union stmt: " << name << endl;
+    } else {
+      return s_success;
+    }
+  }
+  
+  } //end while
+  return s_success;  
+
+  //end if process more than one tuple
+  } 
+}
+
+//returns 0 and set the corresponding MANT value, or return -1 if no MANT can be computed yet.
+//int utStmt::getOutMant(timestamp* mantval) 
+//{  
+//}
+  
+utlStmt::utlStmt(char *name, /*buffer* i,*/ buffer* o, bool sub_stmt, bool mantOp)
+{
+  type = stmt_tl_union;
+  strcpy(this->name, name);
+  in = NULL;
+  out = o;
+  this->inBufName[0] = '\0';
+  strcpy(this->outBufName, o->name);  
+  this->sub_stmt = sub_stmt;  
+  this->mantOp = mantOp;
+  this->last_popped = NULL;  
+}
+
+utlStmt::~utlStmt() 
+{  
+}
+
+
+//if some buffer is not empty, it is the one that I just reached either from backtrack or scheduling (as no tuple will be leftover in this operator)
+//we process it, set it to last_popped.
+//if all empty, and last_popped NOT NULL, we backtrack on last_popped, and set last_popped to NULL.
+//(so if we produce on this backtrack, we would set last_popped to it again)
+//if all empty, and last_popped is NULL, we have backtracked once on "in" with no fruit,
+//backtrack to the next buffer of last backtrack (which is "in") in scanning order, keep last_popped as NULL
+stmt_rc utlStmt::exe_set_in() 
+{
+  if (querySchdl::verbose) cout << "enter exe of timeless union stmt " << name << endl;
+  
+  struct timeval tv1;
+  cDBT d(MAX_STR_LEN, &tv1);
+
+  bool foundNonEmpty = false;
+  bool foundIn = false;
+  buffer* nextBackCandidate = NULL;
+  
+  if (last_popped == NULL) {
+    //we have backtracked on "in", directly check it first without looping to save cost
+    if (in != NULL && !in->empty()) {
+      foundNonEmpty = true;
+      last_popped = in;
+    }
+  }
+  
+  if (!foundNonEmpty) {
+    //I have to loop
+    for (list<buffer*>::iterator itr = union_bufs.begin(); itr != union_bufs.end(); itr++) {
+      if (!(*itr)->empty()) {
+	in = *itr;
+	last_popped = *itr;
+	foundNonEmpty = true;
+	break;
+      } else if (!foundIn && in != NULL && in == *itr) {
+	foundIn = true;
+      } else if (foundIn && nextBackCandidate == NULL) {
+	//we found it in the last round
+	//exception to this is if "in" happen to be the last one in scanning sequence, which will make begin() as the candidate
+	nextBackCandidate = *itr;
+      }
+    }
+  }
+
+  if (foundNonEmpty) {
+    //process the tuple
+    in->get(&d);
+    if (querySchdl::verbose) {
+      cout << "tuple to use in timeless union: ";
+      d.print();
+    }
+
+    if (out == 0) {
+      if (querySchdl::verbose) cout << "out buffer is null in statememt " << name << endl;
+      return s_failure;
+    } else {
+      if (querySchdl::verbose) cout << "out buffer is " << out->name << endl;
+      out->put(&d);
+      if (querySchdl::verbose) cout << "stmt executed: " << name << endl;
+      return s_success;
+    }
+  } else {
+    //all buffer empty, backtrack
+    if (querySchdl::verbose) cout << "timeless union, all buffer empty, will backtrack." << endl;    
+    if (last_popped != NULL) {
+      //backtrack on last_popped, and set it to NULL
+      in = last_popped;
+      last_popped = NULL;
+    } else {
+      //backtrack to the next buffer of "in"
+      if (nextBackCandidate != NULL) {
+	in = nextBackCandidate;
+      } else {
+	in = *(union_bufs.begin());
+      }
+      last_popped = NULL;      
+    }
+    return s_no_input;    
+  }  
+}
+
+/*
+stmt_rc utlStmt::exe_set_in() 
+{
+  if (querySchdl::verbose) cout << "enter exe of timeless union stmt " << name << endl;
+  
+  struct timeval tv1;
+  cDBT d(MAX_STR_LEN, &tv1);
+  
+  list<buffer*>::iterator itr = union_bufs.begin();
+  list<buffer*>::iterator itr2 = 0;
+  bool in_found = false;
+
+  //if all buffers are empty, then retract, otherwise, process a tuple
+  //to ensure fairness, start actual checking from the buffer next in the list
+  //of the previously used buffer (which was set as "in" for popping)
+  while (itr != itr2) {
+    if (in == 0) {
+      if (itr2 == 0) itr2 =union_bufs.begin();
+    } else if (!in_found) {
+      //loop until I see the buffer that was last popped or retracked on
+      if ((*itr) == in) {
+	itr2 = itr;
+	in_found = true;
+      } else {
+	itr++;
+	continue;
+      }
+    }
+
+    //now I am seeing the first buffer to check
+    if ((*itr)->empty()) {
+      itr++;
+      if (itr == union_bufs.end()) {
+	itr = union_bufs.begin();
+      }
+      continue;
+    } else {
+      //at least one buffer is not empty, get the tuple from it
+      (*itr)->get(&d);
+      if (querySchdl::verbose) {
+	cout << "tuple to use in timeless union: ";
+	d.print();
+      }
+
+      if (out == 0) {
+	if (querySchdl::verbose) cout << "out buffer is null in statememt " << name << endl;
+	return s_failure;
+      } else {
+	if (querySchdl::verbose) cout << "out buffer is " << out->name << endl;
+	out->put(&d);
+	if (querySchdl::verbose) cout << "stmt executed: " << name << endl;
+	in = (*itr);  //singal to pop this buffer to the calling function
+	return s_success;
+      }
+    }
+  }
+
+  if (querySchdl::verbose) cout << "timeless union, all buffer empty, will backtrack." << endl;
+  in = (*itr2);
+  return s_no_input;
+}
+*/
+
+//jStmt::jStmt() 
+//{
+//  type = stmt_join;
+//}
+
+jStmt::jStmt(char *name, buffer* i, buffer* o, bool sub_stmt, bool mantOp)
+{
+  type = stmt_join;
+  strcpy(this->name, name);
+  in = i;
+  out = o;
+  strcpy(this->inBufName, i->name);  
+  strcpy(this->outBufName, o->name);  
+  this->sub_stmt = sub_stmt;
+  back_buf = NULL;
+  this->mantOp = mantOp;  
+}
+
+jStmt::~jStmt() 
+{  
+}
+
+/* inlined
+stmt_rc jStmt::exe(int freeVar) 
+{
+   back_buf = NULL;
+   return exe_set_backbuf(freeVar);
+}
+*/
+
+stmt_rc jStmt::exe_set_backbuf(int freeVar) 
+{
+  if (querySchdl::verbose) cout << "enter exe of join stmt " << name << endl;
+
+  //only to free common state
+  if (freeVar == 1) {
+    if (func) {
+      if (querySchdl::verbose) cout << "execute stmt: " << name << endl;    
+      return (stmt_rc) ((*func)(bufferMngr::getInstance(), freeVar, back_buf, getInMemTables()));
+    } else {
+      cerr<<"Warning: stmt not ready"<<endl;
+      return s_failure;
+    }
+  }
+
+  //here freeVar = 0, normal execution
+  //if in buffer is empty, set back_buf to in, and return no-input. Also set state of statement to be empty.
+  //Otherwise, let the join function to decide.
+  if (in->empty()) {
+    back_buf = in;
+    this->empty = true;
+    
+    return s_no_input;
+  } else {
+    stmt_rc rc;
+    
+    if (func) {
+      if (querySchdl::verbose) cout << "execute stmt: " << name << endl;    
+      rc = (stmt_rc) ((*func)(bufferMngr::getInstance(), freeVar, back_buf, getInMemTables()));
+
+      //if result is s_no_input, then tuple can not be processed. Since I know by here that the input buffer is not empty, the minimum of MANT on all window buffers and the timestamp of the first tuple on the stream buffer is the output MANT
+      //if result is s_no_output or s_success, the first tuple on the stream buffer is processed. Then we use the minimum of MANT on all window buffers and the timestamp of the SECOND tuple on the stream buffer as the output MANT
+      //at this point, not clear how MANT on window buffer should be handled - who does it.
+      
+    } else {
+      cerr<<"Warning: stmt not ready"<<endl;
+      return s_failure;
+    }
+    
+    return rc;
+  }
+}
+
+
+//returns 0 and set the corresponding MANT value, or return -1 if no MANT can be computed yet.
+//int jStmt::getOutMant(timestamp* mantval) 
+//{  
+//}
+
+slideStmt::slideStmt(char *name, buffer* i, buffer* o, bool sub_stmt, bool mantOp)
+{
+  type = stmt_normal;
+  strcpy(this->name, name);
+  in = i;
+  out = o;
+  strcpy(this->inBufName, i->name);  
+  strcpy(this->outBufName, o->name);  
+  this->sub_stmt = sub_stmt;
+  this->mantOp = mantOp;
+}
+
+slideStmt::~slideStmt() 
+{  
+}
+
+//!!!!!!!!!!!this function still needs to be modified
+stmt_rc slideStmt::exe(int freeVar) 
+{
+  if (querySchdl::verbose) cout << "enter exe of slide stmt " << name << endl;
+  
+  if (func) {
+    if (querySchdl::verbose) cout << "execute slide stmt: " << name << endl;    
+    stmt_rc rc = (stmt_rc) ((*func)(bufferMngr::getInstance(), freeVar, NULL, getInMemTables()));
+    if (querySchdl::verbose) cout << "finish slide stmt, return code " << (int) rc << endl;    
+    return rc;
+  } else {
+    cerr<<"Warning: stmt not ready"<<endl;
+    return s_failure;
+  }
+}
+ 
+}

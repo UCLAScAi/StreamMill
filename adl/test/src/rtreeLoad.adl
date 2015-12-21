@@ -1,0 +1,6 @@
+table salary4(id int, salary int, tstart int, tend  int)
+rtree(tstart,tend);
+
+load from 'src/salary.data.100' into salary4;
+
+select id,salary,tstart,tend from salary4;

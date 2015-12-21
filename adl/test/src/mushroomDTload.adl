@@ -1,0 +1,319 @@
+table ts
+ (
+ seqno int,
+ weight int,
+ c char(1),
+ capshape  char(1),
+ capsurface char(1),
+ capcolour char(1),
+ bruise char(1),
+ odor char(1),
+ attchmnt char(1),
+ spacing char(1),
+ size char(1),
+ colour char(1),
+ shape char(1),
+ root char(1),
+ sAbv char(1),
+ sBelw char(1),
+ cAbv char(1),
+ cBelw char(1),
+ vType char(1),
+ vColour char(1),
+ rNumber char(1),
+ rType char(1),
+ sColour char(1),
+ pop char(1),
+ habitat char(1) );
+ 
+/* table ns
+ (
+ seqno int,
+ weight int,
+ c char(1),
+ capshape  char(1),
+ capsurface char(1),
+ capcolour char(1),
+ bruise char(1),
+ odor char(1),
+ attchmnt char(1),
+ spacing char(1),
+ size char(1),
+ colour char(1),
+ shape char(1),
+ root char(1),
+ sAbv char(1),
+ sBelw char(1),
+ cAbv char(1),
+ cBelw char(1),
+ vType char(1),
+ vColour char(1),
+ rNumber char(1),
+ rType char(1),
+ sColour char(1),
+ pop char(1),
+ habitat char(1) ); */
+ 
+table seq (seqno int);
+table decisiontree ( seqno int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+table costresult (id int, leaf real, inter real);
+
+aggregate dissemble(seqno int, yorn char(1), v1 char(1), v2 char(1), v3 char(1), v4 char(1), 
+v5 char(1), v6 char(1), v7 char(1), v8 char(1), 
+v9 char(1), v10 char(1), v11 char(1), v12 char(1), 
+v13 char(1), v14 char(1), v15 char(1), v16 char(1), 
+v17 char(1), v18 char(1), v19 char(1), v20 char(1), 
+v21 char(1), v22 char(1) ) : (recid int, col int, val char(1), c char(1))
+ {
+ 	initialize:
+ 	iterate:
+ 	{
+ 		insert into return
+                 values (seqno, 1,v1, yorn), (seqno, 2,v2,yorn), (seqno, 3,v3,yorn), (seqno, 4,v4,yorn),
+                 (seqno, 5,v5, yorn), (seqno, 6,v6,yorn), (seqno, 7,v7,yorn), (seqno, 8,v8,yorn),
+                 (seqno, 9,v9, yorn), (seqno, 10,v10,yorn), (seqno, 11,v11,yorn), (seqno, 12,v12,yorn),
+                 (seqno, 13,v13, yorn), (seqno, 14,v14,yorn), (seqno, 15,v15,yorn), (seqno, 16,v16,yorn),
+                 (seqno, 17,v17, yorn), (seqno, 18,v18,yorn), (seqno, 19,v19,yorn), (seqno, 20,v20,yorn),
+                 (seqno, 21,v21, yorn), (seqno, 22,v22,yorn);
+        }
+ };
+
+AGGREGATE minpointvalue(iCol int, iValue real) : (point int, value real)
+ {
+     TABLE tmp(col int, value real);
+     INITIALIZE:
+     {
+ 	INSERT INTO tmp VALUES(iCol, iValue);
+     }
+     ITERATE:
+     {
+ 	UPDATE tmp SET col=iCol, value=iValue WHERE value > iValue;	
+     }
+     TERMINATE:
+     {
+ 	insert into return SELECT col, value FROM tmp;
+     }		     
+ };
+ 
+ aggregate mcount() : int
+  {
+    table tmp(i int);
+    initialize :
+     {
+ 	insert into tmp values(1); 
+ 	insert into return values(1);
+     }
+     iterate :
+     {
+ 	update tmp set i=i+1;
+ 	insert into return select i from tmp;
+    }
+ };
+
+
+AGGREGATE classify (iRecId int, iCol int,   iValue char(1), iYorN char(1), parent int, pval char(1)   ) : int
+    {
+ 	TABLE treenodes(RecId int, Col int, Val char(1), YorN char(1));
+        TABLE summary(Col int, Value char(1), Yc real, Nc real) btree (Col, Value);
+        TABLE mincol(Col int, MinGini real);
+	TABLE ginitable(Col int, Gini real);
+	TABLE num (number int, yorn char(1));
+	TABLE parentinfo (par int, pvalue char(1)) as values(0, '-');
+	
+	INITIALIZE: 
+	ITERATE: 
+	{ 
+		     INSERT INTO treenodes VALUES (iRecId,  iCol, iValue, iYorN);
+		     update parentinfo set par=parent;
+		     update parentinfo set pvalue=pval;
+		     
+		
+ 		     UPDATE summary 
+ 		     	SET Yc=Yc+1 WHERE Col=iCol AND Value=iValue AND iYorN='e';
+ 		     UPDATE summary 
+ 		     	SET Nc=Nc+1 WHERE SQLCODE=0 AND Col=iCol AND Value=iValue AND iYorN='p';
+ 		     
+ 		     
+ 		     INSERT INTO summary SELECT iCol, iValue, 1, 0 
+                     			 WHERE SQLCODE=0 AND iYorN='e' AND not exists
+                     			 (select s.Col, s.Value from summary s where
+                     			  s.Col=iCol AND s.Value=iValue); 
+                     INSERT INTO summary SELECT iCol, iValue, 0, 1 
+                     			 WHERE SQLCODE=0 AND iYorN='p' AND not exists
+                     			 (select s.Col, s.Value from summary s where
+                     			  s.Col=iCol AND s.Value=iValue); 
+        }
+ 	TERMINATE: 
+ 	{
+		INSERT INTO ginitable SELECT Col, sum((Yc*Nc)/(Yc+Nc))/sum(Yc+Nc)  
+                		      FROM summary 
+				      GROUP BY Col 
+				      HAVING count(Value)>1 AND sum(Yc)>0 AND sum(Nc)>0;	
+
+		INSERT INTO mincol SELECT minpointvalue(Col, Gini) FROM ginitable;
+                
+                insert into num select count(RecId), YorN
+	     	from treenodes
+	     	group by YorN;
+		
+		update seq set seqno=seqno+1;
+		
+		INSERT INTO decisiontree  SELECT  s.seqno,  m.Col, n.yorn, par , pvalue, n.number/22, n2.number/22
+	     	FROM mincol as m, num as n, num as n2, parentinfo, seq as s
+	     	where n.number=(select max(nn.number) from num nn) AND n.yorn<>n2.yorn;
+
+
+	
+		INSERT INTO decisiontree  SELECT   s.seqno,  0, n.yorn, par, pvalue, n.number/22, 0
+	     	FROM 	num as n, parentinfo, seq as s
+	     	where SQLCODE=0 AND n.number=(select max(nn.number) from num nn);
+	     	      
+	
+	     	
+		/* two cases for the previous SQLCODE to be 0, one is only 1 class left (Y or N), the other is 
+		   mincol table is empty, which means we have considered all columns, then returns class which 
+  		   has more count than the other one */
+
+		
+
+
+	    	SELECT classify(t.RecId,  t.Col,  t.Val, t.YorN, s.seqno, m.Value ) 
+	     	FROM treenodes as t, (SELECT tt.RecId as RecId, tt.Val as Value, tt.Col as Col  FROM treenodes tt, mincol mm                       				      
+				      WHERE tt.Col=mm.Col ) as m, seq as s
+		WHERE t.RecId = m.RecId	
+	     	GROUP BY  m.Value;         }
+  } ;
+
+aggregate lgg (num real):real
+ {
+ initialize:
+ iterate:
+   {
+     insert into return values (num*num) ;
+   }
+ };
+
+aggregate transfer (num real):real
+{
+ initialize:
+ iterate:
+  {
+    insert into return values (num);
+  }
+};
+
+aggregate computecost (currentid int):real
+{
+
+table rec (id int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+table leafcost(c real);
+table newcost(c real);
+table cost(c real);
+table children (id int);
+table tmp (c real);
+table realnum (en real, logen real, pn real, logpn real);
+table pai (p real) as values (3.141593);
+
+initialize:
+iterate:
+  { 
+    insert into rec select d.seqno, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber from decisiontree d where d.seqno=currentid;  
+    
+    insert into leafcost select 1+lgg(20)+lgg(10) from rec where pnumber=0 ;
+ 
+    insert into realnum select transfer(enumber), lgg(enumber+pnumber)-lgg(enumber),  
+                               transfer(pnumber), lgg(enumber+pnumber)-lgg(pnumber)  
+                        from rec where pnumber<>0;
+ 
+    
+    insert into leafcost select 1+lgg(20)+lgg(10)+lgg((en+pn)/2)/2+lgg(p)
+    from realnum, pai where pn<>0 ;
+ 
+    insert into leafcost select en*logen+pn*logpn from realnum where pn<>0;
+    insert into cost select sum(l.c) from leafcost l;
+ 
+    insert into tmp values (0);
+    insert into children select d.seqno from decisiontree d where d.parent=currentid;
+    
+    insert into tmp select computecost(id) from children;
+    
+    insert into newcost select 1+lgg(20)+lgg(10)+lgg(22)+sum(t.c) from tmp t;
+    
+/*    insert into costresult 
+      select currentid, cost.c, newcost.c from cost, newcost where currentid=1;*/
+      
+    insert into cost select n.c from newcost n 
+                     where exists (select co.c from cost co where co.c>n.c);
+ 
+    delete from rec;
+ 
+    insert into rec select  d.seqno, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                    from decisiontree d 
+                    where not exists (select c.id from children c where c.id=d.seqno);
+ 
+    delete from decisiontree;
+ 
+    insert into decisiontree select d.id, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                             from rec d;
+ /*
+  delete from decisiontree d 
+    where exists (select c.id from children c where c.id=d.seqno) ;
+    and   exists (select t.n from (select count(c) as n from cost) as t where t.n=1); */
+    
+    
+    insert into return select min(c) from cost;    
+    
+    delete from rec;
+    delete from leafcost;
+    delete from newcost;
+    delete from cost;
+    delete from children;
+    delete from tmp;
+    delete from realnum;
+    
+    
+  }
+};
+
+
+
+load from atlas/axl/test/src/smallts.dat into ts;
+/*load from atlas/axl/test/src/smallns.dat into ts;*/
+
+insert into seq values (0); 
+ 
+
+ select classify (t.recid,  t.col, t.val, t.yorn, 0, '-'  )
+ from (select  dissemble(seqno, c ,
+capshape  ,
+capsurface ,
+capcolour ,
+bruise ,
+odor ,
+attchmnt ,
+spacing ,
+size ,
+colour ,
+shape ,
+root ,
+sAbv ,
+sBelw ,
+cAbv ,
+cBelw ,
+vType ,
+vColour ,
+rNumber ,
+rType ,
+sColour ,
+pop ,
+habitat )
+  as (recid, col, val, yorn) 
+from ts) as t;
+
+insert into stdout select  seqno, col, yorn, parent, pvalue, enumber, pnumber from decisiontree; 
+
+select computecost(1);
+
+insert into stdout select  seqno, col, yorn, parent, pvalue, enumber, pnumber from decisiontree; 
+
+/* insert into stdout select id, leaf, inter from costresult; */

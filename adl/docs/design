@@ -1,0 +1,48 @@
+aggr f(x,y):t
+{
+    decs
+    init  : exp
+    multi : exp
+    terminate: exp
+}
+
+call()
+
+select a, b, f(x,y)
+from g
+group by a,b
+
+********************************************************************************
+
+typedef struct {
+  decs;
+} f_stack_t;
+
+f_stack_t *f_stack;
+
+call(stack)
+{
+    if (stack->stage == 
+
+    gettuple(g)=>(a,b,x,y,result);
+
+    if (result==TERMINATE) {
+	foreach hash(0,_,_)=>(stack,a,b);
+	    f(0,TERMINATE,stack,a,b)=>r;
+	return r;	    
+    } else {
+        hash(0,a,b)=>stack;	
+        f(0,0,stack,a,b)=>r;
+    }
+    return(a,b,r);	
+}
+
+f(id, TERMINATE, stack, x, y)
+{
+    if (TERMINATE)
+	terminate_exp(id) => r;
+    else if (!stack) init_exp(id) => stack;
+    else multi_exp(id) => stack;
+    return r; 
+}
+

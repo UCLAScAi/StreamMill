@@ -1,0 +1,12 @@
+insert into from14 select a_time, from_ip, to_ip, s_port, d_port, num_bytes, current_time
+from tcp2 where from_ip = 14;
+
+insert into from17 select a_time, from_ip, to_ip, s_port, d_port, num_bytes, current_time
+from tcp1 where from_ip = 17;
+
+insert into from87 select a_time, from_ip, to_ip, s_port, d_port, num_bytes, current_time
+from tcp3 where from_ip = 87;
+
+select a_time, from_ip, current_time from from14;
+select a_time, from_ip, current_time from from17;
+select a_time, from_ip, current_time from from87;

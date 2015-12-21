@@ -1,0 +1,35 @@
+Aggregate smm$evaluateClassifier (idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+ table classes(cls int, p real) memory;
+
+ Aggregate updateP(clsi int, coli int, vali int):(o real) {
+   initialize: iterate: {
+     update classes set p = p * (select cnt from colStat where col = coli and val = vali and classLbl = clsi)/(select cnt from classStat where classLbl = clsi)          where exists (select cnt from colStat where col = coli and val = vali and classLbl = clsi) and cls = clsi;
+
+     /* if this combo of coli, vali, classLbli is not seen before then
+        not clear what to do? (options)
+        - set p = 0*
+        - devide p by total number of classes
+     */      update classes set p = 0 where cls = clsi and SQLCODE <> 0;
+   }
+ };
+
+ Aggregate mymax(a real):(b real) {
+   table t(m real) memory;    initialize: {
+     insert into t values(a);
+   }    iterate: {
+     update t set m = a where m < a;
+   }
+   terminate: {
+     insert into return select m from t;
+   }
+ }
+
+ initialize: iterate: {       insert into classes select distinct classLbl, 0 from classStat where coli = 1;    update classes set p = (select cnt from classStat where classLbl = classes.cls)
+                               /(select sum(cnt) from classStat)
+     where coli = 1;
+   select updateP(cls, coli, vali)    from classes;
+   insert into return select idi, classLbli, cls from classes where coli = numColsi and p = (select maxr(p) from classes) and p > 0;    insert into return values(idi, classLbli, -1) where coli = numColsi and SQLCODE <> 0;
+
+   delete from classes where coli = numColsi;
+ }
+};

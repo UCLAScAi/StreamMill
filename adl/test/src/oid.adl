@@ -1,0 +1,12 @@
+TABLE trie(itno int, name char(10), father ref(trie)) memory;
+
+insert into trie values (1024, 'tom', null);
+insert into trie select 2048, 'mary', trie.OID from trie;
+insert into trie select 4096, 'john', trie.OID from trie where name='mary';
+
+/* The following example demonstrates "ref->OID" is the same thing as "ref" */
+
+insert into stdout 
+select name, father->name, father->father->name  from trie 
+where father <> null and father->father<>null;
+

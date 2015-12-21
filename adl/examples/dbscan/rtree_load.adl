@@ -1,0 +1,8 @@
+table temp(x int, y int, name char(100));
+table setofpoints(x int, y int, name char(100)) rtree(x,y);
+
+	load from 'index.input' into temp;
+
+	insert into setofpoints
+	select x, y, name from temp;	
+

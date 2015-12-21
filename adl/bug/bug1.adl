@@ -1,0 +1,82 @@
+/*  
+DBSCAN implementation on ATLaS
+Richard Luo
+UCLARichard@hotmail.com
+2002/6
+*/
+        table setofpoints (x int, y int, ClId int);
+        /* meaning of ClId: -1: unclassified, 0: noise, 1,2,3...: cluster*/
+
+        table nextid(ClusterId int);
+        table seeds (sx int, sy int);
+
+
+
+
+aggregate regionQuery(qx int, qy int, eps real):(r1 int,r2 int)
+{
+ INITIALIZE: ITERATE:
+   {	
+	INSERT INTO return select x,y from setofpoints where (x-qx)*(x-qx) + (y - qy) * (y - qy) <= eps * eps;
+}
+}
+
+aggregate changeClId (sx int, sy int, ClusterId int, Eps real, MinPts
+int):int
+{
+ table result (rx int, ry int);
+ table resultsize (size int);
+ initialize:
+ iterate:
+   {
+    insert into result select regionQuery(sx, sy, Eps);
+    update resultsize 
+	set size=(select count(rx) from result);/*  ???  */
+    insert into seeds select rx, ry from result
+         where (select size from resultsize)>=MinPts
+         and (select ClId from setofpoints where x=result.rx and y=result.ry)=-1;
+    update setofpoints set ClId=ClusterId where SQLCODE=1
+         and exists (select rx,ry from result) and (ClId=-1 or ClId=0);
+    delete from seeds where seeds.sx=sx and seeds.sy=sy;
+   }
+}
+
+AGGREGATE ExpandCluster (x int, y int, ClusterId int, Eps real, MinPts
+int):int
+{
+        table seedssize (size int);
+        initialize:
+        iterate:
+         {
+          insert into seeds select regionQuery (x, y, Eps);
+          insert into seedssize select count(sx) from seeds;
+	  update setofpoints set ClId=0
+		where exists (select sx from seeds where sx=x and sy=y)
+			and (select size from seedssize)<MinPts;
+          update setofpoints set ClId=ClusterId
+                 where exists (select sx from seeds where sx=x and sy=y)
+			and SQLCODE=0;
+          update nextid set ClusterId=ClusterId+1 where SQLCODE=1;
+          delete from seeds where sx=x and sy=y and SQLCODE=1;
+          select changeClId (sx, sy, ClusterId, Eps, MinPts) from seeds
+		where SQLCODE=1;
+         }
+}
+
+
+
+
+
+
+
+        insert into nextid values (1);
+
+	insert into setofpoints values (1,1,-1), (1,3,-1), (2,2,-1), (3,1,-1), (3,2,-1), (3,3,-1),(4,2,-1);
+
+        select ExpandCluster(x, y, ClusterId, 2, 3)
+        from setofpoints, nextid
+        where ClId= -1 ;
+
+	insert into stdout
+	select x,y,ClId
+	from setofpoints;

@@ -1,0 +1,114 @@
+.\"	Quick reference list for the DBUG package, from dbug.p, pp 15-19
+.\"	First group is of interest to programmers, second to users.
+.\"
+.pl 1
+.ll 80
+.lt 80
+
+.ti -5
+\fBDBUG_OFF\fP
+.br
+if defined during compilation, removes all debugging from the program
+
+.ti -5
+\fBDBUG_ENTER\fP(char *\fIfname\fP)
+.br
+marks entry to the function \fIfname\fP
+
+.ti -5
+\fBDBUG_RETURN\fP(int \fIvalue\fP)
+.ti -5
+\fBDBUG_VOID_RETURN\fP
+.br
+marks the return from the current function
+
+.ti -5
+\fBDBUG_PROCESS\fP(char *\fIpname\fP)
+.br
+marks the beginning of the process \fIpname\fP
+
+.ti -5
+\fBDBUG_PUSH\fP(char *\fIstate\fP)
+.br
+sets up a new debugging state (see \fIDebugging States\fP below)
+
+.ti -5
+\fBDBUG_POP\fP(void)
+.br
+restores the previous debugging state
+
+.ti -5
+\fBDBUG_FILE\fP
+.br
+a file pointer which may be used to add output to the debugging trace
+
+.ti -5
+\fBDBUG_EXECUTE\fP(char *\fIkey\fP, \fIC_code\fP)
+.br
+if debugging is active for \fIkey\fP, executes the \fIC_code\fP
+
+.ti -5
+\fBDBUG_PRINT\fP(char *\fIformat\fP, \fIarg ...\fP)
+.br
+if debugging is active for \fIkey\fP,
+executes \fBfprintf\fP to \fBDBUG_FILE\fP
+using the \fIformat\fP and \fIarg\fPs specified
+
+.ti -5
+\fBDBUG_SETJMP\fP(\fIsetjmp_args\fP)
+.ti -5
+\fBDBUG_LONGJMP\fP(\fIlongjmp_args\fP)
+.br
+replace \fBsetjmp\fP() and \fBlongjmp\fP(),
+allowing the debugging state to be restored properly
+
+
+
+.ti -5
+\fBd\fP[,\fIkey\fP...]
+.br
+enable debugging for the \fIkey\fPs specified
+
+.ti -5
+\fBF\fP[,\fItime\fP]
+.br
+delay for \fItime\fP tenths of a second after each output
+
+.ti -5
+\fBf\fP[,\fIfunction\fP ...]
+.br
+limit debugging to the specified \fIfunction\fPs
+
+.ti -5
+\fBF\fP	mark debugger output with the source file name
+
+.ti -5
+\fBL\fP	mark debugger output with the source file line number
+
+.ti -5
+\fBn\fP	mark debugger output with the function nesting depth
+
+.ti -5
+\fBN\fP	number debugger output lines sequentially
+
+.ti -5
+\fBo\fP[,\fIfile\fP]
+.br
+write debugger output to \fIfile\fP
+
+.ti -5
+\fBp\fP[,\fIprocesses\fP ...]
+.br
+limit debugging to the specified \fIprocess\fPes
+
+.ti -5
+\fBP\fP	mark debugger output with the process name
+
+.ti -5
+\fBr\fP	reset indentation level to zero
+
+.ti -5
+\fBt\fP[,N]
+.br
+enable function control flow tracing
+to a maximum depth of \fIN\fP

@@ -1,0 +1,8 @@
+table memo(j int, Sum real) memory;
+
+insert into memo values (1, 10),
+			(2, 20),	
+			(3, 100);
+
+insert into stdout
+select j, Sum+(select m.Sum FROM memo m where j=3) from memo;

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+        echo "USAGE: runtest filename"
+        exit
+fi
+
+adlc -f adlctmp.cc $1.adl
+adlcc adlctmp.cc
+
+./adlctmp 
+

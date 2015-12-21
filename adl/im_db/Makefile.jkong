@@ -1,0 +1,40 @@
+
+CC=gcc
+CDEBUGFLAGS=-g #-DTEST
+CFLAGS=${CDEBUGFLAGS}
+LDFLAGS=
+
+libimdb.a: im_rel.o im_cursor.o im_debug.o im_db_env_method.o im_db_err.o \
+	hash-arbitrary.o mylib.o
+	rm -f $@
+	ar q $@ im_rel.o im_cursor.o im_debug.o im_db_env_method.o im_db_err.o \
+	hash-arbitrary.o mylib.o
+
+test: im_rel.o im_cursor.o im_debug.o im_db_env_method.o im_db_err.o \
+	hash-arbitrary.o mylib.o
+	${CC} ${CFLAGS} -o test \
+	im_rel.o im_cursor.o im_debug.o im_db_env_method.o im_db_err.o \
+	hash-arbitrary.o mylib.o
+
+manual-html:
+	cd manual; latex2html -local_icons document
+
+testhash: hash.o mylib.o
+	${CC} -o $@ hash.o mylib.o
+
+testmyhash: myhash.o mylib.o
+	${CC} -o $@ myhash.o mylib.o
+
+wc:
+	wc im_db.c mylib.c debug.c datatype.c
+
+clean:
+	rm *.o libimdb.a test manual/*.ps manual/*.dvi manual/*.log manual/*.aux manual/*.toc
+
+im_rel.o: im_rel.c im_db.h
+im_cursor.o: im_cursor.c im_db.h
+im_debug.o: im_debug.c im_db.h
+im_db_env_method.o: im_db_env_method.c im_db.h
+im_db_err.o: im_db_err.c im_db.h
+hash-arbitrary.o: hash-arbitrary.c
+mylib.o: mylib.c im_db.h

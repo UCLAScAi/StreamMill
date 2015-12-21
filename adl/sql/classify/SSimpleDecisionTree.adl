@@ -1,0 +1,497 @@
+table abc(a int, b int, c int) memory;
+table mush(id int, capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int,
+           classLbl int) memory;
+table mush1(id int, capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int,
+           classLbl int) memory;
+
+function dissemble (capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int,
+           classLbl int) : (col int, val int, classLbl int) {
+  insert into return values (1, capShape, classLbl), (2, capSurface, classLbl),
+              (3, capColor, classLbl), (4, bruises, classLbl),
+              (5, odor, classLbl), (6, gillAttach, classLbl),
+              (7, gillSpa, classLbl), (8, gillSize, classLbl),
+              (9, gillColor, classLbl), (10, stalkShape, classLbl),
+              (11, stalkRoot, classLbl), (12, stalkSAR, classLbl),
+              (13, stalkSBR, classLbl), (14, stalkCAR, classLbl),
+              (15, stalkCBR, classLbl), (16, veilType, classLbl),
+              (17, veilColor, classLbl), (18, ringNumber, classLbl),
+              (19, ringType, classLbl), (20, sporePC, classLbl),
+              (21, pop, classLbl), (22, hab, classLbl);
+};
+
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int)
+{
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl);
+};
+
+CAggregate learnClassifier(idi int, coli int, vali int, classLbli int, numColsi int, rrate int):(a int) {
+  @
+    /* global c stuff here */
+    static int cnt = 0;
+    static int node = 0;
+    static hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >* colStat = new hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >;
+    struct tc {
+      int id;
+      int col;
+      int val;
+      int classLbl;
+    };
+    struct multAdd {
+      int col;
+      int mult;
+      int add;
+      bool mark;
+    };
+    struct edge {
+      int node;
+      int col;
+      int val;
+      int next;
+      bool nextAccept;
+    };
+    struct nd {
+      int node;
+      vector<edge*>* edges;
+    };
+    static vector<tc*>* current=NULL;
+    static hash_map<int, vector<tc*>*, hash<int> >* tuples = 
+                 new hash_map<int, vector<tc*>*, hash<int> >;
+    static hash_map<int, nd*, hash<int> >* dtree = new hash_map<int, nd*, hash<int> >;
+
+    int getEntropyOrder(hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> > *colStat) {
+      hash_map<int, multAdd*, hash<int> > *ce = new hash_map<int, multAdd*, hash<int> >;
+      int size=0, i;
+      tc* t;
+      multAdd* ma;
+
+      for(hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >::iterator it= colStat->begin();
+                   it!=colStat->end(); ++it) {
+        pair<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >* > pit(*it);
+        for(hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >::iterator iter = pit.second->begin(); iter!= pit.second->end(); ++iter) {
+          pair<int, hash_map<int, int, hash<int> >* >piter(*iter);
+          for(hash_map<int, int, hash<int> >::iterator itera = piter.second->begin(); itera!=piter.second->end(); ++itera) {
+            pair<int, int> pitera(*itera);
+            if(ce->operator[](pit.first)) {
+              ma = ce->operator[](pit.first);
+              ma->mult *= colStat->operator[](pit.first)->operator[](piter.first)->operator[](pitera.first);
+              ma->add += colStat->operator[](pit.first)->operator[](piter.first)->operator[](pitera.first);
+            }
+            else {
+              ma = (multAdd*)malloc(sizeof(multAdd));
+              ma->col = pit.first;
+              ma->mark = false;
+              ma->mult = colStat->operator[](pit.first)->operator[](piter.first)->operator[](pitera.first);
+              ma->add = colStat->operator[](pit.first)->operator[](piter.first)->operator[](pitera.first);
+              ce->operator[](pit.first) = ma;
+            }
+          }
+        }
+      }
+      /* now just need to sort based on mult/add and put in ret */
+      //just a simple sort cause only N values, where N is number of attrs, which is small
+      int minCol, j;
+      double minVal;
+        minCol = 0;
+        minVal = 100000000;
+        for(hash_map<int, multAdd*, hash<int> >::iterator it = ce->begin();
+              it != ce->end(); ++it) {
+          pair<int, multAdd*> p(*it);
+          ma = p.second;
+          //printf("here inner %d %f\n", p.first, ((double)ma->mult)/ma->add);
+          if(p.second->mark == false && ((double)ma->mult)/ma->add < minVal) {
+            minCol = p.first;
+            minVal = ((double)ma->mult)/ma->add;
+          }
+        }
+        //printf("at end %d %f\n", minCol, minVal);
+        ce->operator[](minCol)->mark = true;
+        return minCol;
+   }
+
+   int getProbClassLabel(hash_map<int, vector<tc*>*, hash<int> > *tuples,
+                     hash_map<int, int, hash<int> > *assignments) {
+     hash_map<int, int, hash<int> > soFar;
+     bool mt = true;
+     int max=0;
+     int maxVal=-1;
+
+     for(hash_map<int, vector<tc*>*, hash<int> >::iterator it= tuples->begin();
+                   it!=tuples->end(); ++it) {
+       pair<int, vector<tc*>*> p(*it);
+       mt = true;
+       for(hash_map<int, int, hash<int> >::iterator iter= assignments->begin();
+              iter!=assignments->end() && mt==true; ++iter) {
+         pair<int, int> pit(*iter);
+         //printf("counting matches %d %d %d\n", pit.second,pit.first,
+         //                 p.second->operator[](pit.first-1)->val);
+         
+         if(pit.second != p.second->operator[](pit.first-1)->val) {
+           mt = false;
+         }
+       }
+       if(mt && soFar[p.second->operator[](0)->classLbl]) {
+          soFar[p.second->operator[](0)->classLbl]++;
+       }
+       else if(mt) {
+          soFar[p.second->operator[](0)->classLbl]=1;
+       }
+     }
+     for(hash_map<int, int, hash<int> >::iterator iter= soFar.begin();
+           iter!=soFar.end(); iter++) {
+       pair<int, int> p(*iter);
+       //printf("here got probs %d %d\n", p.first+1, p.second);
+       if(p.second > max) {
+         maxVal = p.first;
+         max = p.second;
+       }
+     }
+     //printf("darn it, get nothing %d\n", soFar.size());
+     /*if(soFar.size() ==0) {
+       printf("Got zero for %d %d %d %d\n", assignments->operator[](1),
+               assignments->operator[](2), assignments->operator[](3),
+               assignments->operator[](4));
+     }*/
+     return maxVal;
+   }
+
+   int getClassLabel(hash_map<int, vector<tc*>*, hash<int> > *tuples,
+                     //hash_map<int, int, hash<int> > *assignments,
+                     int acol, int aval,
+                     hash_map<int, vector<tc*>*, hash<int> > *ctuples) {
+     int soFar = -1;
+     bool mt = true;
+
+     for(hash_map<int, vector<tc*>*, hash<int> >::iterator it= tuples->begin();
+                   it!=tuples->end(); ++it) {
+       //printf("iterate through tuples\n");
+       pair<int, vector<tc*>*> p(*it);
+       mt = true;
+       /*for(hash_map<int, int, hash<int> >::iterator iter= assignments->begin();
+              iter!=assignments->end() && mt==true; ++iter) {
+         pair<int, int> pit(*iter);
+         //printf("iterate through assigns %d %d\n", pit.second, pit.first);
+         if(pit.second != p.second->operator[](pit.first-1)->val) {
+           mt = false;
+         }
+       }*/
+       if(aval != p.second->operator[](acol-1)->val) {
+         mt = false;
+       }
+       if(mt && soFar != -1 && soFar != -2 
+             && soFar != p.second->operator[](0)->classLbl) {
+         soFar = -2;
+       }
+       else if(mt && soFar == -1) {
+         soFar = p.second->operator[](0)->classLbl;
+       }
+       if(mt) {
+         ctuples->operator[](p.first) = p.second;
+       }
+     }
+     //printf("returning %d\n", soFar);
+     if(soFar == -2)
+       return -1;
+     return soFar;
+   }
+
+   vector<int> *getDistVals(int col, hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >* colStat) {
+     vector<int>* dVals = new vector<int>;
+     hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >* valHash = colStat->operator[](col);
+     for(hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >::iterator it = valHash->begin(); it != valHash->end(); ++it) {
+       pair<int, hash_map<int, int, hash<int> >* > p(*it);
+       dVals->push_back(p.first);
+     }
+     return dVals;
+   }
+
+   void printDtree(hash_map<int, nd*, hash<int> > *tree) {
+     for(hash_map<int, nd*, hash<int> >::iterator iter = tree->begin(); 
+           iter!=tree->end(); ++iter) {
+       pair<int, nd*> p(*iter);
+       for(vector<edge*>::iterator it=p.second->edges->begin();
+             it != p.second->edges->end(); ++it) {
+         printf("Edge (nId %d, col %d, val %d, nnId %d, nnAcc %d)\n", 
+                 (*it)->node, (*it)->col, (*it)->val, (*it)->next,
+                 (*it)->nextAccept);
+	}
+     }
+   }
+
+   int getNextColToPart(hash_map<int, vector<tc*>*, hash<int> >* ctuples,
+                        hash_map<int, int, hash<int> >* assignments) {
+     //here simply create ccolStat with only remaining cols
+     // from the cTuples and then call getEntropyOrder with ccolStat
+     hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >* ccolStat = new hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >;
+
+     //printf("here %d\n", assignments->size());
+     int ccoli, cvali, cclassLbli;
+     for(hash_map<int, vector<tc*>*, hash<int> >::iterator it = ctuples->begin(); it!=ctuples->end(); ++it) {
+       pair<int, vector<tc*>*> p(*it);
+       int size = p.second->size();
+       for(int i = 0; i < size; i++) {
+         if(!assignments->operator[](i+1)) {
+           ccoli = p.second->operator[](i)->col;
+           cvali = p.second->operator[](i)->val;
+           cclassLbli = p.second->operator[](i)->classLbl;
+           
+           if(ccolStat->operator[](ccoli)) {
+             if(ccolStat->operator[](ccoli)->operator[](cvali)) {
+               if(ccolStat->operator[](ccoli)->operator[](cvali)->operator[](cclassLbli)) {
+                 ccolStat->operator[](ccoli)->operator[](cvali)->operator[](cclassLbli) += 1;
+               }
+               else {
+                 ccolStat->operator[](ccoli)->operator[](cvali)->operator[](cclassLbli) = 1;
+               }
+             }
+             else {
+               ccolStat->operator[](ccoli)->operator[](cvali) = new hash_map<int, int, hash<int> >;
+               ccolStat->operator[](ccoli)->operator[](cvali)->operator[](cclassLbli) = 1;
+             }
+           }
+           else {
+             ccolStat->operator[](ccoli) = new hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >;
+             ccolStat->operator[](ccoli)->operator[](cvali) = new hash_map<int, int, hash<int> >;
+             ccolStat->operator[](ccoli)->operator[](cvali)->operator[](cclassLbli) = 1;
+           }
+         }
+       }
+     }
+     //printf("1here %d\n", ccolStat->size());
+     if(ccolStat->size() == 0) {
+       return -1;
+     }
+     return getEntropyOrder(ccolStat);
+   }
+
+   void buildDecisionTree(hash_map<int, vector<tc*>*, hash<int> > *tuples, 
+                          int colToPartition, int colIndex,
+                          hash_map<int, nd*, hash<int> > *tree, int &nodeId,
+                          hash_map<int, int, hash<int> > *assignments,
+                          hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >* colStat,
+                          int numColsi) {
+     nd* n = (nd*)malloc(sizeof(nd));
+     n->node = nodeId;
+     n->edges = new vector<edge*>;
+     vector<int> *distVals = getDistVals(colToPartition, colStat);
+     //printf("here node %d, dist %d\n", nodeId, distVals->size());
+     int nextColToPart;
+
+     for(vector<int>::iterator it=distVals->begin(); it!=distVals->end(); ++it) {
+       assignments->operator[](colToPartition) = (*it);
+       //printf("assignment %d %d\n", colToPartition, (*it));
+       //create an edge here first
+       edge *e = (edge*)malloc(sizeof(edge));
+       e->node = n->node;
+       e->col = colToPartition;
+       e->val = (*it);
+       hash_map<int, vector<tc*>*, hash<int> > *ctuples
+                = new hash_map<int, vector<tc*>*, hash<int> >;
+       int clsLbl = getClassLabel(tuples, colToPartition, (*it), ctuples);
+       if(clsLbl == -1) {
+         if(colIndex+1 < numColsi) {
+           nodeId = nodeId + 1;
+           e->next = nodeId;
+           e->nextAccept = false;
+           //here figure out entropy on ctuples, ignore assignments
+       //printf("1assignment %d %d\n", colToPartition, (*it));
+           nextColToPart = getNextColToPart(ctuples, assignments);
+           if(nextColToPart == -1) {
+             e->next = -1;
+             e->nextAccept = true;
+           }
+           else {
+             //printf("2assignment %d %d\n", colToPartition, (*it));
+             buildDecisionTree(ctuples, nextColToPart, colIndex+1,
+                               tree, nodeId, assignments, colStat, numColsi);
+           }
+       //printf("3assignment %d %d\n", colToPartition, (*it));
+         }
+         else {
+           clsLbl = getProbClassLabel(tuples, assignments);
+           e->next = clsLbl;
+           e->nextAccept = true;
+         }  
+       }
+       else {
+         e->next = clsLbl;
+         e->nextAccept = true;
+       }
+       //printf("adding edge %d %d %d %d\n", e->node, e->col, e->val, e->next);
+       n->edges->push_back(e);
+       assignments->erase(colToPartition);
+       free(ctuples);
+     }
+     tree->operator[](n->node) = n;
+   }
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+        /* Random c code here -- init*/
+        if(coli == 1) {
+	  current = new vector<tc*>;
+        }
+        tc* t = (tc*)malloc(sizeof(tc));
+        t->id = idi;
+        t->col = coli;
+        t->val = vali;
+        t->classLbl = classLbli;
+        current->push_back(t);
+
+        if(coli == numColsi) {
+          cnt++;
+          tuples->operator[](cnt) = current;
+        }
+
+        if(colStat->operator[](coli)) {
+          if(colStat->operator[](coli)->operator[](vali)) {
+            if(colStat->operator[](coli)->operator[](vali)->operator[](classLbli)) {
+              colStat->operator[](coli)->operator[](vali)->operator[](classLbli) += 1;
+            }
+            else {
+              colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+            }
+          }
+          else {
+            colStat->operator[](coli)->operator[](vali) = new hash_map<int, int, hash<int> >;
+            colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+          }
+        }
+        else {
+          colStat->operator[](coli) = new hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >;
+          colStat->operator[](coli)->operator[](vali) = new hash_map<int, int, hash<int> >;
+          colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+        }
+        if(cnt == rrate) {
+          //compute entropy
+          int colToPart = getEntropyOrder(colStat); 
+          //printf("done computing entropy\n");
+          hash_map<int, int, hash<int> > *assignments = new hash_map<int, int, hash<int> >;
+          int nodeId=0;
+          //build tree recursively
+          buildDecisionTree(tuples, colToPart, 0, dtree, nodeId, assignments,colStat, numColsi);
+          printf("done building dtree\n");
+          printDtree(dtree);
+          cnt = 0;
+          node = 0;
+          tuples->clear();
+        }
+    @
+  }
+};
+
+
+CAggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  @
+    /* global c stuff here */
+    int classifyTuple(vector<tc*>* tup, hash_map<int, nd*, hash<int> >* dtree, int cnode) {
+      nd* curnode = dtree->operator[](cnode);
+      if(!curnode) {
+        printf("failure in classifyTuple component, wrong node id, craft in danger!!\n");
+        return -1;
+      }
+      int match = false;
+      vector<edge*>* edges = curnode->edges;
+      for(vector<edge*>::iterator it = edges->begin(); 
+                                   it!=edges->end() && !match; ++it) {
+        if((*it)->val == tup->operator[]((*it)->col-1)->val) {
+          match = true;
+          if((*it)->nextAccept) {
+            return (*it)->next;
+          }
+          else {
+            return classifyTuple(tup, dtree, (*it)->next);
+          }
+        }
+      }
+      if(!match)
+        return -1;
+    }
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+       /*hash_map<int, nd*, hash<int> >* dtree = new hash_map<int, nd*, hash<int> >; */
+        /*if(coli == 1) {
+	  current->clear();
+        }*/
+        if(coli > current->size()) {
+          printf("Houston we have a problem!!\n");
+          return;
+        }
+        tc* t = current->operator[](coli-1);
+        t->id = idi;
+        t->col = coli;
+        t->val = vali;
+        t->classLbl = classLbli;
+
+        if(coli == numColsi) {
+          int cls = classifyTuple(current, dtree, 0);
+          /* need to copy the return stuff from NaiveBayesian */
+          memset(&key, 0, sizeof(key));
+          memset(&data, 0, sizeof(data));
+          data.data = datadata;
+          key.data = keydata;
+          memcpy((char*)data.data+0, &idi, sizeof(int));
+          memcpy((char*)data.data+4, &classLbli, sizeof(int));
+          memcpy((char*)data.data+8, &cls, sizeof(int));
+          data.size = 12;
+          key.size = 0;
+          if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+            adlabort(rc, "IM_REL->put()");
+          }
+        }
+    @
+  }
+};
+
+load from '/home/hthakkar/adl/sql/clsf/mushroom.txt' into mush;
+load from '/home/hthakkar/adl/sql/clsf/mushroom.txt' into mush1;
+
+select count(1) from mush;
+
+select learnClassifier(id, d.col, d.val, d.classLbl, 22, 1000000)
+from  mush, TABLE(dissemble(capShape, capSurface, capColor, bruises,
+                            odor, gillAttach, gillSpa, gillSize, gillColor,
+                            stalkShape, stalkRoot, stalkSAR, stalkSBR,
+                            stalkCAR, stalkCBR, veilType, veilColor,
+                            ringNumber, ringType, sporePC, pop, hab,
+                            classLbl)) AS d;
+
+/*select evaluateClassifier(id, d.col, d.val, 22, d.classLbl)
+from  mush1, TABLE(dissemble(capShape, capSurface, capColor, bruises,
+                            odor, gillAttach, gillSpa, gillSize, gillColor,
+                            stalkShape, stalkRoot, stalkSAR, stalkSBR,
+                            stalkCAR, stalkCBR, veilType, veilColor,
+                            ringNumber, ringType, sporePC, pop, hab,
+                            classLbl)) AS d;
+*/
+
+

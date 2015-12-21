@@ -1,0 +1,408 @@
+table activeEnsembles  (ensId int) memory;
+table ensClassTbl  (ensId int, node int, col int, val int, nnVal int, isAccept int) memory;
+table ensembleWeights  (trainEns int, testEns int, correct int, total int) memory;
+table params  (a char(10), b char(10)) memory;
+
+table trainData (id int, col int, val int, classLbl int, numCols int, weight int,ensSize int) memory;
+
+
+
+
+Aggregate buildEns  (idi int, coli int, vali int, lbli int, numColsi int, tWeighti int, ensSize int):
+(ensId int, id int, col int, val int, lbl int, numCols int, tWeight int) {
+  table curEnsId(ensId int) memory;
+  table curEnsCnt(cnt int) memory;
+
+  initialize:
+  {
+    insert into curEnsCnt values(1);
+    insert into curEnsId values(1);
+
+    insert into return 
+      select ensId, idi, coli, vali, lbli, numColsi, tWeighti 
+      from curEnsId;
+  }
+  iterate:
+ {
+    update curEnsCnt set cnt = cnt + 1 where coli = numColsi;
+
+    insert into return 
+      select ensId, idi, coli, vali, lbli, numColsi, tWeighti 
+      from curEnsId;
+    /* indicates end of ens */
+    insert into return select ensId, -1, 0, 0, 0, 0, 0 from curEnsId
+      where coli = numColsi and (select cnt from curEnsCnt) = ensSize; 
+   
+    update curEnsId set ensId = ((ensId+1)%20) where (select cnt from curEnsCnt) = ensSize and coli = numColsi;
+    update curEnsCnt set cnt = 0 where coli = numColsi and (select cnt from curEnsCnt) = ensSize;
+  }
+};
+
+Aggregate learnDTree  (ensIdi int, idi int, coli int, vali int, classLbli int, numColsi int, tWeighti int):
+(ensId int, node int, col int, val int, nnVal int, isAccept int) {
+    table tuples(ensId int, id int, col int, val int, classLbl int, tWeight int) memory;
+    table colStat(col int, val int, classLbl int, cnt int) memory;
+    table clStat(col int, val int, classLbl int, cnt int) memory;
+    table assignedAttrs(col int, val int) memory;
+    table nodeId(node int) memory;
+    table pair(val int) memory;
+    table equ(node int, col int, val int, nnVal int, isAccept int) memory;
+
+    table entropy(col int, ent real) memory;
+    table newCol(col int, i real) memory;
+
+    Aggregate distinctPossibleVals(idi int, coli int, vali int, classLbli int):
+(a int, b int) {
+      table dv(v int, c int) memory;
+      table temp(t int) memory;
+      initialize:
+ iterate:
+ {
+        insert into temp select a.col from assignedAttrs as a, tuples as t where t.id = idi and a.col = t.col and a.val <> t.val;
+        update dv set c = c + 1 where v = classLbli and (select count(1) from temp) = 0;
+        insert into dv values(classLbli, 1) where SQLCODE <> 0
+                                           and (select count(1) from temp) = 0;
+        delete from temp;
+      }
+      terminate:
+ {
+        insert into return select v, c from dv;
+      }
+    };
+
+    Aggregate calcEntropy(coli int, vali int, classLbli int):
+(col int, ent real) {
+        table ce(col int, mult real, add real) memory;
+
+        initialize:
+ iterate:
+ {
+          update ce set mult = mult*(select cnt from clStat where col = coli and val = vali and classLbl = classLbli),
+                        add = add+(select cnt from clStat where col = coli and val = vali and classLbl = classLbli)
+              where col = coli and exists (select cnt from clStat where col = coli and val = vali and classLbl = classLbli);
+          insert into ce values(coli, (select cnt from clStat where col = coli and val = vali and classLbl = classLbli),
+                                      (select cnt from clStat where col = coli and val = vali and classLbl = classLbli))
+              where SQLCODE <> 0 and exists (select cnt from clStat where col = coli and val = vali and classLbl = classLbli);
+        }
+        terminate:
+ {
+          insert into return select col, mult/add from ce;
+        }
+    };
+
+    Aggregate computeEntropy(idi int, coli int, vali int, classLbli int, tWeighti int):
+(col int, ent Real) {
+      table temp1 (t int) memory;
+
+      initialize:
+ iterate:
+ {
+        insert into temp1 select a.col from assignedAttrs as a, tuples as t where t.id = idi and a.col = t.col and a.val <> t.val;
+        update clStat set cnt = cnt + tWeighti where col = coli and val = vali and classLbl = classLbli and
+                                              (select count(1) from temp1) = 0;
+        insert into clStat values(coli, vali, classLbli, tWeighti) where SQLCODE <> 0 and (select count(1) from temp1) = 0;
+        delete from temp1;
+      }
+      terminate:
+ {
+        insert into return select calcEntropy(col, val, classLbl) from clStat;
+        delete from clStat;
+      }
+    };
+
+    AGGREGATE minpair(iPoint Int, iValue real):
+ (mPoint Int, mValue real) {
+      TABLE mvalue(value real) MEMORY;
+      TABLE mpoints(point Int) MEMORY;
+      INITIALIZE:
+ {
+        INSERT INTO mvalue VALUES (iValue);
+        INSERT INTO mpoints VALUES(iPoint);
+      }
+      ITERATE:
+ {
+        UPDATE mvalue SET value = iValue WHERE iValue < value;
+        DELETE FROM mpoints WHERE SQLCODE = 0;
+        INSERT INTO mpoints SELECT iPoint FROM mvalue
+             WHERE iValue =mvalue.value and SQLCODE = 0;
+      }
+      TERMINATE:
+ {
+        INSERT INTO RETURN SELECT point, value FROM mpoints, mvalue;
+      }
+    };
+
+    Aggregate relearnDTree(nodei int, coli int, vali int):
+(a int) {
+      table dVals(v int, cnt int) memory;
+      table temp(n int, c int, v int) memory;
+      table entropy1(col int, ent real) memory;
+      initialize:
+ iterate:
+ {
+        delete from entropy where 1 = 1;
+        delete from entropy1 where 1 = 1;
+        delete from newCol where 1 = 1;
+        insert into assignedAttrs values(coli, vali);
+
+        insert into dVals select distinctPossibleVals(id, col, val, classLbl) from tuples;
+        insert into equ values(nodei, coli, vali, (select node+1 from nodeId), 0)
+                        where (select count(1) from dVals) > 1;
+        update nodeId set node = node+1 where SQLCODE = 0;
+  
+        insert into equ values(nodei, coli, vali, (select v from dVals), 1) where SQLCODE <> 0;
+        insert into equ values(nodei, coli, vali, -1, 1) where (select count(1) from dVals) = 0;
+
+
+        insert into entropy select computeEntropy(id, col, val, classLbl, tWeight) from tuples as c
+          where (select count(1) from dVals) > 1
+          and not exists (select a.col from assignedAttrs as a where a.col = c.col);
+
+        insert into entropy1 select col, ent from entropy as e where not exists(select a.col from assignedAttrs as a where a.col = e.col);
+  
+        insert into equ values(nodei, coli, vali, (select v from dVals where cnt = (select max(cnt) from dVals)), 1)
+                        where (select count(1) from dVals) > 1 and (select count(1) from entropy1) = 0;
+        delete from equ where node = nodei and col = coli and val = vali and isAccept = 0 and SQLCODE = 0;
+
+        insert into newCol select minpair(col, ent) from entropy1 where (select count(1) from dVals) > 1;
+
+        insert into temp select ni.node, c.col, c.val from colStat as c, newCol as n, nodeId as ni where c.col = n.col and (select count(1) from dVals) > 1 group by ni.node, c.col, c.val;
+
+        select relearnDTree(n, c, v) from temp;
+
+        delete from assignedAttrs where col = coli and val = vali;
+        delete from dVals;
+        delete from temp;
+      }
+    };
+
+    initialize:
+ iterate:
+ {
+      insert into tuples values(ensIdi, idi, coli, vali, classLbli, tWeighti)
+        where idi <> -1;
+      update colStat set cnt = cnt+tWeighti where col = coli and val = vali and classLbl = classLbli and idi <> -1;
+      insert into colStat values(coli, vali, classLbli, tWeighti) where SQLCODE <> 0 and idi <> -1;
+
+      insert into nodeId values(1) where idi = -1;
+ 
+      insert into entropy select computeEntropy(id, col, val, classLbl, tWeight) from tuples where idi = -1;
+   
+      insert into newCol select minpair(col, ent) from entropy where idi = -1;
+      insert into pair select val from colStat as c, newCol as n where c.col = n.col and idi = -1 group by val;
+    
+      select relearnDTree(1, n.col, p.val) from newCol as n, pair as p 
+      where idi = -1;
+
+      /* here return the new tree
+         we should also clear the temp tables */
+      /* this marks beginning of a new tree, so the old one can be deleted */
+      insert into return values (ensIdi, 0, -1, 0, 0, 0) where idi = -1; 
+      insert into return select ensIdi, node, col, val, nnVal, isAccept 
+        from equ where idi = -1;
+      delete from tuples where idi = -1;
+      delete from colStat where idi = -1;
+      delete from clStat where idi = -1;
+      delete from assignedAttrs where idi = -1;
+      delete from nodeId where idi = -1;
+      delete from pair where idi = -1;
+      delete from equ where idi = -1;
+      delete from entropy where idi = -1;
+      delete from newCol where idi = -1;
+    }
+};
+
+Aggregate voting  (trainEnsi int, testEnsi int, idi int, classLbli int, predi int):
+(ido int, classLblo int, predo int) {
+  table soFar(lbl int, p real) memory;
+  table curId(id int, lbl int) memory;
+  table temp(pred int) memory;
+  table eW as dynamic ensembleWeights;
+
+
+  aggregate updateSoFar(lbli int, pi real):
+int {
+    /*unused table, to solve a bug tht seg faults when there are not decs */
+    table a(b int) memory;
+    initialize:
+ iterate:
+ {
+      update soFar set p = p + pi where lbl = lbli;
+      insert into soFar values(lbli, pi) where SQLCODE <> 0;
+    }
+  };
+  
+  aggregate mmaxPair(lbli int, pi real):
+(lblo int) {
+    table mSoFar(lbl int, p real) memory;
+    initialize:
+ {
+      insert into mSoFar values(lbli, pi);
+    }
+    iterate:
+ {
+      update mSoFar set lbl = lbli, p = pi where p < pi;
+    }
+    terminate:
+ {
+      insert into return select lbl from mSoFar;
+    }
+  };
+
+  initialize:
+ {
+    /*insert into stdout values('id', idi);*/
+    insert into curId values(idi, classLbli);
+    select updateSoFar(predi, (1.0*correct)/total)
+    from eW where trainEnsi = trainEns and testEnsi = testEns;
+  }
+  iterate:
+ {
+    /*insert into stdout values('id', idi);*/
+    insert into temp select mmaxPair(lbl, p) from soFar where idi <> (select id from curId);
+    insert into return select id, lbl, pred from temp, curId where SQLCODE = 0;
+
+    delete from curId where id <> idi;
+    insert into curId values(idi, classLbli) where SQLCODE = 0;
+    delete from soFar where SQLCODE = 0;
+    delete from temp where SQLCODE = 0;
+
+    select updateSoFar(predi, correct/total)
+    from eW where trainEnsi = trainEns and testEnsi = testEns;
+  }
+};
+
+aggregate dissembleFlowers   (v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):
+(col Int, val Int, classLbl Int)
+{
+   initialize:
+ iterate:
+ {
+      INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl);
+   }
+};
+
+Aggregate updateWeights  (trainEnsi int, testEnsi int, id int, classLbli int, predi int):
+(a int) {
+  table eW as dynamic ensembleWeights;
+
+  initialize:
+ iterate:
+ {
+    update eW set correct = correct + 1
+      where trainEns = trainEnsi and testEns = testEnsi and classLbli = predi;
+    insert into eW values(trainEnsi, testEnsi, 1, 1) where SQLCODE <> 0 and classLbli = predi;
+
+    update eW set total = total+1 where trainEns = trainEnsi and testEns = testEnsi;
+    insert into eW values (trainEnsi, testEnsi, 0, 1) where SQLCODE <> 0 and classLbli <> predi;
+  }
+};
+
+Aggregate updateEnsembles  (ensIdi int, nodei int, coli int, vali int, nnVali int, isAccepti int):
+(a int) {
+  table aE as dynamic activeEnsembles;
+  table eCT as dynamic ensClassTbl;
+  table eW as dynamic ensembleWeights;
+
+  initialize:
+ iterate:
+ {
+    insert into aE values(ensIdi)
+      where coli = -1 
+        and not exists (select ensId from activeEnsembles where ensId = ensIdi);
+/*
+    delete from eCT where coli = -1 and  ensId = ensIdi;
+    delete from eW where coli = -1 and trainEns = ensIdi;
+    delete from eW where coli = -1 and testEns = ensIdi;
+*/
+    insert into eCT values(ensIdi, nodei, coli, vali, nnVali, isAccepti)
+      where coli <> -1;
+  }
+};
+
+Aggregate evaluateClassifier  (trainEnsId int, testEnsId int, idi int, coli int, vali int, lbli int, numColsi int):
+(trainEnsId int, testEnsId int, id int, iclassLbl int, pred int) {
+    table tuples(col int, val int) memory;
+    Aggregate classifyTuple(trainEnsId int, statei int):
+(classLblo int) {
+      table eCT as dynamic ensClassTbl;
+
+      initialize:
+ iterate:
+ {
+        insert into return select classifyTuple(trainEnsId, nnVal)
+                           from eCT as e
+                           where ensId = trainEnsId and isAccept = 0 and statei = e.node
+                             and exists(select t.col from tuples as t where t.col = e.col and t.val = e.val);
+
+        insert into return select nnVal
+                           from eCT as a
+                           where ensId = trainEnsId and a.isAccept = 1 and statei = a.node
+                             and exists (select t.col from tuples as t where t.col = a.col and t.val = a.val);
+
+
+        insert into return values (-1) where not exists (select a.nnVal from eCT as a where a.ensId = trainEnsId and a.node = statei);
+      }
+    };
+
+    initialize:
+ iterate:
+ {
+      insert into tuples values(coli, vali) where idi <> -1;
+      insert into return values(trainEnsId, testEnsId, idi, lbli, (select classifyTuple(trainEnsId, 1))) where coli = numColsi and idi <> -1;
+      insert into return values(trainEnsId, testEnsId, idi, lbli, -1) where SQLCODE <> 0 and coli = numColsi and idi <> -1;
+      delete from tuples where coli = numColsi;
+    }
+};
+
+modeltype EnsembleBag{
+  sharedtables(activeEnsembles,ensClassTbl,ensembleWeights),
+  BuildEns (uda buildEns,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  Train (uda learnDTree,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  UpdateEns (uda updateEnsembles,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  Classify (uda evaluateClassifier,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  ManageWeights (uda updateWeights,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  Voting (uda voting,
+         window false,
+         partables(params),
+         parameters()
+        ),
+  Flow train(
+    create stream buildEnsTrain as (run BuildEns on INSTREAM);
+    create stream dTreeTrain as (run Train on buildEnsTrain);
+    run UpdateEns on dTreeTrain;
+    create stream ensClassiTrainPairs as (select a.ensId as trainEns, b.ensId, b.id, b.col, b.val, b.lbl, b.numCols
+      from buildEnsTrain as b, activeEnsembles as a);
+    create stream evalClassiTrain as (run Classify on ensClassiTrainPairs);
+    insert into OUTSTREAM run ManageWeights on evalClassiTrain;
+  ),
+  Flow test(
+    create stream buildEnsTest as (run BuildEns on INSTREAM);
+    create stream ensClassiTestPairs as (select a.ensId as trainEns, b.ensId, b.id, b.col, b.val, b.lbl, b.numCols
+      from buildEnsTest as b, activeEnsembles as a);
+    create stream evalClassiTest as (run Classify on ensClassiTestPairs);
+    insert into OUTSTREAM run Voting on evalClassiTest;
+  )
+};
+
+run EnsembleBag.train on trainData;

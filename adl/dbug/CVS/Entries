@@ -1,0 +1,24 @@
+/Makefile.am/1.2/Wed Dec 12 15:59:02 2001//
+/Makefile.in/1.8/Fri Apr 22 06:44:22 2005//
+/README/1.1/Mon Feb  2 22:57:51 2004//
+/README.prof/1.2/Wed Dec 12 15:59:02 2001//
+/analyze.c/1.2/Wed Dec 12 15:59:02 2001//
+/dbug.c/1.5/Thu Nov  2 21:21:50 2006//
+/dbug.doc/1.1.1.1/Sun Feb  6 19:24:27 2000//
+/dbug.h/1.2/Wed Dec 12 15:59:02 2001//
+/dbug.qr/1.2/Wed Dec 12 15:59:02 2001//
+/doinstall.sh/1.2/Wed Dec 12 15:59:03 2001//
+/example1.c/1.2/Wed Dec 12 15:59:03 2001//
+/example2.c/1.2/Wed Dec 12 15:59:03 2001//
+/example3.c/1.2/Wed Dec 12 15:59:03 2001//
+/factorial.c/1.3/Tue Apr  1 01:02:47 2003//
+/install.sh/1.2/Wed Dec 12 15:59:03 2001//
+/llib-ldbug/1.2/Wed Dec 12 15:59:03 2001//
+/main.c/1.3/Mon Jan 26 01:18:11 2004//
+/mklintlib.sh/1.2/Wed Dec 12 15:59:03 2001//
+/ranlib.sh/1.2/Wed Dec 12 15:59:03 2001//
+/useful.h/1.2/Wed Dec 12 15:59:03 2001//
+/user.r/1.2/Wed Dec 12 15:59:04 2001//
+/user.t.uu/1.2/Wed Dec 12 15:59:04 2001//
+/vargs.h/1.2/Wed Dec 12 15:59:04 2001//
+D

@@ -1,0 +1,8 @@
+table test(a int, b int);
+
+insert into test values(1,2),(2,3),(3,4),(1,5),(2,6),(3,7);
+
+insert into stdout
+SELECT a FROM
+    test group by a;
+    

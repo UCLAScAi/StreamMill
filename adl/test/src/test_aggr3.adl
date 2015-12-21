@@ -1,0 +1,23 @@
+table test(a int);
+
+AGGREGATE sift(x int) : int
+{
+  table t (a int);
+  table cnt (c int);
+
+  INITIALIZE : {
+    INSERT INTO cnt values(1);
+  }
+  ITERATE:  {
+    update cnt set c=c+1;
+    insert into t select x from cnt where c % 3 = 0;
+  }
+  TERMINATE: {
+    insert into return select a from t union all 
+    select sift(a) from t;
+  }
+}
+
+insert into test values(1),(2),(3),(4),(5),(6),(7),(8),(9);
+
+insert into stdout SELECT sift(a) FROM test;

@@ -1,0 +1,150 @@
+table flowers(id int, SL real, SW real, PL real, PW real, isSetosa int);
+table flowers1(id int, SL real, SW real, PL real, PW real, isSetosa int);
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl); 
+}; 
+
+
+table classStat(ens int, classLbl int, cnt real) memory;
+table colStat(ens int, col int, val int, classLbl int, cnt real) memory;
+table ensId(nEns int) memory;
+table activeEns(ens int) memory;
+
+Aggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  table classes(ens int, cls int, p real) memory;
+
+  Aggregate updateP(ensi int, clsi int, coli int, vali int):(o real) {
+    initialize: iterate: {
+      update classes set p = p * (select cnt from colStat where ens = ensi and col = coli and val = vali and classLbl = clsi)/(select cnt from classStat where classLbl = clsi and ens = ensi) 
+         where exists (select cnt from colStat where ens = ensi and col = coli and val = vali and classLbl = clsi) and cls = clsi and ens = ensi;
+
+      update classes set p = 0 where cls = clsi and ens = ensi and SQLCODE <> 0;
+    }
+  };
+
+  Aggregate initP(ensi int, classLbli int):(a int) {
+    initialize: iterate: {
+      update classes set p = (select cnt from classStat where classLbl = classLbli and ens=ensi)
+                                /(select sum(cnt) from classStat where ens = ensi)
+      where ens = ensi and cls = classLbli;
+    }   
+  };
+
+  Aggregate mmaxPair(idi int, classLbli int, clsi int, ensWi real, pi real):(ido int, classLblo int, clso int) {
+    table probs(cls int, p real) memory;
+    table mSoFar(cls int, p real) memory;
+    initialize: {
+      /*insert into stdout values(idi, classLbli, clsi, ensWi, pi);*/
+      delete from probs where cls = clsi;
+      insert into probs values(clsi, ensWi*pi);
+      insert into mSoFar select cls, p from probs;
+
+    }
+    iterate: {
+      /*insert into stdout values(idi, classLbli, clsi, ensWi, pi);*/
+      update probs set p = p + ensWi*pi where cls = clsi;
+      insert into probs values(clsi, ensWi*pi) where not exists(select cls from probs where cls = clsi);
+      
+      update mSoFar set cls = clsi, p = (select p from probs where cls = clsi)
+        where p < (select p from probs where cls = clsi);
+    }
+    terminate: {
+      insert into return select idi, classLbli, cls from mSoFar where p > 0;
+      insert into return values(idi, classLbli, -1) where SQLCODE <> 0;
+    }
+  }
+
+  initialize: iterate: {
+    insert into classes select a.ens, classLbl, 0 from classStat as c, activeEns as a where c.ens = a.ens and coli = 1;
+
+    select initP(ens, cls)
+    from classes as c
+    where coli = 1;
+
+    select updateP(ens, cls, coli, vali)
+    from classes as c;
+
+    insert into return select mmaxPair(idi, classLbli, cls, 1, p) 
+                       from classes as c
+                       where coli = numColsi;
+    
+    delete from classes where coli = numColsi;
+  }
+};
+
+
+Aggregate learnClassifier(coli int, vali int, classLbli int, numColsi int, ensSize int):(a int) {
+  table ensCnt(cnt int) memory;
+  table tuples(col int, val int, classLbl int) memory;
+  table eval(id int, classLbl int, cls int) memory;
+  table tw(w real) memory;
+
+  Aggregate updateClassColStat(coli int, vali int, classLbli int, numColsi int, wi real):(a int) {
+    initialize: iterate: {
+      update classStat set cnt = cnt + wi where ens = (select nEns from ensId) and classLbl = classLbli and coli = numColsi;
+      /* if first instance of classLbl */
+      insert into classStat values ((select nEns from ensId), classLbli, wi) where SQLCODE <> 0 and coli = numColsi; 
+
+    update colStat set cnt = cnt + wi
+      where ens = (select nEns from ensId) and col = coli and val = vali and classLbl = classLbli;
+    /* if first instance of classLbl for this coli, vali combination */
+    insert into colStat values ((select nEns from ensId), coli, vali, classLbli, wi) where SQLCODE <> 0; 
+    }
+  };
+
+  initialize: {
+    insert into ensId values(1);
+    insert into ensCnt values(1);
+    insert into colStat values ((select nEns from ensId), coli, vali, classLbli, 1); 
+    insert into classStat values ((select nEns from ensId), classLbli, 1) where SQLCODE <> 0 and coli = numColsi;
+    /*insert into activeEns values((select nEns from ensId));*/
+    insert into tuples values(coli, vali, classLbli);
+  }
+  iterate: {
+    insert into tuples values(coli, vali, classLbli);
+   
+    /* BOOSTING: here we first determine the weight of the tuple 
+       - weight = 2 if misclassified
+       - weight = 1 if classified correctly (or not classifiable)
+     */
+    insert into eval select evaluateClassifier(0, col, val, numColsi, classLbli)
+                     from tuples
+                     where coli = numColsi;
+    insert into tw values(2) where exists (select cls from eval where classLbl <> cls and cls <> -1) and coli = numColsi;
+    insert into tw values(1) where exists SQLCODE <> 0 and coli = numColsi;
+            
+
+    select updateClassColStat(col, val, classLbl, numColsi, w)
+    from tuples, tw
+    where coli = numColsi;
+
+    delete from eval where coli = numColsi;
+    delete from tw where coli = numColsi;
+    update ensCnt set cnt = 0 where coli = numColsi and cnt = ensSize;
+    update ensId set nEns = nEns + 1 where SQLCODE = 0;
+    insert into activeEns values((select nEns-1 from ensId)) where SQLCODE = 0;
+
+    delete from tuples where coli = numColsi;
+    update ensCnt set cnt = cnt + 1 where coli = numColsi;
+  }
+};
+
+
+load from '/home/hthakkar/adl/sql/esl/ios/iris.data' into flowers;
+load from '/home/hthakkar/adl/sql/esl/ios/iris1.data' into flowers1;
+
+select learnClassifier(d.col, d.val, d.classLbl, 4, 30)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+/*
+select ens, classLbl, cnt from classStat;
+select ens, col, val, classLbl, cnt from colStat;
+*/
+/*insert into stdout select id, d.col, d.val from flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) as d;*/
+
+

@@ -1,0 +1,43 @@
+table children(Parent int, Child int);
+table gcount(Tally int);
+table offspring(Person int);
+
+aggregate alldesc(P int) : int 
+{
+    initialize:
+    {
+	update gcount set Tally = Tally+1;
+
+        insert into return values(P);
+
+        insert into return
+           select alldesc(Child)
+           from children
+           where Parent=P;
+    }
+    iterate: /* exactly the same as the initialize CASE */	
+    {
+	update gcount set Tally = Tally+1;
+
+        insert into return values(P);
+
+        insert into return
+           select alldesc(Child)
+           from children
+           where Parent=P;
+    }
+}
+    
+insert into children values (1,2), (2,3), (2,4), (3,5),(3,6),(6,7);
+insert into gcount values(0);
+
+insert into offspring
+            select alldesc(Child)
+            from children
+	    where Parent=1;
+	    
+insert into stdout
+	    SELECT Person FROM offspring;
+	    
+
+

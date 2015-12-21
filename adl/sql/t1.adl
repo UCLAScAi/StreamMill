@@ -1,0 +1,9 @@
+table t(a int, b int) source 't';
+table tt(x int, y int) source 'tt';
+
+insert into t values(1, 2);
+
+insert into tt select a, b
+from t;
+
+select x, y from tt;

@@ -1,0 +1,5 @@
+select name from person;
+
+select item_name from auction;
+
+select price from bid;

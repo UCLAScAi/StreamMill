@@ -1,0 +1,6 @@
+table t(i int, r real, s char(20)) btree(i, r, s) ;
+
+
+insert into t values(10, 2.5, 'abc'),(10, 2.5, 'XYZ'), (10,2.5,'xyz'),(1,1.5,'opq'),(5, 5.5, '123');
+
+select i, r, s from t;

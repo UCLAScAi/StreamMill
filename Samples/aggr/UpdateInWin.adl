@@ -1,0 +1,45 @@
+
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+
+WINDOW AGGREGATE UpdateInWin(ID INT, Next INT): INT
+{
+	TABLE inwindow (ID INT, Next int);
+	TABLE state (max Int);
+
+INITIALIZE:
+	{
+		INSERT INTO state VALUES (1);
+	}
+ITERATE:
+	{
+		UPDATE state SET max=max+1;
+
+		UPDATE inwindow SET ID=(SELECT max FROM state)
+			WHERE ID=-1;
+		
+		UPDATE inwindow SET Next=(SELECT max FROM state)
+			WHERE ID=-1;
+
+		INSERT INTO return   values (11111);
+		INSERT INTO return   SELECT  max FROM state; 
+		INSERT INTO return   SELECT  Max(ID) FROM inwindow; 
+		INSERT INTO return   SELECT  Max(Next) FROM inwindow; 
+	}
+TERMINATE:
+	{}
+};
+
+LOAD FROM './test' INTO traffic;
+
+select UpdateInWin(-1, in1) 
+OVER (PARTITION BY time1 ROWS 19 PRECEDING SLIDE 10)
+from traffic;
+
+
+
+
+
+
+
+
+

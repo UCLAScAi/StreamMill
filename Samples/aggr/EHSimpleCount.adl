@@ -1,0 +1,200 @@
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+TABLE EH(TSFirst INT, TSLast INT, OnesCount INT) MEMORY;
+TABLE state(maxID INT) MEMORY;
+
+
+
+FUNCTION merge (size INT, k INT): (ret INT)
+{
+	/* merging buckets with size > 1*/ 
+	INSERT INTO EH 
+		SELECT A.TSFirst, B.TSLast, A.OnesCount+B.OnesCount 
+		FROM EH AS A, EH AS B 
+		WHERE 
+		((SELECT COUNT(TSFirst) FROM EH WHERE OnesCount=size) > k/2+1 ) AND /* update condition */
+		(A.TSLast=B.TSFirst) AND /* 2 consecutive buckets */
+		(A.OnesCount=B.OnesCount) AND
+		(A.OnesCount=size) AND
+		(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.OnesCount=B.OnesCount));
+	/* they should be the oldest buckets having previous conditions */
+
+	/*deleting just merged buckets*/
+	DELETE FROM EH 
+		WHERE
+		EXISTS (SELECT TSFirst FROM EH AS B 
+				WHERE EH.OnesCount < B.OnesCount 
+				AND
+				((EH.TSFirst = B.TSFirst) OR 
+				 (EH.TSLast  = B.TSLast)) );
+	INSERT INTO return values (222222);
+};
+
+
+AGGREGATE  mergeAggr (size INT, k INT): (ret INT)
+{
+	/* merging buckets with size > 1 */
+	INSERT INTO EH 
+		SELECT A.TSFirst, B.TSLast, A.OnesCount+B.OnesCount 
+		FROM EH AS A, EH AS B 
+		WHERE 
+		((SELECT COUNT(TSFirst) FROM EH WHERE OnesCount=size) > k/2+1 ) AND /* update condition */
+		(A.TSLast=B.TSFirst) AND /* 2 consecutive buckets */
+		(A.OnesCount=B.OnesCount) AND
+		(A.OnesCount=size) AND
+		(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.OnesCount=B.OnesCount));
+	/* they should be the oldest buckets having previous conditions */
+
+	/*deleting just merged buckets*/
+	DELETE FROM EH 
+		WHERE
+		EXISTS (SELECT TSFirst FROM EH AS B 
+				WHERE EH.OnesCount < B.OnesCount 
+				AND
+				((EH.TSFirst = B.TSFirst) OR 
+				 (EH.TSLast  = B.TSLast)) );
+
+	/* calling mergeAggr recursively */
+	Select mergeAggr(size*2, k) 
+		FROM EH AS A, EH AS B 
+		WHERE 
+		((SELECT COUNT(TSFirst) FROM EH WHERE OnesCount=(size*2)) > k/2+1 ) AND /* update condition */
+		(A.TSLast=B.TSFirst) AND /* 2 consecutive buckets */
+		(A.OnesCount=B.OnesCount) AND
+		(A.OnesCount=(size*2)) AND
+		(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.OnesCount=B.OnesCount));
+
+};
+
+
+/*
+   The function estimates the number of 1s in current window of Size W 
+   with estimataion factor epsilon. 
+
+
+   k=[1/epsilon] and it must be an even number in order for the EH working efficiently
+   W=window size
+ */
+AGGREGATE EHSimpleCount(k INT, W INT, Next INT) : (TSFirst INT, TSLast INT, OnesCount INT)
+{
+
+
+INITIALIZE:
+	{
+		INSERT INTO state VALUES (0);
+		INSERT INTO EH VALUES ((Select maxID FROM state)+1, (Select maxID FROM state),1)
+			WHERE Next=1;
+	}
+ITERATE:
+	{
+		UPDATE state SET maxID=maxID+1;
+		INSERT INTO EH VALUES ((Select maxID FROM state)+1, (Select maxID FROM state),1)
+			WHERE Next=1;
+
+
+
+		/* merging buckets with size 1 */
+		/*	This form of update is not supported here
+			UPDATE EH AS A, EH AS B 
+			SET 
+			A.TSLast=B.TSLast, 
+			A.OnesCount=OnesCount+B.OnesCount 
+			WHERE 
+			Next=1 AND
+			((SELECT COUNT(*) FROM EH WHERE OnesCount=1) > k+1 ) AND
+			(A.TSLast=B.TSFirst) AND 
+			(A.OnesCount=B.OnesCount) AND
+			(A.OnesCount=1) AND
+			(NOT EXIST (SELECT * FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.OnesCount=B.OnesCount));
+		 */
+
+		INSERT INTO EH 
+			SELECT A.TSFirst, B.TSLast, A.OnesCount+B.OnesCount 
+			FROM EH AS A, EH AS B 
+			WHERE 
+			Next=1 AND
+			((SELECT COUNT(TSFirst) FROM EH WHERE OnesCount=1) > k+1 ) AND /* update condition */
+			(A.TSLast=B.TSFirst) AND /* 2 consecutive bucket */
+			(A.OnesCount=B.OnesCount) AND
+			(A.OnesCount=1) AND
+			(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.OnesCount=B.OnesCount));
+		/* they should be the oldest buckets having previous conditions */
+
+		/*deleting just merged buckets*/
+		DELETE FROM EH 
+			WHERE
+			Next=1 AND
+			EXISTS (SELECT TSFirst FROM EH AS B 
+					WHERE EH.OnesCount < B.OnesCount 
+					AND
+					((EH.TSFirst = B.TSFirst) OR 
+					 (EH.TSLast  = B.TSLast)) );
+
+		/*[7109@semant.cc] Support for scalar UDF in SQL is not implemented yet at line 115 */
+		/*insert into return values (merge(4, k), 111111 ,111111); */
+
+		/* not allowed */
+		/*merge(4,k); */
+
+		/* not allowed */
+		/*mergeAggr(4,k);*/
+
+		/*Err : [7088@semant.cc] NTSql internal error: aggrEntry found in transExp.*/	
+		/*insert into return values (mergeAggr(4, k), 111111 ,111111); */
+
+
+		/* when the aggregate is not recursive */
+		/*Select mergeAggr(2, k) FROM state;	
+		  Select mergeAggr(4, k) FROM state;	
+		  Select mergeAggr(8, k) FROM state;	
+		  Select mergeAggr(16, k) FROM state;	
+		  Select mergeAggr(32, k) FROM state;	
+		  Select mergeAggr(64, k) FROM state;	
+		  Select mergeAggr(128, k) FROM state;	
+		  Select mergeAggr(256, k) FROM state;	*/
+
+		/* too slow and not efficient*/
+		/*
+		   Select mergeAggr(2, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(4, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(8, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(16, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(32, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(64, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(128, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		   Select mergeAggr(252, k) FROM traffic Where in1=(SELECT MAX(in1) from traffic);	
+		 */
+
+		Select mergeAggr(2, k) FROM state
+			WHERE Next=1;
+
+
+
+		/*expiring the last bucket if needed */
+/*		INSERT INTO return values (111111, 1111111, 111111);
+		INSERT INTO return values ((select min(TSFirst)FROM EH), W, (select maxID FROM state));
+		INSERT INTO return values (222222, 2222222, 222222);*/
+		delete FROM EH WHERE TSFirst+W < (select maxID FROM state);
+
+
+		/* printing current bucket status */
+		/*INSERT INTO return SELECT TSFirst, TSLast, OnesCount FROM EH;
+		INSERT INTO return values (333333, 1111111, 111111);*/
+
+		/* this can be done using an aggregate to make it faster
+		   but since the number of rows are few that seems ok */
+		INSERT INTO return VALUES (k, W,
+			(SELECT sum(OnesCount) FROM EH)-
+			(SELECT OnesCount/2 FROM EH 
+ 			 WHERE TSFirst=(select MIN(TSFirst) FROM EH)));
+
+
+		
+
+	}
+
+TERMINATE: {}
+};
+
+LOAD FROM './test' INTO traffic;
+
+SELECT EHSimpleCount(2, 100, in1) FROM traffic;

@@ -1,0 +1,15 @@
+prefix=/home/hthakkar/atlas
+AXLDIR=$(prefix)
+LIBDIR=$(AXLDIR)/lib/
+BERKELEY_INC=${prefix}/include
+BERKELEY_LIB=${prefix}/lib/libdb.a
+ADL_INC=${AXLDIR}/include
+ADL_LIB=$(LIBDIR)/libadl.a
+IMDB_LIB=$(LIBDIR)/libimdb.a
+RTREE_LIB=$(LIBDIR)/librtree.a
+CXX=g++
+ext-tab: ext-tab.o
+	${CXX} -g -O2 -o ext-tab ext-tab.o ${ADL_LIB} ${BERKELEY_LIB} ${IMDB_LIB} ${RTREE_LIB} -ldl
+
+ext-tab.o: ext-tab.cc
+	${CXX} -g -O2 -c -I${BERKELEY_INC} -I${ADL_INC} ext-tab.cc 

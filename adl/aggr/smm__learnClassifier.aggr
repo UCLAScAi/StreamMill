@@ -1,0 +1,10 @@
+Aggregate smm$learnClassifier (coli int, vali int, classLbli int, numColsi int):(a int) {
+ initialize: iterate: {
+   update classStat set cnt = cnt + 1 where classLbl = classLbli and coli = numColsi;
+   insert into classStat values (classLbli, 1) where SQLCODE <> 0 and coli = numColsi;
+
+   update colStat set cnt = cnt + 1
+     where col = coli and val = vali and classLbl = classLbli;
+   insert into colStat values (coli, vali, classLbli, 1) where SQLCODE <> 0;
+ }
+};

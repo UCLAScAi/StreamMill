@@ -1,0 +1,1 @@
+cursor_get() (interface.c): tupleno_t and pageno_t are confused. (sizeof(long), sizeof(pageno_t))

@@ -1,0 +1,7 @@
+aggregate demo$dissembleFlowers (id int, v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(id int, col Int, val Int, classLbl Int)
+{
+ initialize: iterate: {
+
+  INSERT INTO RETURN VALUES (id, 1, v1, classLbl), (id, 2, v2, classLbl), (id, 3, v3, classLbl), (id, 4, v4, classLbl);
+ }
+};

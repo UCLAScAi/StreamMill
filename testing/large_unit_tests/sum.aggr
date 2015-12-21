@@ -1,0 +1,10 @@
+WINDOW AGGREGATE sum_aggr (Next INT): REAL {
+	TABLE state (sum INT, cnt INT) AS VALUES (0, 0);
+	INITIALIZE: ITERATE: {
+		UPDATE state SET sum = sum + Next, cnt = cnt + 1;
+		INSERT INTO RETURN SELECT sum FROM state;
+	}
+	EXPIRE: {
+		UPDATE state SET sum = sum - oldest().Next, cnt = cnt - 1;
+	}
+};

@@ -1,0 +1,13 @@
+table t(r real);
+insert into t
+values(1.0);
+
+select r from t;
+
+
+insert into stdout
+values(1.2, 1111111.222, 0.000000122);
+
+
+insert into stdout
+values(1.2*1.2, 1.2+1.2, 3-1.2, 3/1.2);

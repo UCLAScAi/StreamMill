@@ -1,0 +1,32 @@
+
+table swimparams(param_name char(100), param_value char(100)) source 'paramTable.data';
+table tdata(it int);
+external int swimfis(tid int, val IExt) in './funswim.so';
+
+/*
+insert into swimparams values('trans_avg_len', '100'); 
+insert into swimparams values('window_size', '6');
+insert into swimparams values('slide_size', '2');
+insert into swimparams values('no_items', '10');
+insert into swimparams values('L_delay_max', '2');
+insert into swimparams values('min_supp_10000', '0');
+
+load FROM 'tmp.stream' into tdata;
+*/
+
+delete from swimparams;
+insert into swimparams values('trans_avg_len', '35'); 
+insert into swimparams values('window_size', '20000');
+insert into swimparams values('slide_size', '10000');
+insert into swimparams values('no_items', '1000');
+insert into swimparams values('L_delay_max', '1');
+insert into swimparams values('min_supp_10000', '15');
+
+delete from tdata;
+load FROM '/tmp/sigkdd1.stream' into tdata;
+
+
+select swimfis(t.tid, t.val)
+from tdata, table(buildiext(it)) as t;
+
+

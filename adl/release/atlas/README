@@ -1,0 +1,46 @@
+******************************************************
+*	ATLaS Database System 1.4		     *
+*       Http://wis.cs.ucla.edu/atlas                 *
+*	Authors: 				     *
+*		Haixun Wang (haixun@us.ibm.com)	     *
+*		Chang Richard Luo (lc@cs.ucla.edu)   *
+*		Carlo Zaniolo (zaniolo@cs.ucla.edu)  *
+*	Date:   2003/4				     *
+******************************************************
+
+=========
+Install
+=========
+You don't need to run any installer program, but rather you should add the directory
+to your PATH environment variable and change some file:
+1. for bash shell, add to your ~/.bash_profile:
+export PATH=$PATH:yourdir/bin
+
+(replace "yourdir" with the directory of ATLaS)
+
+2. change 2nd line of the file yourdir/bin/adlcc:
+ATLAS_HOME=yourdir
+
+
+=========
+Editors
+=========
+For Xemacs/Emacs users, you can put the script atlas-linux.el into your Xemacs/Emacs
+script directory. (e.g /usr/share/xemacs-21.4.6/lisp/).  Then add into your initial
+script (e.g.~/.xemacs/init.el or ~/.emacs) the following lines:
+
+(autoload 'atlas-mode "atlas-linux" "ATLaS mode." t)
+(add-to-list 'auto-mode-alist '("\\.adl$" . atlas-mode))
+
+Search and change "/usr/local/lib" into "yourdir/lib" in atlas-linux.el, where "yourdir" 
+is the directory you installed atlas.
+
+=========
+Usage
+=========
+1. adlc yourfile.adl
+2. adlcc yourfile.cc
+3. ./yourfile
+
+Please visit our website for newest release and further help:
+http://wis.cs.ucla.edu/atlas

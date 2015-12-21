@@ -1,0 +1,8 @@
+  StreamMill Miner (SMM) is a distributed data stream management system. A number of instances are started on a 
+  number of nodes. The purpose of a single instance of SMM is to provide data-mining capabilities for a set of users. 
+  Every instance of SMM handles queries for different user. Fault-tolerance in SMM is provided by allowing duplicate 
+  instances of SMM, therefore there may be multiple SMM instances for a given user, but a query request is sent to only 
+  one instance. In out experiments we found that having 2 duplicate instances per user achieves the most benefit without 
+  sacrificing performance due to duplication. At the root, SMM has a hash-map that serves as a directory service 
+  for a quick look-up to find an SMM instance that is able to answer a request from a specific user. Overall SMM provides a 
+  scalable solution for performing data-mining for a large number of users.

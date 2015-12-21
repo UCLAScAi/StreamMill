@@ -1,0 +1,12 @@
+table test(a int, b int, c int);
+
+insert into test values(1,2,3),(3,2,1),(2,3,1),(100,200,300);
+
+insert into stdout SELECT a,b,c FROM test;
+
+
+insert into stdout SELECT a, b FROM test order by a;
+insert into stdout SELECT a, b FROM test order by b;
+insert into stdout SELECT a, b FROM test order by c;
+
+

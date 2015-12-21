@@ -1,0 +1,14 @@
+table rtree(a int, b int, c int) RTREE(a,b);
+
+
+insert into rtree values(3,4,5),(1,2,3),(3,2,100),(7,5,9);
+
+insert into stdout select a,b,c from rtree;
+
+insert into stdout select 111111;
+
+update rtree
+set a=a*2,b=b*3, c=c*2 ;
+
+
+insert into stdout select a, b, c from rtree;

@@ -1,0 +1,30 @@
+table t(v int, a int, b int, c char) btree(a,b);
+insert into t values(0, 1,1,'1'), (1, 1,1,'2'),(2, 3,3,'3'),(3, 4,4,'4');
+
+
+select a,b,c from t
+where a =1;
+
+insert into stdout values('---');
+select a,b,c from t 
+where a > 2 and a < 4;
+
+insert into stdout values('---');
+select a,b,c from t
+where b > 1 and b < 4;
+
+insert into stdout values('---');
+select a,b,c from t
+where a<=4;
+
+insert into stdout values('---');
+select a,b,c from t
+where a>=1;
+
+insert into stdout values('---');
+select a,b,c from t
+where a <=1;
+
+insert into stdout values('---');
+select a,b,c from t
+where a>=4;

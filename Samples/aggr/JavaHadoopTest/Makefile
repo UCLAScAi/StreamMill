@@ -1,0 +1,2 @@
+all:
+	gcc  -o libiterate.so -shared -Wl,-soname,libiterate.so -I/home/training/git/my-workspace/aggr  -I/usr/lib/jvm/java-6-sun/include/Linux/ -I/usr/lib/gcc/i486-linux-gnu/4.3.2/include/ iterate.cc -static /home/training/workspace/StreamMill/atlas/lib/libatlas.a /home/training/workspace/StreamMill/atlas/lib/libdb.a /home/training/workspace/StreamMill/atlas/lib/libimdb.a /home/training/workspace/StreamMill/atlas/lib/libdbug.a /usr/local/lib/libmm.a -lc -lstdc++

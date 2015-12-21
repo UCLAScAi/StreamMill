@@ -1,0 +1,45 @@
+# status->sfs.global_min_supp=0,status->sfs.slide_min_supp=0,status->sfs.window_size=6,status->sfs.slide_size=2,status->sfs.L_delay_max=2
+Starting to ReadChunkToFP.
+Time spent to create FP-status->tree and save to FP: 222
+Slice 0 was read (status->all_trans_len=6): >>>>>>>>>>
+Starting to ReadChunkToFP.
+Time spent to create FP-status->tree and save to FP: 0
+Slice 1 was read (status->all_trans_len=6): >>>>>>>>>>
+Starting to ReadChunkToFP.
+Time spent to create FP-status->tree and save to FP: 0
+Slice 2 was read (status->all_trans_len=6): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 3 was read (status->all_trans_len=8): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 0 was re-accessed for expiration (status->all_trans_len=6): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 4 was read (status->all_trans_len=6): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 1 was re-accessed for expiration (status->all_trans_len=6): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 5 was read (status->all_trans_len=8): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 2 was re-accessed for expiration (status->all_trans_len=6): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 6 was read (status->all_trans_len=6): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 3 was re-accessed for expiration (status->all_trans_len=8): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 7 was read (status->all_trans_len=8): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 4 was re-accessed for expiration (status->all_trans_len=6): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 8 was read (status->all_trans_len=8): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 5 was re-accessed for expiration (status->all_trans_len=8): >>>>>>>>>>
+Main window has started moving....
+Starting to ReadChunkToFP.
+Slice 9 was read (status->all_trans_len=8): >>>>>>>>>>
+Time to Mine FP-status->tree and import into pattern status->tree: 0
+Slice 6 was re-accessed for expiration (status->all_trans_len=6): >>>>>>>>>>

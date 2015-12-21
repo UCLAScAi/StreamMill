@@ -1,0 +1,20 @@
+table tab(a int, b int) memory;
+table tab2(a int, refb ref(tab)) memory;
+
+insert into tab values (1,2),(100,200);
+
+insert into tab2
+select a*(-1),OID
+from tab;
+
+UPDATE tab SET a=a+100
+WHERE tab.OID= (SELECT refb FROM tab2 WHERE a=-100) AND tab.b=200;
+
+insert into stdout
+select a, b
+from tab;
+/*
+select refb->a=refb->a+100
+from tab2
+where a=2 and refb->refb=3;
+*/

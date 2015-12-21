@@ -1,0 +1,545 @@
+\chapter{Design and Impelementation of In-Memory Tables}
+\section{Design}
+
+The in-memory database for {\AXL} is designed to implement,
+\begin{enumerate}
+\item Sequential scan over all tuples;
+\item Potential hash index which can be either unique or non-unique;
+\item Potential variable length tuples (in next versions).
+\end{enumerate}
+
+We consider two solutions:
+\begin{enumerate}
+\item Obviously a simple linked list can do the job.
+
+      Each item of the list is a tuple plus some control information
+      (object id and status flags) associated with it.
+
+      Sequential scan is a linked list scan.  Variable length tuples
+      are accomodated by malloc() variable length space on heap.
+
+      Hash index can be built on the linked list.  If hash index is
+      unique, it is trivial to deal with it.  Otherwise, an extra
+      pointer is defined in control information fields of each tuple
+      so that tuples having same hash key can be chained together.
+
+      Right now we allow only one non-unique hash index on an
+      in-memory relation because only one extra hash-chain pointer is
+      defined in control information of each tuple.
+\item The above solution may suffer from too many malloc() calls since
+      each tuple insertion will issue a malloc() call.
+
+      This can be solved by paging.  Each time we malloc a page (fixed
+      size wrt. each relation) rather than a tuple.  As each page
+      hosts multiple tuples, cost of malloc() is decreased by blocking
+      factor (number of tuples in a page).
+
+      However, this comes with tradeoffs---although cost of malloc()
+      is decreased, inter-page and intra-page control information must
+      be maintained with certain time and space cost.
+
+      Inter-page control information includes connection links among
+      different pages so that a sequential scan is possible.
+
+      Intra-page control information includes (a) a list of all in-use
+      slices, (b) a list of all free slices in a page.
+\end{enumerate}
+
+Since performance doesn't vary much between a simple linked list
+implementation and a paged linked list implementation.  Currently I
+have only implemented a simple linked list implementation.
+
+\section{Implementation}
+\begin{itemize}
+\item {\tt im\_rel.c} implements in-memory relations as linked lists.
+\item {\tt im\_cursor.c} implements cursor operations on in-memory
+      relations.
+\item {\tt im\_debug.c} has some debugging routines and sample calls.
+\item {\tt hash-arbitrary.c} is adapted from GNU Assembler software
+      package.  The original version can only handle text strings
+      because it was designed for looking up symbol table.  I change
+      the code to handle arbitrary bit strings by passing a ``void *''
+      and its length in bytes.
+\item {\tt im\_db\_env\_method.c} {\tt im\_db\_err.c} emulate BerkeleyDB's
+      error reporting utilities.
+\item {\tt mylib.c} has some personal library functions.
+\end{itemize}
+
+In the linked-list implementation I use a doubly-linked cyclic list
+because we need to support bi-directional cursor operations.
+
+Another link pointer is added for chaining duplicate keys.  This is
+because we need to support {\DBNEXTDUP} operation during a cursor
+scan.
+
+To support object-relational database features, the in-memory database
+associates an OID with each tuple.  OID is implemented as memory
+address of a tuple.
+
+OID also affects deletions and retrievals.  Tuples in an OID relation
+are never deleted because it is too expensive to update all places
+referencing the deleting tuples.  Instead, we set a {\em tombstone}
+flag on the deleting tuples, thus each tuple also has a flag field.
+
+A tombstoned tuple keeps all link pointers.  However, during a get
+operation it is skipped.  When a tombstoned tuple is referenced by a
+path-expression instance, it is a signal indicating that no result is
+returned for the path-expression instance.
+\newpage
+%==================================================
+\section{API: Application Programming Interface}
+
+\subsection{im\_rel\_create}
+\begin{verbatim}
+#include <im_db.h>
+int im_rel_create(IM_REL **relpp, IM_DB_ENV *dbenv, IM_DBTYPE type, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+  The {\em im\_rel\_create} function creates handle for an in-memory
+  relation.  A pointer to this structure is returned in the memory
+  referenced by AXL.
+
+  If the dbenv argument is NULL, the database is standalone, i.e., it
+  is not part of any In-memory DB environment.
+
+  If the dbenv argument is not NULL, the database is created within
+  the specified environment. The database access methods automatically
+  make calls to the other subsystems. Right now only error reporting
+  is considered in the environment.  Feel free to use NULL here.
+
+  The currently supported in-memory DB file formats (or access methods)
+  is IM\_LINKED\-LIST.  Other formats (e.g. IM\_ARRAY) may be
+  supported upon request.
+  
+  The IM\_LINKEDLIST format is virtually a linked list.  The order of
+  tuples in a linked list follows the order they are inserted.
+  
+  The flags value must be set to 0 or by bitwise inclusively OR'ing
+  together one or more of the following values. 
+  \begin{description}
+  \item[IM\_REL\_INDEXED]\ \\
+       A hash-index should be built on the in-memory relation.\\
+       If such a hash-index is non-unique, a hash-chain is maintained
+       in the relation so that tuples having same hash key are chained
+       together.
+  \item[IM\_OID]\ \\
+       When relation $A$ has an attribute which is a foreign key of
+       relation $B$, normally relations will use a value stored in $A$
+       as a key of $B$ and locate qualified tuples in $B$.\\
+       When IM\_OID is specified, tuples in $B$ will be referenced via
+       pointers (so-called ``object referenced'') rather than values.
+       Therefore, a tuple in $B$ can {\em not} be deleted. Otherwise,
+       pointers stored in $A$ will point to wrong place.  Instead, a
+       tombstone flag is set for all deleted tuples in $B$.\\
+       To let relation $B$ behave in this way, one must specify
+       IM\_OID when $B$ is created.  Currently OID is implemented as
+       memory address in in-memory relations.
+  \end{description}
+\item[Caveats]\ \\
+  Right now only fixed-length tuples are considered.  Otherwise, when
+  a variable-length tuple is updated, the new tuple may exceed the
+  old tuple in length of bytes, we must allocate a new area for the
+  longer new tuple and set an extra pointer in the old tuple pointing
+  to the new tuple.
+\item[Return Value]\ \\
+  The {\em im\_rel\_create} function returns a non-zero error value on
+  failure and 0 on success.
+\item[Errors]\ \\
+  The {\em im\_rel\_create} function may fail and return a non-zero
+  error for errors specified for other {\IMDB} and C library or system
+  functions.
+\item[Sample Call]\ 
+\begin{verbatim}
+if((ret = im_rel_create(&relp, NULL, IM_LINKEDLIST,
+                        IM_REL_INDEXED | IM_OID)) != 0)
+    return ERROR;
+\end{verbatim}
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$open}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->open(IM_REL *relp, char *name, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+  The {\IMREL}-$>$open interface opens the database represented by name for
+  both reading and writing. The argument `name' is for Berkeley DB
+  compatibility.
+
+  The flags parameter must be set to 0 currently.  
+
+\item[Return Value]\ \\
+  The {\IMREL}-$>$open function returns a non-zero error value on failure
+  and 0 on success.
+\item[Errors]\ \\
+  The {\IMREL}-$>$open function may fail and return a non-zero
+  error for errors specified for other {\IMDB} and C library or
+  system functions.
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$close}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->close(IM_REL *rel, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+The {\IMREL}-$>$close function closes any open cursors, frees any
+allocated resources.
+
+The flags parameter must be set to 0 currently.  
+
+Once {\IMREL}-$>$close has been called, regardless of its return, the
+{\IMREL} handle may not be accessed again until the handle is
+re-opened.
+\item[Return Value]\ \\
+The {\IMREL}-$>$close function returns a non-zero error value on failure
+and 0 on success.
+\item[Errors]\ \\
+The {\IMREL}-$>$close function may fail and return a non-zero error for
+errors specified for other {\IMDB} and C library or system functions.
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$del}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->del(IM_REL *rel, DBT *key, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+  The {\IMREL}-$>$del function removes key/data pairs from a
+  relation. The key/data pair associated with the specified key is
+  discarded from the relation. In the presence of duplicate key
+  values, all records associated with the designated key will be
+  discarded.
+
+  The flags parameter is currently unused, and must be set to 0.
+\item[Return Value]\ \\
+  The {\IMREL}-$>$del function returns a non-zero error value on
+  failure, 0 on success, and returns {\DBNOTFOUND} if the specified key
+  did not exist in the file.
+\item[Errors]\ \\
+The {\IMREL}-$>$del function may fail and return a non-zero error for
+errors specified for other {\IMDB} and C library or system functions.
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$get}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->get(IM_REL *rel, DBT *key, DBT *data, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+  The {\IMREL}-$>$get function retrieves key/data pairs from the database. The
+  address and length of the data associated with the specified key are
+  returned in the structure referenced by data.
+
+  In the presence of duplicate key values, {\IMREL}-$>$get will return the
+  first data item for the designated key. Duplicates are reversely
+  sorted by storing order (Inserting at head of a hash-chain is
+  faster, thus tuples are reversely sorted by storing order).
+  Retrieval of duplicates requires the use of cursor operations. See
+  {\IMRELcursor}-$>$c\_get for details.
+
+  The flags parameter must be set to 0 or one of the following values: 
+  \begin{description}
+  \item[{\DBGETBOTH}]\ \\
+    Retrieve the key/data pair only if both the key and data match the
+    arguments.
+  \item[{\DBSETRECNO}]\ \\
+    Retrieve the specified numbered key/data pair from a
+    database. Upon return, both the key and data items will have been
+    filled in, not just the data item as is done for all other uses of
+    the {\IMREL}-$>$get function.
+
+    The `data' field of the specified key must be a pointer to a
+    logical record number (i.e., a {\dbrecnot}). This record number
+    determines the record to be retrieved.
+
+    The `size' field of the specified key must indicate the length of
+    the key field instead of {\dbrecnot}.
+  \item[{\DBGETOID}]\ \\
+    Given an OID, retrieve the key/data pair from a database.  The OID
+    is passed in `key' argument.  Upon return, both the key and data
+    items will have been filled in, as {\DBSETRECNO} does.
+  \item[{\DBGETOIDOFKEY}]\ \\
+    Retrieve OID of a given key.  If there are duplications in key
+    values, the OID of the first one is returned.  The returned OID is
+    place in `data' argument.
+  \end{description}
+  
+\item[Return Value]\ \\
+  Returned data is placed in a system-allocated buffer, just as what
+  BerkeleyDB does.  Users only need to take care of input arguments.
+
+  If the requested key is not in the database, the {\IMREL}-$>$get
+  function returns {\DBNOTFOUND}.
+
+  Otherwise, the {\IMREL}-$>$get function returns a non-zero error
+  value on failure and 0 on success. 
+
+\item[Errors]\ \\
+  The {\IMREL}-$>$get function may fail and return a non-zero error
+  for errors specified for other Berkeley DB and C library or system
+  functions.
+
+\item[Sample Calls]\ 
+\begin{verbatim}
+DBT key, data;
+db_recno_t i;
+
+/* demo of DB_SET_RECNO */
+i = 10;   /* retrieve 10th record */
+key.data = &i, key.size = sizeof(db_recno_t);
+if((ret = im_rel->get(relp, &key, &data, DB_SET_RECNO)) != 0)
+    return ERROR;
+
+/* demo of DB_GET_OIDOFKEY / DB_GET_OID */
+key.data = "a-key", key.size = sizeof("a-key");
+if((ret = im_rel->get(relp, &key, &data, DB_GET_OIDOFKEY)) != 0)
+    return ERROR;
+key.data = data.data, key.size = data.size;
+if((ret = im_rel->get(relp, &key, &data, DB_GET_OID)) != 0)
+    return ERROR;
+\end{verbatim}
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$put}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->put(IM_REL *rel, DBT *key, DBT *data, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+  The {\IMREL}-$>$put function stores key/data pairs in the relation. 
+
+  The flags parameter must be set to 0 or one of the following values: 
+  \begin{description}
+  \item[{\DBAPPEND}]\ \\
+    Append a tuple to the existing linked list, or if the linked list
+    doesn't exist, treat the new tuple as the head.  If a hash index
+    has been created on the table, the hash-chain should be
+    maintained.  Currently the newly inserted tuple is inserted at the
+    end of a hash-chain.
+  \end{description}
+
+  The default behavior of the {\IMREL}-$>$put function is to enter the
+  new key/data pair, replacing the first previously existing key.
+\item[Return Value]\ \\
+  The {\IMREL}-$>$put function returns a non-zero error value on
+  failure, 0 on success.
+\item[Errors]\ \\
+  The {\IMREL}-$>$put function may fail and return a non-zero error
+  for errors specified for other {\IMDB} and C library or system
+  functions.
+\item[Caveat]\ \\
+  BerkeleyDB users please follow the following policy to make {\IMDB}
+  and BerkeleyDB compatible:
+  \begin{itemize}
+  \item If DUP flag is allowed by DB-$>$set\_flags() in BerkeleyDB,
+        then always call {\IMREL}-$>$put() with {\DBAPPEND} flag in
+        the {\IMDB} version.
+  \item If DUP flag is disallowed by DB-$>$set\_flags() in BerkeleyDB,
+        then always call {\IMREL}-$>$put() with flag 0 in
+        the {\IMDB} version.
+  \end{itemize}
+\end{description}
+
+\newpage
+\subsection{{\IMREL}-$>$cursor}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL->cursor(IM_REL *relp, IM_RELC **cursorp, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+
+  The IM\_REL-$>$cursor function creates a cursor and copies a pointer
+  to it into the memory referenced by ``cursorp''.
+
+  A cursor is a structure used to provide sequential access through a
+  database.
+  
+  Currently the flags value must be set to 0.
+
+\item[Return Value]\ \\
+  The IM\_REL-$>$cursor function returns a non-zero error value on
+  failure and 0 on success.
+\end{description}
+
+\newpage
+\subsection{{\IMRELcursor}-$>$c\_get}
+\begin{verbatim}
+#include <im_db.h>
+int IM_REL_cursor->c_get(IM_RELC *cursor, DBT *key, DBT *data, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+
+  The flags parameter must be set to one of the following values: 
+  \begin{description}
+  \item[{\DBFIRST}]\ \\
+    The cursor is set to reference the first tuple of the relation,
+    and that pair is returned.
+
+    If the database is empty, {\IMRELcursor}-$>$c\_get will return
+    {\DBNOTFOUND}.
+  \item[{\DBNEXT}]\ \\
+    If the cursor is not yet initialized, {\DBNEXT} is identical to
+    {\DBFIRST}.
+
+    Otherwise, the cursor is moved to the next tuple of the database,
+    and that pair is returned.
+
+    If the cursor is already on the last record in the database,
+    {\IMRELcursor}-$>$c\_get will return {\DBNOTFOUND}.
+  \item[{\DBLAST}]\ \\
+    The cursor is set to reference the last tuple of the relation,
+    and that pair is returned.
+
+    If the database is empty, {\IMRELcursor}-$>$c\_get will return
+    {\DBNOTFOUND}.
+  \item[{\DBPREV}]\ \\
+    If the cursor is not yet initialized, {\DBPREV} is identical to
+    {\DBLAST}.
+
+    Otherwise, the cursor is moved to the previous tuple of the database,
+    and that pair is returned.
+
+    If the cursor is already on the first record in the database,
+    {\IMRELcursor}-$>$c\_get will return {\DBNOTFOUND}.
+  \item[{\DBCURRENT}]\ \\
+    Return the tuple currently referenced by the cursor. 
+
+    If the cursor is not yet initialized, the {\IMRELcursor}-$>$c\_get function
+    will return EINVAL.
+  \item[{\DBSET}]\ \\
+    Move the cursor to the specified key/data pair of the database,
+    and return the datum associated with the given key. 
+
+    In the presence of duplicate key values, {\IMRELcursor}-$>$c\_get
+    will return the first data item for the given key. 
+
+    If no matching keys are found, {\IMRELcursor}-$>$c\_get will return
+    {\DBNOTFOUND}.
+  \item[{\DBGETBOTH}]\ \\
+    The {\DBGETBOTH} flag is identical to the {\DBSET} flag, except
+    that both the key and the data arguments must be matched by the
+    key and data item in the database.
+  \item[{\DBNEXTDUP}]\ \\
+    Return the next tuple in the hash-chain, i.e., next tuple having
+    same hash key as current one, when hash index exists.  Hash-chain
+    is not maintained if hash index doesn't exist.
+    {\IMRELcursor}-$>$c\_get will return {\DBNOTFOUND} if hash-chain
+    reaches its end.
+
+    If the cursor is not yet initialized, the {\IMRELcursor}-$>$c\_get
+    function will return EINVAL.
+
+  \item[{\DBGETOIDOFKEY}]\ \\
+    Retrieve OID of the tuple currently referenced by the cursor.  The
+    returned OID is place in `data' argument.
+  \end{description}
+
+  `Tombstoned' tuples are considered deleted and will be ignored
+  during cursor searching.
+\item[Return Value]\ \\
+   If no matching keys are found, {\IMRELcursor}-$>$c\_get will return
+   {\DBNOTFOUND}.  Otherwise, the {\IMRELcursor}-$>$c\_get function
+   returns a non-zero error value on failure and 0 on success.
+
+   If {\IMRELcursor}-$>$c\_get fails for any reason, the state of the
+   cursor will be unchanged.
+
+\item[Error]\ \\ 
+The {\IMRELcursor}-$>$c\_get function may fail and return a non-zero
+error for errors specified for other {\IMDB} and C library or system
+functions.
+
+\item[Sample Call]\ 
+\begin{verbatim}
+DBT key, data;
+
+if((ret = im_rel_cursor->c_get(relcp, &key, &data, DB_FIRST)) != 0)
+    return ERROR;
+\end{verbatim}
+\end{description}
+
+\newpage
+\subsection{{\IMRELcursor}-$>$c\_put}
+\begin{verbatim}
+#include <im_db.h>
+int IM_RELcursor->c_put(IM_RELC *cursorp, DBT *key, DBT *data, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+
+  The IM\_RELcursor-$>$c\_put function stores key/data pairs into the
+  database.
+
+  The flags parameter must be set to one of the following values: 
+  \begin{description}
+  \item[{\DBCURRENT}]\ \\
+    Overwrite the data of the key/data pair referenced by the cursor
+    with the specified data item. The input parameters are ignored. 
+  \end{description}
+
+\item[Return Value]\ \\
+  If the cursor is not yet initialized, the IM\_RELcursor-$>$c\_put
+  function will return {\DBNOTFOUND}. Otherwise, the
+  IM\_RELcursor-$>$c\_put function returns 0 on success. 
+\end{description}
+
+\newpage
+\subsection{{\IMRELcursor}-$>$c\_del}
+\begin{verbatim}
+#include <im_db.h>
+int IM_RELcursor->c_del(IM_RELC *cursorp, u_int32_t flags);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+
+  The IM\_RELcursor-$>$c\_del function deletes the key/data pair currently
+  referenced by the cursor. 
+
+  The flags parameter is currently unused, and must be set to 0. 
+
+  To be compatible with BerkeleyDB's behavior (according to Haixun and
+  James's code),  the cursor position is automatically located at
+  previous available data item after a delete, or set as
+  un-initialized if the head is being deleted.  This design will make
+  {\IMRELcursor}-$>$c\_get always work with {\DBNEXT} flag on.
+
+\item[Return Value]\ \\
+  If the cursor is not yet initialized, the IM\_RELcursor-$>$c\_del
+  function will return {\DBNOTFOUND}. Otherwise, the
+  IM\_RELcursor-$>$c\_del function returns 0 on success. 
+\end{description}
+
+\newpage
+\subsection{{\IMRELcursor}-$>$c\_close}
+\begin{verbatim}
+#include <im_db.h>
+int IM_RELcursor->c_close(IM_RELC *cursorp);
+\end{verbatim}
+\begin{description}
+\item[Description]\ \\
+
+  The IM\_RELcursor-$>$c\_close function discards the cursor. 
+
+  Once IM\_RELcursor-$>$c\_close has been called, regardless of its
+  return, the cursor handle may not be used again. 
+
+\item[Return Value]\ \\
+  The IM\_RELcursor->c\_close function returns a non-zero error value
+  on failure and 0 on success.
+\end{description}
+
+\newpage

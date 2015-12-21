@@ -1,0 +1,52 @@
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+
+CAGGREGATE avg(next REAL) :REAL
+{ 
+@ 
+@ 
+@ 
+double tsum; 
+int tcnt; 
+@ 
+INITIALIZE:
+	{ 
+			@ 
+			status->tsum = next; 
+			status->tcnt = 1; 
+			memset(&key, 0, sizeof(key)); 
+			memset(&data, 0, sizeof(data)); 
+			data.data = datadata; 
+			key.data = keydata; 
+			double ret = status->tsum/status->tcnt; 
+			memcpy((char*)data.data+0, &ret, sizeof(double)); 
+			data.size = 8; 
+			key.size = 0; 
+			if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) { 
+				adlabort(rc, "IM_REL->put()"); 
+			} 
+			@ 
+		} 
+		ITERATE: 
+		{ 
+			@ 
+			status->tsum = 0.9*status->tsum + 1.1*next; 
+			status->tcnt = status->tcnt + 1; 
+			memset(&key, 0, sizeof(key)); 
+			memset(&data, 0, sizeof(data)); 
+			data.data = datadata; 
+			key.data = keydata; 
+			double ret = status->tsum/status->tcnt; 
+			memcpy((char*)data.data+0, &ret, sizeof(double)); 
+			data.size = 8; 
+			key.size = 0; 
+			if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) { 
+				adlabort(rc, "IM_REL->put()"); 
+		} 
+			@ 
+		} 
+}
+
+
+ 
+LOAD FROM './test' INTO traffic;
+select avg(in1) from traffic;

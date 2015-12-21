@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while test $# -gt 0; do
+      tr -d '\r' < $1 > /tmp/aa
+      mv /tmp/aa $1	 
+      shift
+done
+

@@ -1,0 +1,52 @@
+TABLE points (X1 real, Y1 real, C1 int);
+
+FUNCTION newpoints(iX Real, iY Real, iC Int):(oX Real, oY Real, oC Int)
+{
+  TABLE closepnts(X2 real, Y2 real, C2 Int) memory;
+  insert into closepnts
+    select from points X1, Y1, C1
+    where distance(X1-X0, Y1-Y0) < 10;
+
+  insert into RETURN
+    select X2, Y2, C2
+    from closepnts
+    where C1=0
+          and 5 < (select count C1 closepnts)
+} 
+/* newpoints counts the neighbours that are only returned when there are
+   more than 5; only those with C=0 are returned*/
+
+
+
+aggregate dbscan(iX Real, iY Real, iC Int):(oX Real, oY Real, oC Int)
+{
+    TABLE clusterno( Cno Int) values (0);
+
+    AGGREGATE propagate(IX Real, IY Real, IC Int):()
+            {initialize: iterate:
+                    { update points set C1 =IC where X1=IX and Y1=IY;
+                      propagate(N.oX, N.oY, N.oC)
+                      from TABLE(newpoints(IX,IY,IC)) AS N)
+                      }; /* end of propagate*/
+ %%%%here  starts dbscan
+  initialize: iterate:
+            {
+    update clusterno set Cno = Cno+1
+            from TABLE(newpoints(iX,iY, iC)) AS N;
+                    /* if anything is returned, we increase the cluster 
+counter (previous statement)
+                     and then start a new cluster and then propagate 
+(next statement) */
+            select propagate(iX, iY, clusterno.Cno)
+            from clusterno where SQLcode=0;
+           }
+     terminate: {  insert into RETURN
+                    select X1, Y1, C1
+                    from points }
+}
+%%%The actual program
+select dbscan(X1, Y1, C1)
+from points;
+
+
+

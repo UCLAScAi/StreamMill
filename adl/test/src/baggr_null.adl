@@ -1,0 +1,7 @@
+TABLE abc(item int);
+
+insert into abc values(1),(2),(3);
+
+insert into stdout
+select count(item) from abc where item>3;
+

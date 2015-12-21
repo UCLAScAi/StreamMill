@@ -1,0 +1,12 @@
+table test(v int);
+
+FUNCTION tabf(a int): (r int)
+{
+	insert into return select a+v from test;
+}
+
+insert into test values (1),(2),(3),(4),(5);
+
+insert into stdout
+select t.r
+from table (tabf(10)) t;

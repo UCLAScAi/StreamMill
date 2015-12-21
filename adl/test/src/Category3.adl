@@ -1,0 +1,128 @@
+table tennis(outlook int, temp int, humidity int, wind int, playtennis int);
+table result (inode int, col int, gini real, info char(20));
+
+aggregate dissemble(v1 int, v2 int, v3 int, v4 int, yorn int) : (col int, val int, class int)
+{
+	initialize: 
+	iterate:	
+	{	
+		insert into return values(1,v1, yorn), (2,v2,yorn), (3,v3,yorn), (4,v4,yorn);      
+	}
+};
+
+AGGREGATE minpointvalue(iCol int, iValue real) : (point int, value real)
+{    
+	TABLE tmp(col int, value real);    
+	INITIALIZE:  
+	{
+	 	INSERT INTO tmp VALUES(iCol, iValue);    
+	}   
+	ITERATE:  
+	{	
+		UPDATE tmp SET col=iCol, value=iValue WHERE value > iValue;	 
+	} 
+	TERMINATE:    
+	{
+		insert into return SELECT col, value FROM tmp;    
+	}	
+};
+
+AGGREGATE classify (RecId int, iNode int, iCol int, iValue int, iYorN int) : int  
+
+/* New parameter NotCol, since it's the attribute which we split */
+
+{
+	TABLE treenodes(RecId int, Node int, Col int, Val int, YorN int);           
+	TABLE summary(Col int, Value int, Yc real, Nc real) btree (Col, Value);   /*Yc, Nc should be real for division*/
+	TABLE mincol(Col int, MinGini real);		
+	TABLE ginitable(Col int, Gini real); 		
+	TABLE tmp (a int);
+/*	TABLE termin (Col, nValues, sYc, sNc); */
+
+
+	INITIALIZE: 
+	ITERATE: 
+	{
+		INSERT INTO treenodes VALUES (RecId, iNode, iCol, iValue, iYorN);  
+	     	UPDATE summary SET Yc=Yc+iYorN, Nc=Nc+1-iYorN WHERE Col = iCol AND Value = iValue; 
+             	INSERT INTO summary SELECT iCol, iValue, iYorN, 1-iYorN WHERE SQLCODE=0;   	
+        }
+
+	TERMINATE: 
+	{	
+	  	INSERT INTO ginitable SELECT Col, sum((Yc*Nc)/(Yc+Nc))/sum(Yc+Nc)  
+                		      FROM summary 
+				      GROUP BY Col 
+				      HAVING count(Value)>1 AND sum(Yc)>0 AND sum(Nc)>0;	
+
+		INSERT INTO mincol SELECT minpointvalue(Col, Gini) FROM ginitable;
+
+/*		INSERT INTO termin
+		SELECT Col, count(Value), sum(Yc), sum(Nc)  
+		FROM summary
+		GROUP BY Col;  */
+
+		/* HAVING count(Value)>1; */
+
+		/* NotCol can't be considered when calculating mingini */
+
+	     	INSERT INTO stdout  SELECT iNode, Col, MinGini, 'Intermediate-Node' FROM mincol; 	
+
+	     	INSERT INTO stdout  SELECT  iNode, t.yorn, 0, 'Leaf-Node' FROM 
+			(select tt.YorN yorn, count(tt.RecId) num from treenodes tt group by tt.YorN) as t 
+			where  SQLCODE=0 and t.num=(select max(t2.num) 
+			from (select tt.YorN yorn, count(tt.RecId) num from treenodes as tt group by tt.YorN) as t2); 
+
+		/* two cases for the previous SQLCODE to be 0, one is only 1 class left (Y or N), the other is 
+		   mincol table is empty, which means we have considered all columns, then returns class which 
+  		   has more count than the other one */
+
+		/* delete from treenodes where Col=NotCol; */ /* NotCol unnecessary later */
+
+
+	    	SELECT classify(t.RecId, t.Node*3+m.Value+1, t.Col, t.Val, t.YorN) 
+	     	FROM treenodes as t, (SELECT tt.RecId RecId, tt.Col Col, tt.Val Value FROM treenodes tt, mincol mm                       				      
+				      WHERE tt.Col=mm.Col ) as m
+		WHERE t.RecId = m.RecId	 
+	     	GROUP BY m.Value;
+/*		AND (select sum(s.Yc) from summary s )>0 AND (select sum(s.Nc) from summary s )>0 
+	*/
+
+		/* the only stopping case is we still have some yes and some no, coz it's possible to have 0 gigi even
+		 if not all yes or all no */
+
+		insert into stdout select a from tmp; /* do nothing, but delete it will have anomaly in output, don't know why */
+
+
+         } 
+};
+
+aggregate mcount() : int
+{
+	table tmp(i int);   
+
+	initialize :
+	{
+		insert into tmp values(1); 	
+		insert into return values(1);
+	}
+
+	iterate :    
+	{
+		update tmp set i=i+1;	
+		insert into return select i from tmp;    
+	}
+};
+
+insert into tennis values (1,1,1,1,0),(1,1,1,2,0), (2,1,1,1,1),(3,2,1,1,1), (3, 3, 2, 1, 1), (3, 3, 2, 2, 1),
+			  (2, 3, 2, 2, 0), (1, 2, 1, 1, 0),  (1, 3, 2, 1, 1), (3, 2, 2, 1, 1), (1, 2, 2, 2, 1), 
+			  (2, 2, 1, 2, 1), (2, 1, 2, 1, 1), (3, 2, 1, 2, 0); 
+
+/* insert into tennis values (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), 
+			  (1, 1, 1, 1, 1), (1, 1, 1, 1, 1), (0, 1, 1, 1, 0), (0, 1, 1, 1, 0), (0, 1, 1, 1, 0),
+			  (0, 1, 1, 1, 0), (0, 1, 1, 1, 0), (0, 1, 1, 1, 0), (0, 1, 1, 1, 0);  */
+
+select classify (t.recid, 0, t.col, t.val, t.yorn)
+from (select mcount() recid, dissemble(outlook, temp, humidity, wind, playtennis) as (col, val, yorn) from tennis) as t;
+
+insert into stdout select inode, col, gini, info from result;

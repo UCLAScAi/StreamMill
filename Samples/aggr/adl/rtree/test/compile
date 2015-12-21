@@ -1,0 +1,3 @@
+#!/bin/sh
+prefix=/home/lc/atlas/lib
+g++ -g $1 $prefix/librtree.a $prefix/libdb.a

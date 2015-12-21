@@ -1,0 +1,101 @@
+table flowers(id int, SL real, SW real, PL real, PW real, isSetosa int) memory;
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, YorN Int):(col Int, val Int, YorN Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, YorN), (2, v2, YorN), (3, v3, YorN), (4, v4, YorN); 
+}; 
+
+
+table classStat(YorN int, cnt real) memory;
+table colStat(col int, val int, YorN int, cnt real) memory;
+
+Aggregate learnClassifier(coli int, vali int, YorNi int):(a int) {
+  initialize: iterate: {
+    update classStat set cnt = cnt + 1 where YorN = YorNi;
+    /* if first instance of YorN */
+    insert into classStat values (YorNi, 1) where SQLCODE <> 0; 
+ 
+    update colStat set cnt = cnt + 1
+      where col = coli and val = vali and YorN = YorNi;
+    /* if first instance of YorN */
+    insert into colStat values (coli, vali, YorNi, 1) where SQLCODE <> 0; 
+  }
+};
+
+Aggregate evaluateClassifier(coli int, vali int, numColsi int, YorNi int):(YorNo int, classo int) {
+  table temp(col int, val int) memory;
+  table classes(cls int) memory;
+  table compute(cls int, prob real) memory;
+
+  Aggregate computeClsProb(clsi int, coli int, vali int):(probo real) {
+    table soFar(p real) memory;
+    initialize: {
+      insert into soFar values(((select cnt from classStat where YorN = clsi)/(select sum(cnt) from classStat))*((select cnt from colStat where col = coli and val = vali and YorN = clsi)/(select cnt from classStat where YorN = clsi))) 
+        where exists (select cnt from colStat where col = coli and val = vali and YorN = clsi);
+      insert into soFar values((select cnt from classStat where YorN = clsi)/(select sum(cnt) from classStat)) where SQLCODE <> 0;
+      /*insert into stdout select 'in comClsProb', p, clsi, coli, vali from soFar;
+      insert into stdout values ((select cnt from classStat where YorN = clsi), (select sum(cnt) from classStat), (select cnt from colStat where col = coli and val = vali and YorN = clsi)) where exists (select cnt from colStat where col = coli and val = vali and YorN = clsi);
+      */
+    }
+    iterate: {
+      update soFar set p = p * (select cnt from colStat where col = coli and val = vali and YorN = clsi)/(select cnt from classStat where YorN = clsi) 
+        where exists (select cnt from colStat where col = coli and val = vali and YorN = clsi);
+      update soFar set p = 0 where SQLCODE <> 0;
+      /*insert into stdout select 'in comClsProb-iter', p, clsi, coli, vali from soFar;
+      insert into stdout values ((select cnt from classStat where YorN = clsi), (select sum(cnt) from classStat), (select cnt from colStat where col = coli and val = vali and YorN = clsi)) where exists (select cnt from colStat where col = coli and val = vali and YorN = clsi);
+      */
+    }
+    terminate: {
+      insert into return select p from soFar;
+    }
+  };
+
+  Aggregate computeProb(clsi int):(clso int, probo real) {
+    initialize: {
+      insert into return values(clsi, (select computeClsProb(clsi, col, val) from temp));
+    }
+    iterate: {
+      /* common def of init and iter does not work for this case, kind of strange*/
+      insert into return values(clsi, (select computeClsProb(clsi, col, val) from temp));
+    }
+  };
+ 
+  Aggregate mymax(a real):(b real) {
+    table t(m real) memory;
+    initialize: {
+      insert into t values(a);
+    }
+    iterate: {
+      update t set m = a where m < a;
+    }
+    terminate: {
+      insert into return select m from t;
+    }
+  }
+
+  initialize: {
+    insert into temp values(coli, vali);
+    insert into classes select distinct YorN from classStat;
+  }
+  iterate: {
+    insert into temp values(coli, vali);
+    /*insert into stdout values('--here--', coli, vali) where coli = numColsi;*/
+    /*insert into stdout select 'classesOpts', cls from classes where coli = numColsi;*/
+    insert into compute select computeProb(cls) from classes where coli = numColsi;
+    
+    insert into return select YorNi, cls from compute where coli = numColsi and prob = (select mymax(prob) from compute); 
+    
+    delete from temp where coli = numColsi;
+    /*delete from classes where coli = numColsi;*/
+    delete from compute where coli = numColsi;
+  }
+}
+
+load from 'iris.data' into flowers;
+
+select learnClassifier(d.col, d.val, d.YorN)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+
+select evaluateClassifier(d.col, d.val, 4, d.YorN)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+

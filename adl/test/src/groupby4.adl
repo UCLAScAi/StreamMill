@@ -1,0 +1,18 @@
+table test(a int, b int);
+
+insert into test values(1,2),(2,3),(3,4),(1,5),(2,6),(3,7),(2,3),(2,6);
+
+insert into stdout
+SELECT sum(b)
+FROM test
+group by 3;
+
+insert into stdout
+SELECT sum(b)
+FROM test
+group by a;
+    
+insert into stdout
+SELECT sum(b)
+FROM test
+group by a,b;

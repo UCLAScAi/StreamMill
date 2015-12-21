@@ -1,0 +1,2 @@
+hadoop fs -rmr hashing hashing0 
+/usr/src/hadoop-0.20/bin/hadoop jar hashing.jar StaticHashing input/numbersFromSameDistr hashing 

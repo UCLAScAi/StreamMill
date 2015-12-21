@@ -1,0 +1,31 @@
+Table stock(date int, price int, volume int);
+
+AGGREGATE landmark(idate int, iprice int, D int,P int) :  (date int, price int )
+{
+    TABLE tmp( date int, price int, dir int);
+
+    INITIALIZE:
+    {
+        INSERT INTO tmp VALUES(idate, iprice,0);
+        INSERT INTO return VALUES (idate,iprice);
+    }
+    ITERATE:
+    {
+        INSERT INTO return SELECT idate, iprice from tmp where 
+                (10000*4*(tmp.price - iprice)*(tmp.price - iprice)
+                        /((tmp.price+iprice)*(tmp.price+iprice))) >P 
+			OR (idate -tmp.date)> D;
+        UPDATE tmp SET date=idate, price=iprice, dir=1
+                 where 
+                (10000*4*(tmp.price - iprice)*(tmp.price - iprice)
+                        /((tmp.price+iprice)*(tmp.price+iprice))) >P 
+			OR (idate -tmp.date)> D;
+    }
+    TERMINATE:
+    {
+    }                
+}
+
+load from nasdint2.txt into stock;
+insert into stdout SELECT landmark(date,price,22,1600)->date,
+		landmark(date,price, 22,1600)->price FROM stock;

@@ -1,0 +1,11 @@
+table temp1(a int);
+table temp2(a int, b int);
+
+load FROM 'src/load1.dat' into temp1;
+load FROM 'src/load2.dat' into temp2;
+
+insert into stdout
+SELECT a FROM temp1;
+
+insert into stdout
+SELECT a, b FROM temp2;

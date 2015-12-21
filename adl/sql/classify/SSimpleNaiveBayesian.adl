@@ -1,0 +1,187 @@
+table abc(a int, b int, c int) memory;
+table mush(id int, capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int, 
+           classLbl int) memory;
+table mush1(id int, capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int, 
+           classLbl int) memory;
+
+function dissemble (capShape int, capSurface int, capColor int, bruises int,
+           odor int, gillAttach int, gillSpa int, gillSize int, gillColor int,
+           stalkShape int, stalkRoot int, stalkSAR int, stalkSBR int,
+           stalkCAR int, stalkCBR int, veilType int, veilColor int,
+           ringNumber int, ringType int, sporePC int, pop int, hab int, 
+           classLbl int) : (col int, val int, classLbl int) {
+  insert into return values (1, capShape, classLbl), (2, capSurface, classLbl),
+              (3, capColor, classLbl), (4, bruises, classLbl),
+              (5, odor, classLbl), (6, gillAttach, classLbl),
+              (7, gillSpa, classLbl), (8, gillSize, classLbl),
+              (9, gillColor, classLbl), (10, stalkShape, classLbl),
+              (11, stalkRoot, classLbl), (12, stalkSAR, classLbl),
+              (13, stalkSBR, classLbl), (14, stalkCAR, classLbl),
+              (15, stalkCBR, classLbl), (16, veilType, classLbl),
+              (17, veilColor, classLbl), (18, ringNumber, classLbl),
+              (19, ringType, classLbl), (20, sporePC, classLbl),
+              (21, pop, classLbl), (22, hab, classLbl);
+};
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int)
+{
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl);
+};
+
+CAggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  @
+    /* global c stuff here */
+    static int cnt = 0;
+    static hash_map<int, int, hash<int> >* classStat = new hash_map<int, int, hash<int> >;
+    static hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >* colStat = new hash_map<int, hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >*, hash<int> >;
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+        /* Random c code here -- init*/
+        //printf("here %d %d %d %d %d\n", coli, vali, classLbli, status->classStat, status->colStat);
+        if(coli==numColsi)
+          cnt++;
+
+        if(classStat->operator[](classLbli)) {
+          classStat->operator[](classLbli) += 1;
+        }
+        else {
+          classStat->operator[](classLbli) = 1;
+        }
+
+        if(colStat->operator[](coli)) {
+          if(colStat->operator[](coli)->operator[](vali)) {
+            if(colStat->operator[](coli)->operator[](vali)->operator[](classLbli)) {
+              colStat->operator[](coli)->operator[](vali)->operator[](classLbli) += 1;
+            }
+            else {
+              colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+            }
+          }
+          else {
+            colStat->operator[](coli)->operator[](vali) = new hash_map<int, int, hash<int> >;
+            colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+          }
+        }
+        else {
+          colStat->operator[](coli) = new hash_map<int, hash_map<int, int, hash<int> >*, hash<int> >;
+          colStat->operator[](coli)->operator[](vali) = new hash_map<int, int, hash<int> >;
+          colStat->operator[](coli)->operator[](vali)->operator[](classLbli) = 1;
+        }
+    @
+  }
+};
+
+
+CAggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  @
+    /* global c stuff here */
+    static hash_map<int, double, hash<int> >* tclassStat = new hash_map<int, double, hash<int> >;
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+      if(coli == 1) {
+        for(hash_map<int, int, hash<int> >::iterator iter = classStat->begin();
+              iter != classStat->end(); ++iter) {
+          pair<int, int> p(*iter);
+          tclassStat->operator[](p.first) = ((double)p.second)/cnt;
+        }
+      }
+      for(hash_map<int, int, hash<int> >::iterator iter = classStat->begin();
+            iter != classStat->end(); ++iter) {
+        pair<int, int> p(*iter);
+        if(colStat->operator[](coli)) {
+          if(colStat->operator[](coli)->operator[](vali)) {
+            if(colStat->operator[](coli)->operator[](vali)->operator[](p.first)) {
+              tclassStat->operator[](p.first) = tclassStat->operator[](p.first)*
+                                                  colStat->operator[](coli)->operator[](vali)->operator[](p.first)/classStat->operator[](p.first);
+            }
+            else {
+              tclassStat->operator[](p.first) = 0;
+            }
+          }
+          else {
+            tclassStat->operator[](p.first) = 0;
+          }
+        }
+        else {
+          tclassStat->operator[](p.first) = 0;
+        }
+      }
+      if(coli == numColsi) {
+        double mx=0;
+        int cls=-1;
+        for(hash_map<int, double, hash<int> >::iterator iter = tclassStat->begin();
+              iter != tclassStat->end(); ++iter) {
+          pair<int, double> p(*iter);
+          if(p.second > mx) {
+            mx = p.second;
+            cls = p.first;
+          }
+        }
+        if(mx==0) cls = -1;
+        /* output results here */
+        memset(&key, 0, sizeof(key));
+        memset(&data, 0, sizeof(data));
+        data.data = datadata;
+        key.data = keydata;
+        memcpy((char*)data.data+0, &idi, sizeof(int));
+        memcpy((char*)data.data+4, &classLbli, sizeof(int));
+        memcpy((char*)data.data+8, &cls, sizeof(int));
+        data.size = 12;
+        key.size = 0;
+        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+          adlabort(rc, "IM_REL->put()");
+        }
+
+      }
+    @
+  }
+};
+
+
+load from '/home/hthakkar/adl/sql/clsf/mushroom1.txt' into mush;
+load from '/home/hthakkar/adl/sql/clsf/mushroom1.txt' into mush1;
+
+select count(1) from mush;
+
+select learnClassifier(d.col, d.val, d.classLbl, 22)
+from  mush, TABLE(dissemble(capShape, capSurface, capColor, bruises, 
+                            odor, gillAttach, gillSpa, gillSize, gillColor,
+                            stalkShape, stalkRoot, stalkSAR, stalkSBR,
+                            stalkCAR, stalkCBR, veilType, veilColor,
+                            ringNumber, ringType, sporePC, pop, hab,
+                            classLbl)) AS d;
+
+select evaluateClassifier(id, d.col, d.val, 22, d.classLbl)
+from  mush1, TABLE(dissemble(capShape, capSurface, capColor, bruises, 
+                            odor, gillAttach, gillSpa, gillSize, gillColor,
+                            stalkShape, stalkRoot, stalkSAR, stalkSBR,
+                            stalkCAR, stalkCBR, veilType, veilColor,
+                            ringNumber, ringType, sporePC, pop, hab,
+                            classLbl)) AS d;
+

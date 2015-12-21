@@ -1,0 +1,15 @@
+prefix=/research/workspace/StreamMill/atlas
+AXLDIR=$(prefix)
+LIBDIR=$(AXLDIR)/lib/
+BERKELEY_INC=${prefix}/include
+BERKELEY_LIB=${prefix}/lib/libdb.a
+ADL_INC=${AXLDIR}/include
+ADL_LIB=$(LIBDIR)/libatlas.a
+IMDB_LIB=$(LIBDIR)/libimdb.a
+RTREE_LIB=$(LIBDIR)/librtree.a
+CXX=g++ -g
+nlaptev_myavg.so: 
+	adlc nlaptev_myavg.aggr
+	${CXX} -g -shared -fPIC -Iesl -I../rtree -I../im_db -I. -I.. -o nlaptev_myavg.so nlaptev_myavg.cc ${ADL_LIB} -ldl -lmm ../sql/libatlas.a ${BERKELEY_LIB} ${IMDB_LIB} ../dbug/libdbug.a -ldl
+	cp nlaptev_myavg.so ../exe/
+

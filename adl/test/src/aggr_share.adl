@@ -1,0 +1,14 @@
+table temp(a int);
+
+AGGREGATE mcount() : int
+{
+    INITIALIZE :
+    ITERATE :
+    {
+	INSERT INTO return VALUES(1);
+    }
+}
+
+insert into temp values(5),(4),(3),(2),(1); 
+
+insert into stdout SELECT mcount() FROM temp;

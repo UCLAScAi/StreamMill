@@ -1,0 +1,4 @@
+#!/bin/sh
+LIBDIR=${ATLAS_HOME}/lib
+
+gcc -shared -o $1.so -fPIC -I../../BerkeleyDB/include $1.c ${LIBDIR}/libadl.a ${LIBDIR}/libdb.a ${LIBDIR}/libimdb.a

@@ -1,0 +1,48 @@
+
+
+\chapter{Introduction}
+
+ATLaS is an SQL-based programming language for data-intensive applications.
+Unlike languages, such as PL/SQL  or SQL/PSM, which use the imperative the constructs of
+procedural languages, ATLaS achieves Turing completeness by using declarations, i.e.,
+by supporting the declarations of new  aggregates and table functions.
+
+An ATLaS program consists of list of declarations followed by a list of
+SQL statements. Therefore, (with
+{\tt A|B} denoting either {\tt A} or {\tt B}, and {\tt A*}
+denoting zero or more occurrence of {\tt A}) we have:
+%{\renewcommand{\baselinestretch}{1}
+\begin{figure}[!htp]
+\centering
+\framebox{
+\begin{tabular}{rll}
+   \bnf{ATLaS-program} &$\rightarrow$& \bnf{ATLaS-dcl}$*$\;  \bnf{SQL-statement}$*$\\
+  \bnf{ATLaS-dcl}     &$\rightarrow$&  \bnf{Table-dcl} $|$ \bnf{UDA-dcl} $|$ \bnf{TFunc-dcl} \\
+  \end{tabular}
+}
+\caption{Syntax of ATLaS extensions \label{tab:syntax}}
+\end{figure}
+
+%}
+
+The SQL-statements  mentioned  in Figure \ref{tab:syntax}
+are the  basic select, insert, delete, update commands of
+SQL-2,  which are summarized in Figure \ref{table:sql}.
+We will assume that our reader is  already familiar with SQL-2 and
+concentrate on the extensions which make
+makes ATLaS so powerful.  ATLaS is Turing-complete
+because of its declarations,
+which are of three kinds:
+
+\begin{enumerate}
+\item  Table declarations (Table-dcl]),
+
+\item  declarations of User-Defined Aggregates (UDA-dcl),
+
+\item  declarations of Table Functions (TFunc-dcl).
+\end{enumerate}
+
+In the next  Section  we discuss simple programs that only use table
+declarations. Programs
+containing user-defined aggregates and table functions are
+discussed in  the following sections.

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Implementation</TITLE>
+<META NAME="description" CONTENT="Implementation">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node3.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="document.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html40"
+ HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html37"
+ HREF="document.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html31"
+ HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html39"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html41"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Up:</B> <A NAME="tex2html38"
+ HREF="document.html">No Title</A>
+<B> Previous:</B> <A NAME="tex2html32"
+ HREF="node1.html">Design</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000">
+Implementation</A>
+</H1>
+<UL>
+<LI><TT>im_rel.c</TT> implements in-memory relations as linked lists.
+<LI><TT>im_cursor.c</TT> implements cursor operations on in-memory
+      relations.
+<LI><TT>im_debug.c</TT> has some debugging routines and sample calls.
+<LI><TT>hash-arbitrary.c</TT> is adapted from GNU Assembler software
+      package.  The original version can only handle text strings
+      because it was designed for looking up symbol table.  I change
+      the code to handle arbitrary bit strings by passing a ``void *''
+      and its length in bytes.
+<LI><TT>im_db_env_method.c</TT> <TT>im_db_err.c</TT> emulate BerkeleyDB's
+      error reporting utilities.
+<LI><TT>mylib.c</TT> has some personal library functions.
+</UL>
+<P>
+In the linked-list implementation I use a doubly-linked cyclic list
+because we need to support bi-directional cursor operations.
+
+<P>
+Another link pointer is added for chaining duplicate keys.  This is
+because we need to support <FONT SIZE="-1"><I>DB_NEXT_DUP</I></FONT> operation during a cursor
+scan.
+
+<P>
+To support object-relational database features, the in-memory database
+associates an OID with each tuple.  OID is implemented as memory
+address of a tuple.
+
+<P>
+OID also affects deletions and retrievals.  Tuples in an OID relation
+are never deleted because it is too expensive to update all places
+referencing the deleting tuples.  Instead, we set a <EM>tombstone</EM>
+flag on the deleting tuples, thus each tuple also has a flag field.
+
+<P>
+A tombstoned tuple keeps all link pointers.  However, during a get
+operation it is skipped.  When a tombstoned tuple is referenced by a
+path-expression instance, it is a signal indicating that no result is
+returned for the path-expression instance.
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html40"
+ HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html37"
+ HREF="document.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html31"
+ HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html39"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html41"
+ HREF="node3.html">API: Application Programming Interface</A>
+<B> Up:</B> <A NAME="tex2html38"
+ HREF="document.html">No Title</A>
+<B> Previous:</B> <A NAME="tex2html32"
+ HREF="node1.html">Design</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,20 @@
+What's new?
+1.4.16: 1/25/04
+- bug fixed: btree comparison funtions for multi-keys
+
+1.4.15: 1/4/04
+- support SQL/XML
+- support nested aggregates
+
+1.4.14: 11/5/03
+- External Functions: support C external function.  TODO: C++ external function 
+- Dynamically allocate external function's return space (_allocateResultSpace())
+- Support Binary type data, using char(len).  
+  (change strcpy() into memcpy() in sement.cc and semant_aggr.cc)
+
+1.4.13: 10/31/03, Happy Halloween!
+External functions: Add char* return type.  Disallow char return type 
+
+1.4.12: 10/14/03
+Bug fixed: DB_SET should be combined with DB_NEXT_DUP not DB_NEXT with equality predicates, reported by Fusheng.
+

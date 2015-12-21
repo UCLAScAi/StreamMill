@@ -1,0 +1,76 @@
+SUFFIXES = .grm .c .o
+
+CFLAGS = -DSQL_AG -g
+CXXFLAGS = -DSQL_AG -g
+YFLAGS = -d
+INCLUDES = -I../ 
+LDADD = ../dbug/dbug.o 
+CXX = c++
+CXXLINK = $(CXX) $(CXXFLAGS) $(CXXFLAGS) -o $@
+CXXCOMPILE = $(CXX) $(CXXFLAGS) $(INCLUDES) 
+#LIBS = -lm -ldl 
+LIBS = -lm  
+
+adlc_OBJECTS =  adl_yacc.o lex.o adlc.o absyn.o sql_rewrite.o semant.o sqlsem.o builtin.o \
+bind.o table.o trans2C.o symbol.o types.o env.o adl_sys.o semant_aggr.o udf.o \
+io.o adl_obj.o util.o list.o err.o getopt.o getopt1.o
+
+adlc_SOURCES = adl_yacc.cc lex.cc adlc.cc \
+		absyn.cc sql_rewrite.cc semant.cc bind.cc sqlsem.cc \
+		builtin.cc udf.o  \
+		semant_aggr.cc table.cc \
+		trans2C.cc symbol.cc \
+		types.cc env.cc \
+		adl_sys.cc io.cc adl_obj.cc \
+		util.cc list.cc err.cc \
+		getopt.c getopt1.c \
+		err.h  getopt.h io.h lex.h \
+		list.h adl_obj.h adl_sys.h system.h absyn.h \
+		trans2C.h const.h irtree.h semant.h table.h types.h env.h \
+		temp.h util.h symbol.h basic.h
+
+EXTRA_DIST = adl_yacc.grm Makefile.win
+
+all: adlc
+
+dist: adlsql.tgz 
+
+adlsql.tgz: $(adlc_SOURCES) $(EXTRA_DIST)
+	tar cf - $(adlc_SOURCES) $(EXTRA_DIST) | gzip > adlsql.tgz
+	
+clean: 
+	rm -f $(adlc_OBJECTS)
+	rm -f adlc.exe
+	rm -f adl_yacc.cc
+
+adlc: $(adlc_OBJECTS)
+	@rm -f adlc.exe
+	$(CXXLINK) $(adlc_OBJECTS) $(LDADD) $(LIBS)
+
+.cc.o:
+	$(CXXCOMPILE) -c -o $@ $<
+
+
+adl_yacc.cc: adl_yacc.grm
+	$(YACC) $(AM_YFLAGS) $(YFLAGS) $< 
+	mv y.tab.h $*.h
+	sed -e "s/yyn += yychar1;/yyn += yychar1;\
+  {\
+    int dodefault = (yyn < 0 || yyn > YYLAST || yycheck[yyn] \!= yychar1);\
+    int newlookahead; \
+    if ( ((dodefault \&\& yydefact[yystate]==0) ||\
+	  (\!dodefault \&\& (yytable[yyn] == YYFLAG || yytable[yyn] == 0))) \&\&\
+	(newlookahead = yylex2()) ) {\
+	yychar = newlookahead;  goto yybackup;  \
+    }  \
+  }/" y.tab.c > adl_yacc.cc
+
+
+
+
+
+
+
+
+
+

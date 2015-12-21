@@ -1,0 +1,5 @@
+table test(i int, j int);
+
+insert into test values(1,2), (2,3), (3,4);
+
+insert into stdout SELECT i, j FROM test;

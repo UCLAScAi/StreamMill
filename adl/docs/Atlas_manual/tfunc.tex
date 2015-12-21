@@ -1,0 +1,133 @@
+
+\chapter{Table Functions}
+Table functions play a critical role in rearranging data, and
+allowing the composition of aggregates. For instance,
+if we want to count the number
+of the local minima found in the execution of {\tt minpair},
+we can use the following table function:
+
+
+\paragraph{Cascading of Aggregates via a Tfunction}
+\begin{codedisplay}
+\> /* include the declaration of the {AGGREGATE} minpair here*/\\
+\> TABLE stock\_prices(Day Int, Stock char(4), Cprice Real)\\
+\>\>\>\>\>\>\>\>\>\>\>source  'C:$\backslash$mydabase$\backslash$stock\_prices' ;\\
+
+\>FUNCTION localmins():(Stock Int, Point Int, Value Int)\\
+\>\> \{ \> insert into RETURN\\
+\>\>\>select p.Stock, minpair(p.Day, p.Cprice)\\
+\>\>\>\>from stock\_prices as p\\
+\>\>\>\> group by p.Stock\\
+\> \>\> \} \\[0.2cm]
+\>select  L.Stock,  count(L.Point)\\
+\>\>from  stock\_prices, TABLE(localmins()) AS L\\
+\>\>group by L.Stock; \\
+\>\\
+\end{codedisplay}
+
+Here the table function does little more than calling the {\tt minpair}
+aggregate on the {\tt stock\_prices} table, and organizing the results
+as a virtual table with attributes  {\tt (Stock, Point, Value)}. Then,
+the aggregate {\tt count} can be called on this virtual table,
+whereas the direct cascading of aggregates is not allowed in
+SQL, nor in ATLaS.
+
+Also observe that the notation
+{\tt TABLE( ...)} must be used when invoking table functions,
+to conform to SQL standards.
+
+The final NB is that the `dot' notation
+(e.g., {\tt L.Point})  is used to refer to the various columns in a
+tuple produced by a table function, whereas we use``$\rightarrow$''
+for UDAs (e.g., {\tt minpair(Day, Stock) $\rightarrow$ iPoint}).
+
+\paragraph{Pre-Sorting the Data}
+The correctness of the $\tt rising$ is predicated upon the data
+being sorted by increasing time. If that is not the case, we can
+use a table function to pre-sort the data. Then, our program
+becomes:
+\begin{codedisplay}
+\> /*{AGGREGATE} minpair  include here the rising declaration*/\\
+\> TABLE stock\_prices(Day Int, Stock char(4), Cprice Real)\\
+\>\>\>\>\>\>\>\>\>\>\>source  'C:$\backslash$mydabase$\backslash$stock\_prices' ;\\[0.1cm]
+\>FUNCTION sort():(Stock Int, Point Int, Value Int)\\
+\>\> \{ \> insert into RETURN\\
+\>\>\>select Day, Stock, Cprice)\\
+\>\>\>\>from stock\_prices\\
+\>\>\>\> ORDERED BY Stock, Day\\
+\> \>\> \} \\[0.1cm]
+\>\>insert into stdout\\
+\>\>select Stock, rising(Day, Stock) $\rightarrow$ Start,
+rising(Day, Stock)$\rightarrow$ End\\
+\>\>from stock\_prices, TABLE(sort())\\
+\>\>group by Stock\\
+\end{codedisplay}
+
+
+\paragraph{Column Value Pair}The first step for most scalable classifiers
+is to convert the training set into column/value pairs. For instance,
+say that our training set is as follows, where the  various conditions
+are described by their initials (e.g., S, O, R in the first column stand
+respectively for Sunny, Overcast, and Rain):
+
+\begin{figure}[htb]
+\begin{center}
+{\footnotesize
+\begin{tabular}{|c|c|c|c|c|c|} \hline
+{\bf RID}&{\bf Outlook}&{\bf Temp}&{\bf Humidity}&{\bf Wind}&{\bf Play}\\
+\hline
+1&S&H&H&W&N\\
+2&S&H&L&S&N\\
+3&O&H&L&W&Y\\
+4&R&M&H&W&Y\\
+$\ldots$& $\ldots$& $\ldots$ & $\ldots$ & $\ldots$& $\ldots$\\
+\end{tabular}
+}
+\caption{The relation \bf PlayTennis} \label{tab:tennis}
+\end{center}
+\end{figure}
+
+Then, we want to convert {\bw PlayTennis} into a new
+stream of three columns {\bw (Col, Value, YorN)} by breaking down each
+tuple into four records, each record representing one column in the
+original tuple, including the column number, column value and the
+class label {\bw YorN}. For instance, the first tuple should
+produce the following
+tuples:
+
+$$\tt
+(1, S, N), \ (2, H, N), \ (3, H, N), \ (4, W, N)$$
+Our next table function, called
+{\tt dissemble}  can be used for the task.
+
+\begin{codedisplay}
+\kw{FUNCTION} dissemble\\
+\> \>(v1 \kw{Char(1)}, v2 \kw{Char(1)}, v3 \kw{Char(1)},
+v4 \kw{Char(1)}, YorN \kw{Char(1)}):\\
+\> \>  \> \> \> \> \> \>\hspace{2cm}  (col \kw{Int}, val \kw{Char(1)}, YorN \kw{Char(1)}); \\
+\> \{\kw{INSERT} \kw{INTO} \kw{RETURN}\\
+ \> \> \> \kw{VALUES} (1, v1, YorN), (2, v2, YorN),\\
+  \> \> \> \> \> \>\kw{}(3, v3, YorN), (4, v4, YorN);\\
+ \> \> \}\\
+\end{codedisplay}
+
+\begin{figure}[hbt]
+\centering
+\framebox{
+\begin{tabular}{rll}
+    \bnf{Tfunc-dcl} &$\rightarrow$& `FUNCTION` \bnf{id} `(` \bnf{column-list} `)` `:`
+             \bnf{return-type} \bnf{Tfunc-body} \\
+  \bnf{return-type} &$\rightarrow$& \bnf{type} $|$ `(` \bnf{column-list} `)`\\
+  \bnf{Tfunc-body} &$\rightarrow$& `\{` \bnf{ATLaS-dcl*}  \bnf{SQL-statement*} `\}` \\
+
+\end{tabular}
+}
+\caption{The declaration of a Table Function}
+\end{figure}
+The syntax for function tables is given below.
+ The mapping expressed by {\tt dissemble} could be expressed in standard
+ SQL via the union of several statements, but such a formulation could
+ lead to inefficient execution. In later sections we will show that,
+using this table function and specialized aggregates we can
+express Naive Bayesian classifiers and Decision Tree Classifiers in
+a few ATLaS statements.

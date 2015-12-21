@@ -1,0 +1,110 @@
+\chapter{ATLaS SQL on Tables}
+ATLaS can use a variety of tables from different sources. In
+particular, it can access B+Tree indexed tables managed by the embedded
+database system Berkeley DB~\cite{berkeleydb}. For instance, say that an
+employee table, with key $\tt Eno$, is stored in such a format in
+the directory\\
+$\tt C$:$\tt \backslash mydb \backslash employees$.
+[Say more about win vs linux] Then the following
+program  first gives a 5 \% raise to the employees in the 'QA'
+department, and then prints all the employees who now make more
+than 60K:
+
+
+\begin{codedisplay}
+\tt
+\>\>\>\>\>\>\>\>\> $\slash$* Begin of ATlaS program--- this is a comment*$\slash$\\
+\>\>table employees(Eno int, Name char(18), Sal real, Dept char(6)) \\
+ \> \>    \> \> \> \> Btree(Eno) ~  source \
+ '$\tt C$:$\tt \backslash  mydb\backslash employees$';\\[0.1cm]
+ \> \> update employees set Sal = Sal * 1.05\\
+       \> \> \> \> \> where Dept='QA' ;\\[0.1cm]
+ \> \> insert into stdout select Eno, Name\\
+ \> \> \> \> \> from employees where Sal $>$ 60000;\\
+\>\>\>\>\>\>\>\>\> $\slash$* End of ATlaS program *$\slash$\\
+\end{codedisplay}
+
+The {\tt insert into stdout} clause before {\tt select} in the last
+statement can be omitted without changing the meaning of this program.
+Thus ATLaS supports the standard {\tt select, insert, delete, update}
+statements of SQL-2. Observe that keywords can be written in upper
+case or lower case---however, attribute names and other user-defined
+identifiers are case-sensitive.
+
+Since we assume that our readers are already familiar
+with SQL-2, we will now concentrate on the new constructs of ATLaS and
+return to SQL in Section 6.
+
+Three types of tables are currently supported in ATLaS, as follows:
+
+\begin{enumerate}
+\item Secondary storage tables with indexed by B+ trees on one or more attributes,
+as in the following example:
+
+\begin{codedisplay}
+\tt
+\>\> TABLE employees(Eno int, Name char(18), Sal real, Dept char(6)) \\
+ \> \>  \> \> \> \> BTree(Eno)
+ source '$\tt C$:$\tt \backslash  mydb \backslash employees$';\\
+\end{codedisplay}
+
+The  $\tt SOURCE$ declaration associates this table with the file
+$\tt C$:$\tt \backslash  mydb \backslash employees$ and make it
+ {\em persistent}. Persistent tables remain after
+the the program completes its execution. Tables declared without a $\tt source$
+are {\em transitory} and they are removed at the end of the program
+execution.
+
+\item Secondary storage tables with indexed by R+ trees on a pair
+or a quadruplet of real attributes: the first can be
+used to index points, and the second for rectangles:
+
+\begin{codedisplay}
+\tt
+\>TABLE mypoints(x real, y real, object char(10)) RTree(x,y); \\[0.2cm]
+
+\> TABLE myrectangles(tx real, ty real, bx real, by real, object char(10))\\
+  \> \>  \> \> \> \>      \> \>  \> \> \> \>     RTree(tx,ty,bx,by);
+\end{codedisplay}
+\item
+Main memory tables, with a hash-based index on one or more
+attributes:
+\begin{codedisplay}
+\tt
+TABLE memo(j Int,  Region Char(20))\\
+\>\>\> MEMORY AS VALUES(0, `root-of-tree`);
+\end{codedisplay}
+This example also illustrates that a transitory
+table can be  initialized to the results of the query defined using the
+{\tt AS query} option. In this example, we use constant values to
+initialize the table. In general, the initialization query can
+use the content of previously declared tables.
+\end{enumerate}
+A source declaration can only be given for B+tree and R+tree tables, but not for
+{\tt MEMORY} tables since these are never persistent.
+The syntax of table declarations is as follows:
+
+
+\begin{table}[!htp]
+\centering
+\framebox{
+\begin{tabular}{rll}
+    \bnf{Table-dcl} &$\rightarrow$ & `TABLE` ~ \bnf{table-id}
+`(` \bnf{columns} \bnf{keydec} `)`\\
+     & &~~~~~~~~~~ [`SOURCE` $|$ `$'$`\bnf{file-name}`$'$``AS` \bnf{query}] `;`\\
+    \bnf{column-list} &$\rightarrow$& \bnf{column} [`,`  \bnf{column}]* \\
+    \bnf{column} &$\rightarrow$& \bnf{id} \bnf{type} \\
+    \bnf{type} &$\rightarrow$& `INT` $|$ `REAL` $|$ `CHAR` `(` \bnf{num} `)` $|$  `REF` `(` \bnf{id} `)`\\
+    \bnf{keydec} &$\rightarrow$& [`BTree(`\bnf{key}`)`, `RTree(`\bnf{key}`)`, MEMORY] `;`\\
+  \bnf{key} &$\rightarrow$&  `(` \bnf{id} [`,` \bnf{id}]* `)` \\
+ \\
+ \bnf{load} &$\rightarrow$& `LOAD` \ `FROM` `$'$`\bnf{file-name}`$'$` `INTO` \bnf{table-id}\\
+
+  \end{tabular}
+}
+\caption{Declaring and Initializing Tables in ATLaS.}
+\end{table}
+The {\tt LOAD} construct of ATLaS  can be used to load into a table data from
+an external file, where the commas (carriage returns) are used as separators
+between attribute values (records). Newly loaded tuples are appended to
+the existing tuples.

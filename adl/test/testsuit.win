@@ -1,0 +1,40 @@
+#!bash
+
+for i in `ls src/$1*.adl`; do
+    BASENAME=`echo $i | cut -d. -f 1`
+
+    echo testing $BASENAME ...
+
+    if [ ! -f $BASENAME.result ]; then
+        echo "skipped. Can't locate $BASENAME.result"
+    else
+	
+	adlc -f adlctmp.cc $BASENAME.adl 
+	adlcc adlctmp.cc 
+
+	./adlctmp > adltestsuittmp
+
+	echo "*********CURRENT RESULT***************"
+	cat adltestsuittmp
+	echo "*********ORIGINAL RESULT**************"
+	cat $BASENAME.result
+	echo "**************************************"
+
+        cmp=`diff adltestsuittmp $BASENAME.result`
+
+        if [ "$cmp" = "" ]; then
+            echo "TEST $BASENAME **OK**"
+        else
+	    sort adltestsuittmp > sort.1
+	    sort $BASENAME.result > sort.2
+	    cmp= `diff sort.1 sort.2`
+	    if [ "$cmp" = "" ]; then
+		echo "TEST $BASENAME **ORDER**"
+	    else 
+		echo "TEST $BASENAME FAILED"
+	    fi
+        fi
+
+	rm -rf adlctmp adlctmp.*
+    fi
+done

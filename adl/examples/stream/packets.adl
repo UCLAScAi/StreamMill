@@ -1,0 +1,20 @@
+Table Packets(Pid char(6), Leng int, Minutes int)
+Btree(Minutes);/* source 'cricket.txt';*/
+aggregate wavg(Pid char(6), Length int, Timein int): int
+{table onehour(sl int, time int) memory;
+table temp(cnt int, sm int) memory;
+initialize:{ insert into temp values(1, Length);
+insert into onehour values(Length, Timein);
+}
+iterate:{update temp set cnt= cnt+1, sm= sm + Length;
+update temp set
+cnt = cnt - (select count(sl) from onehour
+where time + 60 < Timein ),
+sm = sm - (select sum(sl) from onehour
+where time + 60 < Timein );
+delete from onehour where time + 60 < Timein;
+insert into return select Timein from temp
+where sm/cnt< Length/2 }
+}
+select wavg(P.Pid, P.Leng, P.Minutes)
+from Packets AS P

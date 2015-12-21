@@ -1,0 +1,168 @@
+/* Using nested aggregates find a pattern of PageType 'a', 'd', 'p' */
+
+
+TABLE Sessions(SessNO int, PageNo int, ClickTime char(16), PageType char(1));
+
+AGGREGATE buffer_handler(SessionsPageNoIn int, SessionsClickTimeIn char(16), SessionsPageTypeIn char(1)):
+(SessionsPageNo int, SessionsClickTime char(16))
+{
+
+   TABLE buffer(SessionsPageNo int, SessionsClickTime char(16), SessionsPageType char(1), tIndex int);
+   TABLE ValidIndex (tIndex int);
+   TABLE Memo(SessionsPageNo int, SessionsClickTime char(16), SessionsPageType char(1), st Int);
+   TABLE StateCount(st Int, count Int);
+   TABLE CurrentState(curState Int);
+   TABLE CurrentSt(curState Int);
+   AGGREGATE find_pattern(SessionsPageNoIn int, SessionsClickTimeIn char(16), SessionsPageTypeIn char(1)):
+   (SessionsPageNo int, SessionsClickTime char(16))
+   {
+
+      INITIALIZE:
+      {
+         UPDATE CurrentState
+         SET curState = 0
+         WHERE (
+         (CurrentState.curState = 0
+         AND ( SessionsPageTypeIn  <>  'a')) OR
+         (CurrentState.curState = 1
+         AND ( SessionsPageTypeIn  <>  'd')) OR
+         (CurrentState.curState = 2
+         AND ( SessionsPageTypeIn  <>  'p')));
+
+         UPDATE ValidIndex
+         SET tIndex = tIndex + 1
+         WHERE SQLCODE = 0;
+
+         UPDATE StateCount
+         SET count = 0
+         WHERE SQLCODE = 0;
+
+         UPDATE CurrentState
+         SET curState = curState + 1
+         WHERE (
+         (CurrentState.curState = 0
+         AND ( SessionsPageTypeIn  =  'a')) OR
+         (CurrentState.curState = 1
+         AND ( SessionsPageTypeIn  =  'd')) OR
+         (CurrentState.curState = 2
+         AND ( SessionsPageTypeIn  =  'p'))) AND SQLCODE > 0;
+
+         UPDATE Memo
+         SET SessionsPageNo = SessionsPageNoIn, SessionsClickTime = SessionsClickTimeIn, SessionsPageType = SessionsPageTypeIn
+         WHERE Memo.st = (SELECT curState FROM CurrentState)
+         AND SQLCODE = 0;
+
+         UPDATE Memo         SET SessionsPageNo = SessionsPageNoIn, SessionsClickTime = SessionsClickTimeIn, SessionsPageType = SessionsPageTypeIn
+         WHERE Memo.st = (SELECT curState FROM CurrentState)         AND SQLCODE > 0;
+
+         UPDATE StateCount         SET count = count + 1
+         WHERE st = (SELECT curState FROM CurrentState);
+
+         INSERT INTO RETURN
+         SELECT Y.SessionsPageNo, Z.SessionsClickTime         FROM CurrentState, Memo AS X, Memo AS Y, Memo AS Z
+         WHERE CurrentState.curState = 3 AND X.st = 1 AND Y.st = 2 AND Z.st = 3;
+
+         UPDATE CurrentState SET curState=0 WHERE SQLCODE = 0;
+
+         UPDATE ValidIndex SET tIndex=tIndex + 1 WHERE SQLCODE = 0;
+
+         UPDATE StateCount SET count=0 WHERE SQLCODE = 0;
+      }
+
+      ITERATE:
+      {
+         UPDATE CurrentState
+         SET curState = 0
+         WHERE (
+         (CurrentState.curState = 0
+         AND ( SessionsPageTypeIn  <>  'a')) OR
+         (CurrentState.curState = 1
+         AND ( SessionsPageTypeIn  <>  'd')) OR
+         (CurrentState.curState = 2
+         AND ( SessionsPageTypeIn  <>  'p')));
+
+         UPDATE ValidIndex
+         SET tIndex = tIndex + 1
+         WHERE SQLCODE = 0;
+
+         UPDATE StateCount
+         SET count = 0
+         WHERE SQLCODE = 0;
+
+         UPDATE CurrentState
+         SET curState = curState + 1
+         WHERE (
+         (CurrentState.curState = 1
+         AND ( SessionsPageTypeIn  =  'd')) OR
+         (CurrentState.curState = 2         AND ( SessionsPageTypeIn  =  'p'))) AND SQLCODE > 0;
+
+         UPDATE Memo         SET SessionsPageNo = SessionsPageNoIn, SessionsClickTime = SessionsClickTimeIn, SessionsPageType = SessionsPageTypeIn
+         WHERE Memo.st = (SELECT curState FROM CurrentState)         AND SQLCODE = 0;
+
+         UPDATE Memo         SET SessionsPageNo = SessionsPageNoIn, SessionsClickTime = SessionsClickTimeIn, SessionsPageType = SessionsPageTypeIn
+         WHERE Memo.st = (SELECT curState FROM CurrentState)
+         AND SQLCODE > 0;
+
+         UPDATE StateCount
+         SET count = count + 1
+         WHERE st = (SELECT curState FROM CurrentState);
+
+         INSERT INTO RETURN
+         SELECT Y.SessionsPageNo, Z.SessionsClickTime
+         FROM CurrentState, Memo AS X, Memo AS Y, Memo AS Z
+         WHERE CurrentState.curState = 3 AND X.st = 1 AND Y.st = 2 AND Z.st = 3;
+
+         UPDATE CurrentState SET curState=0 WHERE SQLCODE = 0;
+
+         UPDATE ValidIndex SET tIndex=tIndex + 1 WHERE SQLCODE = 0;
+
+         UPDATE StateCount SET count=0 WHERE SQLCODE = 0;
+      }
+   };   /* End find_pattern */
+   INITIALIZE:
+   {
+      INSERT INTO ValidIndex VALUES(1);
+      INSERT INTO CurrentState VALUES(0);
+      INSERT INTO CurrentSt VALUES(0);      INSERT INTO buffer VALUES (SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn, 1);
+      INSERT INTO StateCount VALUES (1, 0);      INSERT INTO Memo VALUES(SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn,   1);
+      INSERT INTO StateCount VALUES (2, 0);      INSERT INTO Memo VALUES(SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn,   2);
+      INSERT INTO StateCount VALUES (3, 0);      INSERT INTO Memo VALUES(SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn,   3);
+
+      INSERT INTO RETURN      SELECT find_pattern(SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn)
+      FROM buffer;
+   }
+   ITERATE:
+   {
+      UPDATE CurrentSt SET curState = (SELECT curState FROM CurrentState);      INSERT INTO buffer VALUES (SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn, (SELECT max(tIndex) FROM buffer) + 1);
+      DELETE FROM buffer WHERE tIndex < (SELECT tIndex FROM ValidIndex);      INSERT INTO RETURN      SELECT find_pattern(SessionsPageNoIn, SessionsClickTimeIn, SessionsPageTypeIn)
+      FROM CurrentSt      WHERE curState <> 0;
+      INSERT INTO RETURN      SELECT find_pattern(SessionsPageNo, SessionsClickTime, SessionsPageType)
+      FROM buffer      WHERE (SELECT curState FROM CurrentSt) = 0
+      ORDER BY tIndex;
+   }} /* End buffer_handler */
+
+
+
+/*
+For testing
+*/
+
+INSERT INTO Sessions VALUES (1, 1, '12:31', 'a');
+INSERT INTO Sessions VALUES (1, 2, '12:32', 'd');
+INSERT INTO Sessions VALUES (1, 3, '12:33', 'p');
+INSERT INTO Sessions VALUES (1, 4, '12:34', 'a');
+INSERT INTO Sessions VALUES (1, 5, '12:35', 'd');
+INSERT INTO Sessions VALUES (1, 6, '12:36', 'p');
+INSERT INTO Sessions VALUES (1, 7, '12:37', 'a');
+INSERT INTO Sessions VALUES (1, 8, '12:38', 'd');
+INSERT INTO Sessions VALUES (1, 9, '12:39', 'p');
+
+
+SELECT buffer_handler(Sessions.PageNo, Sessions.ClickTime, Sessions.PageType)
+FROM Sessions
+GROUP BY Sessions.SessNO
+
+/*
+ missing ORDER BY, NOT Supported in this version of ATLAS
+*/
+

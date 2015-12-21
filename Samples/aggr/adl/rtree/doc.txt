@@ -1,0 +1,81 @@
+
++--------------------+
+|fb|tb|              | superblock
++--------------------+
+|                 |lp| root
++--------------------+
+|                    |
++--------------------+
+|                    |
++--------------------+
+|                 |lp| leaf1
++--------------------+
+|                 |lp| leaf2
++--------------------+
+|        .           |
+|        .           |
+|        .           |
+|        .           |
++--------------------+
+|                  |0| leafN
++--------------------+
+
+index.db
+
+* fb means head of free block list
+* tb means total number of blocks in current file
+* lp means leaf node pointer
+  the lp in the root node points to the first leaf node
+  the lp in each leaf node points to the next leaf node
+
+The first block in index.db is always the root node.
+Each node consists of items of 5 integers (20 bytes).
+4 for rectangle coordinates (upper left corner (x1,y1) and lower
+right corner (x2,y2)), 1 for the offset pointer to data.db of the
+tuple.
+
+
+
+
+
+
+
+
+
++--------------------+
+|fb|tb|              | superblock
++--------------------+
+|                 |lp| root
++--------------------+
+|                    |
++--------------------+
+|                    |
++--------------------+
+|                 |lp| leaf1
++--------------------+
+|                 |lp| leaf2
++--------------------+
+|        .           |
+|        .           |
+|        .           |
+|        .           |
++--------------------+
+|                  |0| leafN
++--------------------+
+
+data.db
+
+* fb means head of free block list
+* tb means total number of blocks in current file
+* lp means leaf node pointer
+  the lp in the root node points to the first leaf node
+  the lp in each leaf node points to the next leaf node
+
+Data.db is architecturally the same as index.db.
+The first block in data.db is always the root node.
+Each node consists of items of 5 integers (20 bytes).
+4 for rectangle coordinates (upper left corner (x1,y1) and lower
+right corner (x2,y2)), 1 for the offset pointer to data.db of the
+tuple.
+
+

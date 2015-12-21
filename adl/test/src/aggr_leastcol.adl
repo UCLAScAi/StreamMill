@@ -1,0 +1,23 @@
+table dataset(col int, val int);
+
+AGGREGATE leastcol(iCol int, iValue int) : int
+{
+    TABLE tmp(col int, value int);
+
+    INITIALIZE:
+    {
+	INSERT INTO tmp VALUES(iCol, iValue);
+    }
+    ITERATE:
+    {
+	UPDATE tmp SET col=iCol, value=iValue WHERE value > iValue;	
+    }
+    TERMINATE:
+    {
+	insert into return SELECT col FROM tmp;
+    }		     
+}
+
+insert into dataset values(201,2),(200,3),(10,34),(200,-1),(1,100),(11,-1);
+
+insert into stdout SELECT leastcol(col,val) FROM dataset;

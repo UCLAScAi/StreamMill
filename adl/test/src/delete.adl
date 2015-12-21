@@ -1,0 +1,15 @@
+table test (a int);
+
+table t (b int);
+
+insert into test values (2), (3);
+insert into t values (2), (3);
+
+delete from test where exists (select b from t where b>test.a); 
+
+insert into stdout select a from test;
+
+
+
+
+

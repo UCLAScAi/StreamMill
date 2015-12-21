@@ -1,0 +1,2 @@
+hadoop fs -rmr aggsharing*
+/usr/src/hadoop-0.20/bin/hadoop jar aggrsharing.jar HeteroDataStorage input/build.xml aggsharing 

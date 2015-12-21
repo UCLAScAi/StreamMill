@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Design</TITLE>
+<META NAME="description" CONTENT="Design">
+<META NAME="keywords" CONTENT="document">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<LINK REL="STYLESHEET" HREF="document.css">
+<LINK REL="next" HREF="node2.html">
+<LINK REL="previous" HREF="document.html">
+<LINK REL="up" HREF="document.html">
+<LINK REL="next" HREF="node2.html">
+</HEAD>
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html29"
+ HREF="node2.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html26"
+ HREF="document.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html20"
+ HREF="document.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html28"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html30"
+ HREF="node2.html">Implementation</A>
+<B> Up:</B> <A NAME="tex2html27"
+ HREF="document.html">No Title</A>
+<B> Previous:</B> <A NAME="tex2html21"
+ HREF="document.html">No Title</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00010000000000000000">
+Design</A>
+</H1>
+
+<P>
+The in-memory database for <IMG
+ WIDTH="45" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
+ SRC="img1.gif"
+ ALT="$\cal AXL$">
+is designed to implement,
+<DL COMPACT>
+<DT>1.
+<DD>Sequential scan over all tuples;
+<DT>2.
+<DD>Potential hash index which can be either unique or non-unique;
+<DT>3.
+<DD>Potential variable length tuples (in next versions).
+</DL>
+<P>
+We consider two solutions:
+<DL COMPACT>
+<DT>1.
+<DD>Obviously a simple linked list can do the job.
+<P>
+Each item of the list is a tuple plus some control information
+      (object id and status flags) associated with it.
+
+<P>
+Sequential scan is a linked list scan.  Variable length tuples
+      are accomodated by malloc() variable length space on heap.
+
+<P>
+Hash index can be built on the linked list.  If hash index is
+      unique, it is trivial to deal with it.  Otherwise, an extra
+      pointer is defined in control information fields of each tuple
+      so that tuples having same hash key can be chained together.
+
+<P>
+Right now we allow only one non-unique hash index on an
+      in-memory relation because only one extra hash-chain pointer is
+      defined in control information of each tuple.
+<DT>2.
+<DD>The above solution may suffer from too many malloc() calls since
+      each tuple insertion will issue a malloc() call.
+
+<P>
+This can be solved by paging.  Each time we malloc a page (fixed
+      size wrt. each relation) rather than a tuple.  As each page
+      hosts multiple tuples, cost of malloc() is decreased by blocking
+      factor (number of tuples in a page).
+
+<P>
+However, this comes with tradeoffs--although cost of malloc()
+      is decreased, inter-page and intra-page control information must
+      be maintained with certain time and space cost.
+
+<P>
+Inter-page control information includes connection links among
+      different pages so that a sequential scan is possible.
+
+<P>
+Intra-page control information includes (a) a list of all in-use
+      slices, (b) a list of all free slices in a page.
+</DL>
+<P>
+Since performance doesn't vary much between a simple linked list
+implementation and a paged linked list implementation.  Currently I
+have only implemented a simple linked list implementation.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html29"
+ HREF="node2.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html26"
+ HREF="document.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html20"
+ HREF="document.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html28"
+ HREF="node15.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html30"
+ HREF="node2.html">Implementation</A>
+<B> Up:</B> <A NAME="tex2html27"
+ HREF="document.html">No Title</A>
+<B> Previous:</B> <A NAME="tex2html21"
+ HREF="document.html">No Title</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Jiejun Kong</I>
+<BR><I>2000-09-12</I>
+</ADDRESS>
+</BODY>
+</HTML>

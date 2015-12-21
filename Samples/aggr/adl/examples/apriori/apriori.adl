@@ -1,0 +1,159 @@
+/*
+Apriori Algorithm Implementation
+Haixun Wang
+Richard Luo (lc@cs.ucla.edu)
+
+*/
+
+
+TABLE baskets(item int);
+/*	SOURCE 'marketdata';*/
+ TABLE trie(item Int, father REF(trie)) btree(father) MEMORY;
+ TABLE cands(item Int, trieref REF(trie), freqcount Int) btree(item,trieref) MEMORY;
+ TABLE fitems(item Int) btree(item);
+TABLE subitems(toid REF(trie), level Int) MEMORY;
+table Output(item int);
+
+aggregate printSeparator():int
+{
+initialize:iterate:{
+	insert into stdout values('-----------------');
+}
+};
+
+aggregate print(sonOID REF(trie)):int
+{
+initialize:iterate:{	
+	select print(trie.OID) from trie
+	where sonOID->father = trie.OID and trie.OID <> NULL;
+	insert into stdout values(sonOID->item);
+
+
+}
+};
+
+aggregate traverse(fatherOID REF(trie)):int
+{
+INITIALIZE:ITERATE:
+{
+	insert into Output values(fatherOID->item);
+	select item from Output;
+	insert into stdout values('-----------------');
+	select traverse(trie.OID)
+	from trie
+	where father = fatherOID;
+	delete from Output
+	where item = fatherOID->item;
+
+
+}
+};
+/* extend the trie and return candidates on the new level */
+AGGREGATE nextlevel(citem int, ptrie REF(trie)): (a int,b REF(trie), c int)
+{
+TABLE previous(poid REF(trie)) MEMORY;
+INITIALIZE: ITERATE:{
+	INSERT INTO trie VALUES(citem, ptrie);
+	/* join with previously inserted itemsets and return them as next-level candidates*/
+
+	INSERT INTO return SELECT citem, previous.poid, 0 FROM previous;
+
+	/* appending the newly-added to the previous table */
+	INSERT INTO previous
+	SELECT trie.OID FROM trie WHERE trie.item=citem AND
+	trie.father=ptrie;
+}
+};
+
+/* for each (J+1)-itemset, find its frequent subsets of size J */
+AGGREGATE checkset (citem Int, cref REF(trie)):int
+{
+	INITIALIZE: ITERATE: { /* call checkset recursively */
+	SELECT checkset(f.item, f.father) FROM trie AS f WHERE
+	cref<>null AND f.OID=cref;
+	/* as we exit the recursion we expand subitems */
+	INSERT INTO subitems
+	SELECT t.OID, s.level+1 FROM subitems AS s, trie AS t
+	WHERE t.item=citem AND t.father=s.toid;
+}
+};
+/* pruning using the anti-monotonic property */
+AGGREGATE antimon(it Int, aref REF(trie), J Int):int
+{
+INITIALIZE: ITERATE: {
+	DELETE FROM cands
+	WHERE cands.item=it AND trieref=aref
+	AND J+1 > (SELECT count(toid) FROM subitems WHERE
+	subitems.level=J);
+	DELETE FROM subitems WHERE toid <> null;
+}
+};
+
+ AGGREGATE countset (bitem Int, J Int, MinSup Int):INT
+ {
+ TABLE previous(marked REF(trie), Level Int) btree(marked) MEMORY;
+ TABLE nextcands(cit Int, trieref REF(trie), freqcount Int) btree(trieref) MEMORY;
+ INITIALIZE: ITERATE: { /* Intialize previous for a new transaction if bitem=0. */
+	 DELETE FROM previous WHERE bitem=0;
+	INSERT INTO previous VALUES (null, 0) WHERE bitem=0;
+	/* Store supported frequent itemsets in previous */
+	INSERT INTO previous
+	SELECT t.OID, p.Level+1 FROM previous AS p, trie AS t
+	WHERE t.item=bitem AND t.father=p.marked AND p.Level<J-1;
+	/* Count candidates that appear in the transaction */
+	UPDATE cands SET freqcount=freqcount+1
+	WHERE bitem > 0 AND cands.item=bitem
+	AND OID = (SELECT c.OID FROM previous AS p, cands AS c
+	WHERE p.Level=J-1 AND c.trieref=p.marked);
+	}
+TERMINATE: { /* Derive trie on level J and candidates on level J+1 */
+
+	INSERT INTO nextcands
+	SELECT nextlevel (item, trieref) FROM cands WHERE freqcount>MinSup GROUP BY trieref;
+	/* Eliminate candidates by the anti-monotonicity */
+	INSERT INTO subitems VALUES(null,0);
+	SELECT checkset(cit, trieref), antimon(cit, trieref, J) FROM
+	nextcands;
+	/* Ascend to level J+1 if cands not empty */
+	
+	delete from cands where 1=1;
+	insert into cands
+		select cit, trieref, freqcount
+		from nextcands;
+	delete from nextcands where 1=1;
+
+	SELECT countset (b.item, J+1, MinSup)
+	FROM (SELECT count(cands.item) AS size FROM cands) AS c, baskets AS
+	b WHERE c.size >0;
+}
+};
+
+
+insert into baskets values(0),(2),(3),(4),(0),(1),(2),(3),(4),(0),(3),(4),(5),(0),(1),(2),(5),(0),(2),(4),(5);
+/* generat frequent one-itemsets */
+
+ INSERT INTO fitems
+SELECT item FROM baskets WHERE item > 0
+GROUP BY item HAVING count(item) > 1;
+/* intialize the trie to contain frequent one-itemsets */
+ INSERT INTO trie SELECT item, null FROM fitems;
+/* self-join frequent 1-itemsets to get candidate 2-itemsets */
+ INSERT INTO cands SELECT t1.item, t2.OID, 0 FROM trie AS t1, trie AS
+t2 WHERE t1.item > t2.item;
+/* Generate (k+1)-itemsets from k-itemsets. Start with k=2 */
+
+SELECT countset(item, 2, 1) FROM baskets;
+
+insert into stdout values('Large item sets:');
+
+/* depth-first traverse */
+/*
+select traverse(trie.OID)
+from trie
+where father=NULL;
+*/
+
+/* breath-first traverse */
+insert into stdout values ('Large item sets ordered by number of items:');
+select print(trie.OID),printSeparator()
+from trie;

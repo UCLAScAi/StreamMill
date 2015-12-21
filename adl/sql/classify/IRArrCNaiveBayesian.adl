@@ -1,0 +1,145 @@
+table hd(id int, a1 int, b1 int, c1 int, d1 int, classLbl int) memory;
+table hd1(id int, a1 int, b1 int, c1 int, d1 int, classLbl int) memory;
+
+function dissemble(a1 int, b1 int, c1 int, d1 int, classLbl int): 
+           (col int, val int, classLbl int)
+{
+   INSERT INTO RETURN VALUES (1, a1, classLbl), (2, b1, classLbl), 
+                             (3, c1, classLbl), (4, d1, classLbl);
+};
+
+CAggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  @
+    /* global c stuff here */
+    static int cnt = 0;
+    const int numClasses = 3;
+    const int numAttrs = 4;
+    const int maxAttrVal = 10;
+    int classStatA[numClasses] = {0, 0, 0};
+    int attrOpts[numAttrs] = {10, 2, 5, 10};
+    int colStatA[numAttrs][maxAttrVal][numClasses];
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize:  {
+    @
+    for(int i =0; i < numAttrs; i++) {
+      for(int j=0; j < maxAttrVal; j++) {
+        for(int k=0; k < numClasses; k++) {
+          colStatA[i][j][k] = 0;
+        }
+      }
+    }
+    //if(coli > numAttrs || vali > attrOpts[coli-1] || classLbli > numClasses) {
+    if(coli > numAttrs || vali > 10 || classLbli > numClasses) {
+      printf("1. Houston we have a problem!!, coli %d, vali %d, classLbli %d \n", coli, vali, classLbli);
+    }
+    colStatA[coli-1][vali][classLbli]++;
+    @
+  }
+  iterate: {
+    @
+        /* Random c code here -- init*/
+      //if(coli > numAttrs || vali > attrOpts[coli-1] || classLbli > numClasses) {
+      if(coli > numAttrs || vali > 10 || classLbli > numClasses) {
+        printf("2. Houston we have a problem!!, coli %d, vali %d, classLbli %d \n", coli, vali, classLbli);
+      }
+      colStatA[coli-1][vali][classLbli]++;
+      if(coli == numColsi) { 
+        classStatA[classLbli]++;
+        cnt++;
+      }
+    @
+  }
+};
+
+
+CAggregate evaluateClassifier(idi int, coli int, vali int, numColsi int, classLbli int):(ido int, classLblo int, classo int) {
+  @
+    /* global c stuff here */
+    double tclassStatA[numClasses] = {0, 0, 0};
+  @
+
+  /* can put other ESL stuff like tables etc here, will be put in status */
+  table abc(a int) memory;  #just for example
+
+  @
+    /* things to put in the status structure here */
+  @
+
+  initialize: iterate: {
+    @
+      if(coli == 1) {
+        for(int i =0; i < numClasses; i++) {
+          tclassStatA[i] = ((double)classStatA[i])/cnt;
+        }
+      }
+      //if(coli > numAttrs || vali > attrOpts[coli-1] || classLbli > numClasses) {
+      if(coli > numAttrs || vali > 10 || classLbli > numClasses) {
+        printf("testing -- Houston we have a problem!!, coli %d, vali %d, classLbli %d \n", coli, vali, classLbli);
+      }
+      
+                             
+      for(int i =0; i < numClasses; i++) {
+        tclassStatA[i] = (tclassStatA[i]*colStatA[coli-1][vali][i])/
+                             ((double)classStatA[i]);
+      }
+      if(coli == numColsi) {
+        double mx=0;
+        int cls=-1;
+        for(int i =0; i < numClasses; i++) {
+          if(tclassStatA[i] > mx) {
+            mx = tclassStatA[i];
+            cls = i;
+          }
+        }
+        if(mx==0) cls = -1;
+        /* output results here */
+        memset(&key, 0, sizeof(key));
+        memset(&data, 0, sizeof(data));
+        data.data = datadata;
+        key.data = keydata;
+        memcpy((char*)data.data+0, &idi, sizeof(int));
+        memcpy((char*)data.data+4, &classLbli, sizeof(int));
+        memcpy((char*)data.data+8, &cls, sizeof(int));
+        data.size = 12;
+        key.size = 0;
+        if ((rc = status->ret->put(status->ret, &key, &data, DB_APPEND))!=0) {
+          adlabort(rc, "IM_REL->put()");
+        }
+
+      }
+    @
+  }
+};
+
+table mt(id int, c int, d int) memory;
+
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into hd;
+load from '/home/hthakkar/adl/sql/clsf/iris1.data' into hd1;
+
+
+
+select learnClassifier(d.col, d.val, d.classLbl, 4)
+from hd, table(dissemble(a1, b1, c1, d1, classLbl)) as d;
+
+insert into mt select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from hd1, table(dissemble(a1, b1, c1, d1, classLbl)) as d;
+
+/*select id, c, d from mt;
+*/
+select count(1) from mt where c=d;
+
+/*select learnClassifier(d.col, d.val, d.classLbl, 4)
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d;
+
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d;
+*/
+

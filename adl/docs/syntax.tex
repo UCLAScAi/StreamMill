@@ -1,0 +1,268 @@
+\chapter{BNF Syntax of AXL}
+
+In this section, we show the syntax of AXL in BNF. At the top-most
+level, an AXL program is composed of some declarations followed by
+some SQL statements. There are two types of declarations in AXL. One
+is variable declaration; as of now, the only type of variable in AXL
+is TABLE.  The types of statements supported in AXL are SELECT, INSERT,
+UPDATE, DELETE and LOAD.
+
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <program> &->& {@ <dec>} {@ <statement> ;} \\
+    <dec>  &->& <vdec> | <aggrdec>\\
+    <statement> &->& <select> \\
+    &&| <insert>\\
+    &&| <update>\\
+    &&| <delete>\\
+    &&| <load>\\
+  \end{eqnarray*}
+\end{bnf}
+
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <vdec> &->& `TABLE` <id> `(` <columns> <keydec> `)` [<scope>] [`AS` <query>] `;`\\
+    <columns> &->& <column> {@ `,`  <column>}\\
+    <column> &->& <id> <type> \\
+    <type> &->& `INT` | `REAL` | `CHAR` `(` <num> `)` |  `REF` `(` <id> `)`\\
+    <keydec> &->& {@ `,` \ `KEY` `(` <id> {@ `,` <id>}`)` }\\
+    <scope> &->& `PERSISTENT` | `LOCAL` | `MEMORY`
+  \end{eqnarray*}
+\end{bnf}
+
+In addition to integer, float and string column types, we also support
+a {\it reference} type. In Example~\ref{exe:reftable} , the reference
+attribute, {\tt dept}, in the {\tt emp} table, refers to (i.e.,
+uniquely identifies) a tuple in table {\tt dept}. Note here, the
+declaration of table {\tt emp} and {\tt dept} is mutually recursive.
+
+\begin{example}{Table Schema with Reference Types}
+\begin{codedisplay}
+\>\>\kw{TABLE} emp(name CHAR(20), salary INT, dept REF(dept), \kw{KEY}(name)) \kw{MEMORY};\\
+\>\>\kw{TABLE} dept(name CHAR(20), manager REF(emp), \kw{KEY}(name)) \kw{MEMORY};
+\end{codedisplay}
+\label{exe:reftable}
+\end{example}
+
+A table in AXL can be either persistent or non-persistent (local); we
+also support in-memory non-persistent tables. When a table is defined,
+we can initialize its content to the result of a query by using the
+{\tt AS $<$query$>$} construct. For instance, the following table
+declaration initializes the table to contain two tuples.
+
+\begin{example}{Initializing a Table}
+\begin{codedisplay}
+  \>\>\kw{TABLE} students(id \kw{INT}, name \kw{CHAR}(20), major \kw{CHAR}(20)) \kw{AS} \\
+  \>\>\>\>\kw{VALUES}(1, 'tom', 'cs'), (2, 'jerry', 'ee');
+\end{codedisplay}
+\label{exe:init}
+\end{example}
+
+To intialize a table whose schema contains reference types, we need to
+use the INSERT statement. In the following example, we insert a tuple
+into the emp table declared in Example~\ref{exe:reftable}. Here, {\tt
+  oid} is a builtin function, which takes its parameter ('sales') as
+the key columns of the tuple the current tuple refers to, and returns
+its OID. This part is still being implemented.
+
+\begin{example}{Initializing a Table}
+\begin{codedisplay}
+\>\kw{INSERT INTO} emp {\tt VALUE} ('tom', 100, oid('sales'));
+\end{codedisplay}
+\label{exe:refinit}
+\end{example}
+
+The other kind of declaration is UDA. A UDA is prescribed by three
+aggregate routines, INITIALIZE, ITERATE and TERMINATE, each of which
+is composed of some SQL statements. If the {\tt $<$exp$>$} followed by
+INITIALIZE is omitted, the INITIALIZE routine shares the code of the
+ITERATE routine.  Alternatively, a UDA can be declared through
+redefinition, which is being implemented.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <aggrdec> &->& `AGGREGATE` <id> `(` <columns> `)` `:` <ret-type> <body>\\
+    <ret-type> &->& <type> | `(` <columns> `)`\\
+    <body> &->& `{`\\
+      && \ \ \ {@ <vdec>}\\      
+      && \ \ \ `INITIALIZE` \ `:` [{@ <statement> `;`}]\\
+      && \ \ \ `ITERATE` \ `:` {@ <statement> `;`}\\
+      && \ \ \ [`TERMINATE` \ `:` {@ <statement> `;`}]\\
+    && `}`\\
+    && | \\
+      && `{`\\
+      &&  \ \ \ {@ <vdec>}\\      
+      &&  \ \ \ {@ <statement> `;`}\\
+      && `}`
+  \end{eqnarray*}
+\end{bnf}
+
+One of the features that we have added to UDAs in AXL is structured
+return types. The return type of a UDA can be either a basic type or a
+complex type consisting of a vector of basic types.  For example, the
+following code declares a UDA which returns a value consisting of two
+elements, one is of string type and the other integer type.
+
+\begin{example}{Defining Aggregates Returning Complex Return Type}
+\begin{codedisplay}
+\>\>\>\kw{AGGREGATE} minsal(...): (name \kw{CHAR}(10), minsalary \kw{INT})
+\end{codedisplay}
+\label{exe:aggrcomplex}
+\end{example}
+
+Thus, the result of UDA {\tt minsal(..)} is a stream of 2-column
+tuples.  Alternatively, we can use {\tt minsal(...)$\rightarrow$name}
+and {\tt minsal(...)$\rightarrow$minsalary} to reference individual
+element in the complex type. 
+
+
+Following is the syntax of the query block in SQL. The query block is
+the most complicated construct, and it contains a list of {\it Head
+  eXPression}, a list of {\it QUaNtifiers}, an optional WHERE
+condition, an optional list of GROUP BY columns, and an optional
+HAVING condition.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <query-block> &->& `SELECT` [`DISTINCT`] <hxp> {@ `,` <hxp>} \\
+    && `FROM` <qun> {@ `,` <qun>} \\
+    && [`WHERE` <exp>] \\
+    && [`GROUP` \ `BY` <exp> {@ `,` <exp>}] \\
+    && [`HAVING` <exp>]\\
+  \end{eqnarray*}
+\end{bnf}
+
+In AXL, we support three types of quantifiers, which are i) source
+tables, ii) table functions (not yet implemented), and iii)
+subqueries.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <qun>  &->& <id> [<qun-alias>] \\
+    && | `TABLE` \ `(` <udf> `)` <qun-alias>\\
+    && | `(` <query> `)` <qun-alias>
+  \end{eqnarray*}
+\end{bnf}
+
+Both head expressions (hxp) and quantifiers (qun) can have aliases,
+which are similar but not exactly the same.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <hxp> &->& <exp> [[`AS`] <hxp-alias>]\\
+      &&| [<id> `.`] `*`\\
+    <hxp-alias> &->& <id> | `(` <id> {@ `,` <id>} `)`\\
+    <qun-alias> &->& [`AS`] <id> [`(` <id> {@ `,` <id>} `)`]\\
+    <udf> &->& <id> `(` [<exp> {@ `,` <exp>}] `)`\\
+  \end{eqnarray*}
+\end{bnf}
+
+Since AXL supports UDA returning complex data types, we make it easier
+to define aliases for the complex data types returned by UDAs.  We can
+write:
+
+\begin{codedisplay}
+\>\>\>\kw{SELECT} minsal(...) \kw{AS} (name, salary) \\
+\>\>\>\kw{FROM} t
+\end{codedisplay}
+
+where the aggregate {\tt minsal} is declared in
+Example~\ref{exe:aggrcomplex}, as a shorthand of:
+
+\begin{codedisplay}
+\>\>\>\kw{SELECT}\>\>\>\>minsal(...)$\rightarrow$ name \kw{AS} name,\\
+\>\>\>\>\>\>\>minsal(...)$\rightarrow$ minsalary \kw{AS} salary\\
+\>\>\>\kw{FROM} t
+\end{codedisplay}
+
+We connect query blocks using UNION, INTERSECT and EXCEPT set
+operators to form a query. (The INTERSECT and EXCEPT operators are not
+yet implemented.) The SQL SELECT statement is composed of a query and
+an optional ORDER BY clause.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <select> &->&  <query> [<order-clause>]\\
+    <order-clause> &->& `ORDER` \ `BY` <exp> [`ASC`|`DSC`] {@ `,` <exp> [`ASC`|`DSC`] }\\
+    <query>  &->& <query> (`UNION`|`INTERSECT`|`EXCEPT`) [`ALL`] <query-block> \\
+  \end{eqnarray*}
+\end{bnf}
+
+The support of CREATE, DELETE, INSERT and UPDATE statements conforms
+with the SQL standard. We also support subqueries and table functions
+in AXL. We also have a LOAD statement, which bulk loads text data into
+AXL system.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <delete> &->& `DELETE` \ `FROM` <id> [`WHERE` <exp>]\\
+    <insert> &->& `INSERT` \ `INTO` <id> <query>\\
+    <update> &->& `UPDATE` <id> `SET` <updates> [`WHERE` <exp>]\\
+    <updates> &->& <id> `=` <exp> {@ `,` <id> `=` <exp>}\\
+    <load> &->& `LOAD` \ `FROM` <id> `INTO` <id>\\
+  \end{eqnarray*}
+\end{bnf}
+
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <exp> &->& `NIL`\\
+    && | <num>\\
+    && | <float>\\
+    && | <string>\\
+    && | <id> [ `.` <id>] \\
+    && | <ref>\\
+%    && | <id> `(` {@ <exp> {@, <exp>} } `)`\\
+%   && | `(` {@ <exp> `;`} `)`\\
+    && | <exp> (`+`|`-`|`*`|`/`|`%`) <exp>\\
+    && | <exp> (`=`|`!=`|`<`|`<=`|`>`|`>=`) <exp>\\
+    && | <exp> (`AND`|`OR`|`IN`|`NOT`\ `IN`) <exp>\\
+    && | `EXISTS` <exp>\\
+    && | (`max`|`min`|`count`|`sum`|`avg`) `(`<exp>`)`\\
+    && | <udf> [ `->` <id>]\\
+    && | <case-exp>\\
+    && | `(` <exp> `)`\\
+    && | `(` <query> `)`\\
+    && | `{` {@ <vdec>} {@ <exp> `;`} `}` \\
+    <ref> &->& <ref> `->` <id>\\
+    && | <id> [`.` <id>] `->` <id>
+  \end{eqnarray*}
+\end{bnf}
+
+As shown in the above syntax, we support path expression in AXL. For
+example, in the following query, we find the name of the department
+for each employee.
+
+\begin{example}{Path Expression}
+\begin{codedisplay}
+\>\kw{SELECT} name, dept$\rightarrow$name \\
+\>\kw{FROM} emp
+\end{codedisplay}
+\label{exe:refferencing}
+\end{example}
+
+
+AXL supports CASE expressions. A CASE expression can be used wherever
+an expression such as {\tt x+y} or {\tt foo(x)} can be used. CASE can
+be used in a SELECT clause, in a WHERE clause, or in the SET clause of
+an UPDATE statement.
+
+\begin{bnf}
+  \begin{eqnarray*}
+    <case-exp> &->& `CASE` <exp> <when-exp-list> [`ELSE` <exp>] `END`\\
+    && | `CASE` <when-exp-list>  [`ELSE` <exp>] `END`\\
+    <when-exp-list> &->& `WHEN` <exp> `THEN` <exp> {@ `WHEN` <exp> `THEN` <exp>}\\
+    <id> &->& <letter> {@ <letter> | <digit>}\\
+    <letter> &->& (`a`-`z`|`A`-`Z`)\\
+    <digit> &->& (`0`-`9`)\\
+  \end{eqnarray*}
+\end{bnf}
+
+In its simple form, a CASE expression evaluates
+to one of several result expressions, depending on the value of a test
+expression. The CASE expression also has a more general form, which
+consists of a set of search conditions, each paired with a result
+expression.
+

@@ -1,0 +1,2 @@
+hadoop fs -rmr iterate*
+/usr/src/hadoop-0.20/bin/hadoop jar iteration.jar LocalVsGlobalFixedIterations input/build.xml iterate 

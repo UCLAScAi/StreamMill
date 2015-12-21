@@ -1,0 +1,50 @@
+table flowers(id int, SL real, SW real, PL real, PW real, isSetosa int) memory;
+table flowers1(id int, SL real, SW real, PL real, PW real, isSetosa int) memory;
+
+FUNCTION dissembleFlowers(v1 Int, v2 Int, v3 Int, v4 Int, classLbl Int):(col Int, val Int, classLbl Int) 
+{  
+   INSERT INTO RETURN VALUES (1, v1, classLbl), (2, v2, classLbl), (3, v3, classLbl), (4, v4, classLbl); 
+}; 
+
+
+/*
+table classStat(classLbl int, cnt real) memory;
+table colStat(col int, val int, classLbl int, cnt real) memory;
+*/
+table classStat(classLbl int, cnt real) memory;
+table colStat(col int, classLbl int, mean real, var real, sumSofar int, cnt int) memory;
+
+Aggregate learnClassifier(coli int, vali int, classLbli int, numColsi int):(a int) {
+  initialize: iterate: {
+    update classStat set cnt = cnt + 1 where classLbl = classLbli and coli = numColsi;
+    /* if first instance of classLbl */
+    insert into classStat values (classLbli, 1) where SQLCODE <> 0 and coli = numColsi; 
+ 
+    update colStat set cnt = cnt + 1,
+                       var = ((sumSofar+vali*vali)/(cnt+1)) - (mean*cnt+vali)*(mean*cnt+vali),
+                       mean = (mean*cnt+vali)/(cnt+1),
+                       sumSofar = sumSofar + vali*vali
+      where col = coli and classLbl = classLbli;
+    /* if first instance of classLbl for this coli, vali combination */
+    insert into colStat values (coli, classLbli, vali, 0, vali*vali, 1) where SQLCODE <> 0; 
+  }
+};
+
+table dis(col int, val int, cLbl int) memory;
+
+
+load from 'iris1.data' into flowers;
+insert into dis select d.col, d.val, d.classLbl
+from  flowers, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d;
+
+/*
+load from 'iris1.data' into flowers1;
+*/
+select count(1) from dis;
+select learnClassifier(d.col, d.val, d.cLbl, 4)
+from  dis AS d; 
+
+/*
+select evaluateClassifier(id, d.col, d.val, 4, d.classLbl)
+from  flowers1, TABLE(dissembleFlowers(SL, SW, PL, PW, isSetosa)) AS d; 
+*/

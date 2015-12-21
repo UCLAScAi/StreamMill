@@ -1,0 +1,48 @@
+/****
+
+  create function mytestd(a real)
+  returns real 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!MyAggrD!F!mytestd';
+
+  replace function mytestd(a real)
+  returns REAL 
+  CLASS AGGREGATE (64000)
+  LANGUAGE C
+  NO SQL
+  PARAMETER STYLE TD_GENERAL
+  DETERMINISTIC
+  CALLED ON NULL INPUT
+  EXTERNAL NAME 'SL!MyAggrD!F!mytestd';
+
+ ***/
+
+/*  
+sqrt((x_i - x_mean)^2/N)
+*/
+
+AGGREGATE mytestd(start_price real):
+real
+{
+		TABLE prices (xsqrd  real,x real, count int,sum real,avg real);
+AGR_INIT:
+	{
+		insert into prices values(0,0,0,0,0);
+	}  
+AGR_DETAIL:
+	{
+		update prices set  count = count+1, sum = sum+start_price, xsqrd = xsqrd + (start_price*start_price);
+	}
+AGR_FINAL:
+	{
+		update prices set avg = (sum/count), x=sum;
+		INSERT INTO return select sqrt(((xsqrd-((2*sum*sum)/count) + count*avg*avg))/count) from prices;
+		/*INSERT INTO return select xsqrd from prices;*/
+	}
+
+};

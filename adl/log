@@ -1,0 +1,2155 @@
+In file included from /usr/include/c++/4.3/ext/hash_map:64,
+                 from esl/buffer.h:17,
+                 from adl_yacc.grm:16:
+/usr/include/c++/4.3/backward/backward_warning.h:33:2: warning: #warning This file includes at least one deprecated or antiquated header which may be removed without further notice at a future date. Please use a non-deprecated interface with equivalent functionality instead. For a listing of replacement headers and interfaces, consult the file backward_warning.h. To disable this warning use -Wno-deprecated.
+adl_yacc.grm:259: error: stray ‘@’ in program
+adl_yacc.grm:259:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:259: error: stray ‘@’ in program
+adl_yacc.grm:259:67: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:266: error: stray ‘@’ in program
+adl_yacc.grm:266:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:291: error: stray ‘@’ in program
+adl_yacc.grm:291:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:341: error: stray ‘@’ in program
+adl_yacc.grm:341:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:379: error: stray ‘@’ in program
+adl_yacc.grm:379:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:462: error: stray ‘@’ in program
+adl_yacc.grm:462:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:466: error: stray ‘@’ in program
+adl_yacc.grm:466:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:470: error: stray ‘@’ in program
+adl_yacc.grm:470:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:476: error: stray ‘@’ in program
+adl_yacc.grm:476:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:480: error: stray ‘@’ in program
+adl_yacc.grm:480:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:487: error: stray ‘@’ in program
+adl_yacc.grm:487:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:493: error: stray ‘@’ in program
+adl_yacc.grm:493:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:505: error: stray ‘@’ in program
+adl_yacc.grm:505:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:509: error: stray ‘@’ in program
+adl_yacc.grm:509:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:513: error: stray ‘@’ in program
+adl_yacc.grm:513:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:527: error: stray ‘@’ in program
+adl_yacc.grm:527:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:551: error: stray ‘@’ in program
+adl_yacc.grm:551:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:556: error: stray ‘@’ in program
+adl_yacc.grm:556:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:569: error: stray ‘@’ in program
+adl_yacc.grm:569:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:593: error: stray ‘@’ in program
+adl_yacc.grm:593:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:604: error: stray ‘@’ in program
+adl_yacc.grm:604:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:616: error: stray ‘@’ in program
+adl_yacc.grm:616:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:643: error: stray ‘@’ in program
+adl_yacc.grm:643:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:746: error: stray ‘@’ in program
+adl_yacc.grm:746:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:791: error: stray ‘@’ in program
+adl_yacc.grm:791:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:796: error: stray ‘@’ in program
+adl_yacc.grm:796:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:801: error: stray ‘@’ in program
+adl_yacc.grm:801:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:814: error: stray ‘@’ in program
+adl_yacc.grm:814:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:817: error: stray ‘@’ in program
+adl_yacc.grm:817:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:832: error: stray ‘@’ in program
+adl_yacc.grm:832:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:835: error: stray ‘@’ in program
+adl_yacc.grm:835:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:952: error: stray ‘@’ in program
+adl_yacc.grm:952:48: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:953: error: stray ‘@’ in program
+adl_yacc.grm:953:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:957: error: stray ‘@’ in program
+adl_yacc.grm:957:48: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:958: error: stray ‘@’ in program
+adl_yacc.grm:958:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:985: error: stray ‘@’ in program
+adl_yacc.grm:985:34: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:989: error: stray ‘@’ in program
+adl_yacc.grm:989:34: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1004: error: stray ‘@’ in program
+adl_yacc.grm:1004:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1004: error: stray ‘@’ in program
+adl_yacc.grm:1004:80: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1008: error: stray ‘@’ in program
+adl_yacc.grm:1008:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1008: error: stray ‘@’ in program
+adl_yacc.grm:1008:80: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1016: error: stray ‘@’ in program
+adl_yacc.grm:1016:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1016: error: stray ‘@’ in program
+adl_yacc.grm:1016:80: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1020: error: stray ‘@’ in program
+adl_yacc.grm:1020:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1020: error: stray ‘@’ in program
+adl_yacc.grm:1020:74: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1034: error: stray ‘@’ in program
+adl_yacc.grm:1034:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1038: error: stray ‘@’ in program
+adl_yacc.grm:1038:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1061: error: stray ‘@’ in program
+adl_yacc.grm:1061:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1065: error: stray ‘@’ in program
+adl_yacc.grm:1065:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1066: error: stray ‘@’ in program
+adl_yacc.grm:1066:17: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1071: error: stray ‘@’ in program
+adl_yacc.grm:1071:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1072: error: stray ‘@’ in program
+adl_yacc.grm:1072:16: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1073: error: stray ‘@’ in program
+adl_yacc.grm:1073:21: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1083: error: stray ‘@’ in program
+adl_yacc.grm:1083:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1084: error: stray ‘@’ in program
+adl_yacc.grm:1084:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1105: error: stray ‘@’ in program
+adl_yacc.grm:1105:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1119: error: stray ‘@’ in program
+adl_yacc.grm:1119:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1122: error: stray ‘@’ in program
+adl_yacc.grm:1122:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1186: error: stray ‘@’ in program
+adl_yacc.grm:1186:31: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1189: error: stray ‘@’ in program
+adl_yacc.grm:1189:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1204: error: stray ‘@’ in program
+adl_yacc.grm:1204:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1208: error: stray ‘@’ in program
+adl_yacc.grm:1208:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1211: error: stray ‘@’ in program
+adl_yacc.grm:1211:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1218: error: stray ‘@’ in program
+adl_yacc.grm:1218:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1221: error: stray ‘@’ in program
+adl_yacc.grm:1221:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1228: error: stray ‘@’ in program
+adl_yacc.grm:1228:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1231: error: stray ‘@’ in program
+adl_yacc.grm:1231:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1240: error: stray ‘@’ in program
+adl_yacc.grm:1240:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1243: error: stray ‘@’ in program
+adl_yacc.grm:1243:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1248: error: stray ‘@’ in program
+adl_yacc.grm:1248:22: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1249: error: stray ‘@’ in program
+adl_yacc.grm:1249:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1251: error: stray ‘@’ in program
+adl_yacc.grm:1251:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1256: error: stray ‘@’ in program
+adl_yacc.grm:1256:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1264: error: stray ‘@’ in program
+adl_yacc.grm:1264:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1267: error: stray ‘@’ in program
+adl_yacc.grm:1267:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1274: error: stray ‘@’ in program
+adl_yacc.grm:1274:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1277: error: stray ‘@’ in program
+adl_yacc.grm:1277:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1281: error: stray ‘@’ in program
+adl_yacc.grm:1281:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1285: error: stray ‘@’ in program
+adl_yacc.grm:1285:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1289: error: stray ‘@’ in program
+adl_yacc.grm:1289:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1292: error: stray ‘@’ in program
+adl_yacc.grm:1292:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1301: error: stray ‘@’ in program
+adl_yacc.grm:1301:37: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1311: error: stray ‘@’ in program
+adl_yacc.grm:1311:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1313: error: stray ‘@’ in program
+adl_yacc.grm:1313:33: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1320: error: stray ‘@’ in program
+adl_yacc.grm:1320:33: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1327: error: stray ‘@’ in program
+adl_yacc.grm:1327:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1329: error: stray ‘@’ in program
+adl_yacc.grm:1329:33: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1336: error: stray ‘@’ in program
+adl_yacc.grm:1336:33: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1357: error: stray ‘@’ in program
+adl_yacc.grm:1357:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1366: error: stray ‘@’ in program
+adl_yacc.grm:1366:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1370: error: stray ‘@’ in program
+adl_yacc.grm:1370:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1374: error: stray ‘@’ in program
+adl_yacc.grm:1374:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1378: error: stray ‘@’ in program
+adl_yacc.grm:1378:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1382: error: stray ‘@’ in program
+adl_yacc.grm:1382:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1386: error: stray ‘@’ in program
+adl_yacc.grm:1386:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1390: error: stray ‘@’ in program
+adl_yacc.grm:1390:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1394: error: stray ‘@’ in program
+adl_yacc.grm:1394:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1398: error: stray ‘@’ in program
+adl_yacc.grm:1398:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1404: error: stray ‘@’ in program
+adl_yacc.grm:1404:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1404: error: stray ‘@’ in program
+adl_yacc.grm:1404:49: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1405: error: stray ‘@’ in program
+adl_yacc.grm:1405:20: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1409: error: stray ‘@’ in program
+adl_yacc.grm:1409:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1409: error: stray ‘@’ in program
+adl_yacc.grm:1409:49: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1410: error: stray ‘@’ in program
+adl_yacc.grm:1410:20: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1415: error: stray ‘@’ in program
+adl_yacc.grm:1415:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1418: error: stray ‘@’ in program
+adl_yacc.grm:1418:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1425: error: stray ‘@’ in program
+adl_yacc.grm:1425:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1428: error: stray ‘@’ in program
+adl_yacc.grm:1428:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1436: error: stray ‘@’ in program
+adl_yacc.grm:1436:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1440: error: stray ‘@’ in program
+adl_yacc.grm:1440:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1444: error: stray ‘@’ in program
+adl_yacc.grm:1444:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1448: error: stray ‘@’ in program
+adl_yacc.grm:1448:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1452: error: stray ‘@’ in program
+adl_yacc.grm:1452:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1456: error: stray ‘@’ in program
+adl_yacc.grm:1456:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1460: error: stray ‘@’ in program
+adl_yacc.grm:1460:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1464: error: stray ‘@’ in program
+adl_yacc.grm:1464:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1468: error: stray ‘@’ in program
+adl_yacc.grm:1468:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1472: error: stray ‘@’ in program
+adl_yacc.grm:1472:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1476: error: stray ‘@’ in program
+adl_yacc.grm:1476:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1480: error: stray ‘@’ in program
+adl_yacc.grm:1480:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1484: error: stray ‘@’ in program
+adl_yacc.grm:1484:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1488: error: stray ‘@’ in program
+adl_yacc.grm:1488:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1492: error: stray ‘@’ in program
+adl_yacc.grm:1492:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1496: error: stray ‘@’ in program
+adl_yacc.grm:1496:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1500: error: stray ‘@’ in program
+adl_yacc.grm:1500:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1504: error: stray ‘@’ in program
+adl_yacc.grm:1504:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1508: error: stray ‘@’ in program
+adl_yacc.grm:1508:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1512: error: stray ‘@’ in program
+adl_yacc.grm:1512:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1516: error: stray ‘@’ in program
+adl_yacc.grm:1516:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1520: error: stray ‘@’ in program
+adl_yacc.grm:1520:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1524: error: stray ‘@’ in program
+adl_yacc.grm:1524:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1528: error: stray ‘@’ in program
+adl_yacc.grm:1528:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1532: error: stray ‘@’ in program
+adl_yacc.grm:1532:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1544: error: stray ‘@’ in program
+adl_yacc.grm:1544:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1544: error: stray ‘@’ in program
+adl_yacc.grm:1544:69: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1555: error: stray ‘@’ in program
+adl_yacc.grm:1555:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1559: error: stray ‘@’ in program
+adl_yacc.grm:1559:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1563: error: stray ‘@’ in program
+adl_yacc.grm:1563:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1567: error: stray ‘@’ in program
+adl_yacc.grm:1567:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1583: error: stray ‘@’ in program
+adl_yacc.grm:1583:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1595: error: stray ‘@’ in program
+adl_yacc.grm:1595:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1622: error: stray ‘@’ in program
+adl_yacc.grm:1622:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1623: error: stray ‘@’ in program
+adl_yacc.grm:1623:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1627: error: stray ‘@’ in program
+adl_yacc.grm:1627:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1631: error: stray ‘@’ in program
+adl_yacc.grm:1631:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1637: error: stray ‘@’ in program
+adl_yacc.grm:1637:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1646: error: stray ‘@’ in program
+adl_yacc.grm:1646:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1668: error: stray ‘@’ in program
+adl_yacc.grm:1668:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1684: error: stray ‘@’ in program
+adl_yacc.grm:1684:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1705: error: stray ‘@’ in program
+adl_yacc.grm:1705:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1725: error: stray ‘@’ in program
+adl_yacc.grm:1725:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1742: error: stray ‘@’ in program
+adl_yacc.grm:1742:38: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1778: error: stray ‘@’ in program
+adl_yacc.grm:1778:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1794: error: stray ‘@’ in program
+adl_yacc.grm:1794:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1819: error: stray ‘@’ in program
+adl_yacc.grm:1819:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1847: error: stray ‘@’ in program
+adl_yacc.grm:1847:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1867: error: stray ‘@’ in program
+adl_yacc.grm:1867:31: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1869: error: stray ‘@’ in program
+adl_yacc.grm:1869:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1904: error: stray ‘@’ in program
+adl_yacc.grm:1904:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:1935: error: stray ‘@’ in program
+adl_yacc.grm:1935:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2112: error: stray ‘@’ in program
+adl_yacc.grm:2112:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2114: error: stray ‘@’ in program
+adl_yacc.grm:2114:37: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2115: error: stray ‘@’ in program
+adl_yacc.grm:2115:38: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2117: error: stray ‘@’ in program
+adl_yacc.grm:2117:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2137: error: stray ‘@’ in program
+adl_yacc.grm:2137:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2138: error: stray ‘@’ in program
+adl_yacc.grm:2138:43: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2139: error: stray ‘@’ in program
+adl_yacc.grm:2139:43: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2141: error: stray ‘@’ in program
+adl_yacc.grm:2141:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2166: error: stray ‘@’ in program
+adl_yacc.grm:2166:37: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2172: error: stray ‘@’ in program
+adl_yacc.grm:2172:37: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2173: error: stray ‘@’ in program
+adl_yacc.grm:2173:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2192: error: stray ‘@’ in program
+adl_yacc.grm:2192:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2200: error: stray ‘@’ in program
+adl_yacc.grm:2200:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2201: error: stray ‘@’ in program
+adl_yacc.grm:2201:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2227: error: stray ‘@’ in program
+adl_yacc.grm:2227:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2250: error: stray ‘@’ in program
+adl_yacc.grm:2250:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2252: error: stray ‘@’ in program
+adl_yacc.grm:2252:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2264: error: stray ‘@’ in program
+adl_yacc.grm:2264:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2277: error: stray ‘@’ in program
+adl_yacc.grm:2277:31: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2296: error: stray ‘@’ in program
+adl_yacc.grm:2296:23: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2297: error: stray ‘@’ in program
+adl_yacc.grm:2297:38: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2298: error: stray ‘@’ in program
+adl_yacc.grm:2298:38: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2299: error: stray ‘@’ in program
+adl_yacc.grm:2299:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2309: error: stray ‘@’ in program
+adl_yacc.grm:2309:26: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2317: error: stray ‘@’ in program
+adl_yacc.grm:2317:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2360: error: stray ‘@’ in program
+adl_yacc.grm:2360:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2368: error: stray ‘@’ in program
+adl_yacc.grm:2368:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2368: error: stray ‘@’ in program
+adl_yacc.grm:2368:53: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2369: error: stray ‘@’ in program
+adl_yacc.grm:2369:20: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2372: error: stray ‘@’ in program
+adl_yacc.grm:2372:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2375: error: stray ‘@’ in program
+adl_yacc.grm:2375:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2381: error: stray ‘@’ in program
+adl_yacc.grm:2381:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2383: error: stray ‘@’ in program
+adl_yacc.grm:2383:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2387: error: stray ‘@’ in program
+adl_yacc.grm:2387:47: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2392: error: stray ‘@’ in program
+adl_yacc.grm:2392:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2394: error: stray ‘@’ in program
+adl_yacc.grm:2394:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2399: error: stray ‘@’ in program
+adl_yacc.grm:2399:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2401: error: stray ‘@’ in program
+adl_yacc.grm:2401:35: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2405: error: stray ‘@’ in program
+adl_yacc.grm:2405:44: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2409: error: stray ‘@’ in program
+adl_yacc.grm:2409:44: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2421: error: stray ‘@’ in program
+adl_yacc.grm:2421:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2440: error: stray ‘@’ in program
+adl_yacc.grm:2440:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2501: error: stray ‘@’ in program
+adl_yacc.grm:2501:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2505: error: stray ‘@’ in program
+adl_yacc.grm:2505:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2509: error: stray ‘@’ in program
+adl_yacc.grm:2509:25: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2515: error: stray ‘@’ in program
+adl_yacc.grm:2515:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2521: error: stray ‘@’ in program
+adl_yacc.grm:2521:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2525: error: stray ‘@’ in program
+adl_yacc.grm:2525:27: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2529: error: stray ‘@’ in program
+adl_yacc.grm:2564: error: stray ‘@’ in program
+adl_yacc.grm:2564:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2577: error: stray ‘@’ in program
+adl_yacc.grm:2577:30: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2596: error: stray ‘@’ in program
+adl_yacc.grm:2596:34: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2620: error: stray ‘@’ in program
+adl_yacc.grm:2620:34: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2639: error: stray ‘@’ in program
+adl_yacc.grm:2639:36: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2648: error: stray ‘@’ in program
+adl_yacc.grm:2648:33: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2701: error: stray ‘@’ in program
+adl_yacc.grm:2701:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2713: error: stray ‘@’ in program
+adl_yacc.grm:2713:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2744: error: stray ‘@’ in program
+adl_yacc.grm:2744:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2746: error: stray ‘@’ in program
+adl_yacc.grm:2746:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2767: error: stray ‘@’ in program
+adl_yacc.grm:2767:38: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2810: error: stray ‘@’ in program
+adl_yacc.grm:2810:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2815: error: stray ‘@’ in program
+adl_yacc.grm:2815:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2823: error: stray ‘@’ in program
+adl_yacc.grm:2823:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2830: error: stray ‘@’ in program
+adl_yacc.grm:2830:43: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2832: error: stray ‘@’ in program
+adl_yacc.grm:2832:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2849: error: stray ‘@’ in program
+adl_yacc.grm:2849:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2856: error: stray ‘@’ in program
+adl_yacc.grm:2856:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2857: error: stray ‘@’ in program
+adl_yacc.grm:2857:42: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2858: error: stray ‘@’ in program
+adl_yacc.grm:2858:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2875: error: stray ‘@’ in program
+adl_yacc.grm:2875:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2879: error: stray ‘@’ in program
+adl_yacc.grm:2879:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2883: error: stray ‘@’ in program
+adl_yacc.grm:2883:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2894: error: stray ‘@’ in program
+adl_yacc.grm:2894:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2905: error: stray ‘@’ in program
+adl_yacc.grm:2905:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2907: error: stray ‘@’ in program
+adl_yacc.grm:2907:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2911: error: stray ‘@’ in program
+adl_yacc.grm:2911:29: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2913: error: stray ‘@’ in program
+adl_yacc.grm:2913:32: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2923: error: stray ‘@’ in program
+adl_yacc.grm:2923:28: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2928: error: stray ‘@’ in program
+adl_yacc.grm:2928:24: error: invalid suffix "first_line" on floating constant
+adl_yacc.grm:2932: error: stray ‘@’ in program
+adl_yacc.grm:2932:32: error: invalid suffix "first_line" on floating constant
+In file included from adl_yacc.grm:13:
+./sql/absyn.h:491: warning: ‘typedef’ was ignored in this declaration
+In file included from esl/buffer.h:4,
+                 from adl_yacc.grm:16:
+esl/dbt.h: In member function ‘void dbt::setTime(timeval*)’:
+esl/dbt.h:44: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c: At global scope:
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2043: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+y.tab.c:2380: warning: deprecated conversion from string constant to ‘char*’
+btyaccpa.ske:96: error: ‘YYSTYPE’ does not name a type
+btyaccpa.ske:100: error: ‘YYSTYPE’ does not name a type
+btyaccpa.ske:115: error: ISO C++ forbids declaration of ‘YYSTYPE’ with no type
+btyaccpa.ske:115: error: expected ‘;’ before ‘*’ token
+btyaccpa.ske:117: error: ‘YYSTYPE’ does not name a type
+btyaccpa.ske:120: error: ISO C++ forbids declaration of ‘YYSTYPE’ with no type
+btyaccpa.ske:120: error: expected ‘;’ before ‘*’ token
+btyaccpa.ske:134: error: expected initializer before ‘*’ token
+btyaccpa.ske:137: error: expected initializer before ‘*’ token
+btyaccpa.ske:140: error: expected initializer before ‘*’ token
+btyaccpa.ske:143: error: expected initializer before ‘*’ token
+btyaccpa.ske:178: error: variable or field ‘YYSCopy’ declared void
+btyaccpa.ske:178: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:178: error: ‘to’ was not declared in this scope
+btyaccpa.ske:178: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:178: error: ‘from’ was not declared in this scope
+btyaccpa.ske:178: error: expected primary-expression before ‘int’
+btyaccpa.ske: In function ‘int yyparse()’:
+btyaccpa.ske:213: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:213: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:235: warning: deprecated conversion from string constant to ‘char*’
+btyaccpa.ske:291: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:291: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:291: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:291: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:294: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:294: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:294: error: ‘YYSCopy’ was not declared in this scope
+btyaccpa.ske:310: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:310: error: expected type-specifier before ‘YYSTYPE’
+btyaccpa.ske:310: error: expected `;' before ‘YYSTYPE’
+btyaccpa.ske:311: error: ‘yylvlim’ was not declared in this scope
+btyaccpa.ske:315: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:315: error: ‘yylve’ was not declared in this scope
+btyaccpa.ske:316: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:320: error: ‘yylval’ was not declared in this scope
+btyaccpa.ske:328: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:331: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:331: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:341: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:372: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:372: error: ‘yylval’ was not declared in this scope
+btyaccpa.ske:399: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:399: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:403: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:403: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:412: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:412: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:412: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:412: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:415: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:415: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:415: error: ‘YYSCopy’ was not declared in this scope
+btyaccpa.ske:419: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:419: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:424: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:424: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:424: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:424: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:427: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:427: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:427: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:427: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:427: error: ‘YYSCopy’ was not declared in this scope
+btyaccpa.ske:452: error: ‘yylval’ was not declared in this scope
+btyaccpa.ske:455: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:455: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:455: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:455: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:458: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:458: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:458: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:458: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:470: warning: deprecated conversion from string constant to ‘char*’
+btyaccpa.ske:479: error: ‘YYERRCODE’ was not declared in this scope
+btyaccpa.ske:505: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:515: warning: deprecated conversion from string constant to ‘char*’
+btyaccpa.ske:560: error: ‘struct yyparsestate’ has no member named ‘val’
+btyaccpa.ske:560: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:259: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:259: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:266: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:267: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:268: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:268: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:272: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:273: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:273: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:274: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:274: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:281: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:285: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:285: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:291: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:292: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:293: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:293: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:298: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:299: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:299: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:301: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:301: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:308: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:312: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:312: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:316: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:316: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:320: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:320: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:324: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:324: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:328: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:328: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:334: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:334: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:341: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:342: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:343: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:343: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:348: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:349: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:349: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:350: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:350: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:357: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:365: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:369: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:369: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:373: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:373: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:379: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:380: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:381: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:381: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:386: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:387: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:387: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:388: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:388: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:395: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:403: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:407: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:407: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:456: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:456: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:456: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:462: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:462: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:466: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:466: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:470: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:470: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:476: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:476: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:476: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:480: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:481: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:482: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:487: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:487: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:487: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:487: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:493: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:494: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:494: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:498: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:498: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:499: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:499: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:505: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:505: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:505: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:509: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:509: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:509: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:509: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:513: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:518: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:527: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:540: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:546: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:551: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:551: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:556: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:560: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:569: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:572: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:573: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:574: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:593: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:599: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:604: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:608: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:616: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:617: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:638: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:643: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:646: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:699: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:699: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:707: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:707: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:714: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:714: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:721: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:721: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:728: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:728: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:735: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:739: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:739: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:746: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:747: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:747: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:751: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:751: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:752: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:752: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:786: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:791: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:791: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:796: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:796: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:801: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:801: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:805: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:809: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:814: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:814: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:814: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:817: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:817: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:817: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:823: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:827: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:832: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:832: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:832: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:835: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:835: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:835: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:842: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:846: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:846: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:852: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:856: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:856: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:860: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:864: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:866: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:872: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:876: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:882: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:887: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:891: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:895: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:901: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:908: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:914: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:918: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:918: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:925: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:925: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:926: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:926: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:931: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:936: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:942: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:946: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:946: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:952: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:952: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:953: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:953: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:953: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:953: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:953: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:957: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:957: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:958: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:958: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:958: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:958: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:965: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:966: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:971: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:979: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:982: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:984: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:985: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:985: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:985: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:985: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:989: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:989: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:989: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:989: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:989: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:996: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:999: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1001: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1003: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1004: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1004: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1004: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1008: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1008: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1008: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1008: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1013: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1015: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1016: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1016: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1016: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1016: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1020: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1020: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1020: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1020: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1020: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1029: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1029: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1034: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1034: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1038: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1038: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1043: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1047: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1047: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1061: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1061: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1061: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1065: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1066: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1067: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1071: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1073: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1074: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1075: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1081: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1081: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1082: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1083: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1083: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1083: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1083: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1084: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1084: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1084: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1084: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1085: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1086: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1090: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1090: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1091: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1091: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1092: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1092: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1093: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1093: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1094: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1094: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1095: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1095: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1096: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1096: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1097: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1097: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1098: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1098: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1099: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1099: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1101: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1102: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1104: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1105: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1105: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1105: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1105: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1106: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1114: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1114: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1120: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1122: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1123: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1129: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1130: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1131: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1132: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1133: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1134: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1135: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1136: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1137: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1138: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1139: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1140: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1141: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1142: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1143: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1144: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1145: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1146: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1147: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1148: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1149: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1150: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1151: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1152: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1153: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1154: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1155: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1156: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1157: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1158: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1159: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1160: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1161: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1162: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1163: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1164: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1165: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1166: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1167: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1168: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1169: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1170: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1171: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1172: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1173: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1174: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1175: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1176: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1177: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1178: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1182: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1186: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1186: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1189: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1189: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1189: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1195: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1201: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1204: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1204: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1209: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1211: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1212: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1219: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1221: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1222: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1229: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1231: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1232: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1241: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1244: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1252: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1256: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1265: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1267: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1268: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1275: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1276: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1277: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1277: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1282: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1283: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1283: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1284: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1285: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1285: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1290: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1291: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1291: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1292: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1292: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1298: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1301: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1302: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1303: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1311: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1312: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1312: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1313: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1314: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1319: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1319: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1320: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1321: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1322: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1322: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1327: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1328: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1328: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1329: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1330: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1335: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1335: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1336: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1337: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1338: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1338: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1345: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1349: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1349: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1357: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1357: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1363: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1366: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1366: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1370: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1370: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1374: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1378: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1378: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1382: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1382: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1386: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1386: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1386: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1390: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1390: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1390: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1394: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1394: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1398: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1398: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1403: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1405: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1410: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1411: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1418: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1419: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1426: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1428: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1428: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1432: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1432: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1436: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1436: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1436: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1440: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1440: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1440: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1444: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1444: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1444: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1448: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1448: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1448: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1452: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1452: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1452: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1456: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1456: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1460: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1460: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1460: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1464: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1464: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1468: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1468: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1468: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1472: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1472: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1472: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1476: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1476: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1476: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1480: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1480: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1480: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1484: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1484: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1484: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1488: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1488: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1488: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1492: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1492: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1492: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1496: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1496: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1496: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1500: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1500: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1500: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1504: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1504: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1504: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1508: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1508: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1508: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1512: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1512: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1512: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1516: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1516: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1516: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1520: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1520: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1524: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1524: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1528: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1528: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1532: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1532: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1536: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1536: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1540: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1540: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1544: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1544: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1544: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1548: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1548: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1555: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1555: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1555: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1555: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1559: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1559: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1559: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1563: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1563: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1563: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1567: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1567: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1573: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1577: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1577: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1583: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1584: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1584: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1588: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1588: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1589: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1589: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1595: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1596: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1596: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1597: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1597: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1601: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1601: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1602: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1602: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1603: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1603: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1624: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1624: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1627: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1631: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1631: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1637: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1646: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1647: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:1650: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1657: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1664: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1670: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1672: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1676: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1676: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1677: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1677: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1686: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1688: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1692: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1692: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1693: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1693: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1700: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1700: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1701: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1701: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1706: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1707: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1714: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1718: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1725: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1725: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1725: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1738: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1742: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1742: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1743: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1743: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1743: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1752: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1752: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1759: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1759: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1766: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1774: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1778: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1778: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1778: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1778: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1784: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1790: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1794: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1813: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1819: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1822: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1823: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1824: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1825: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1826: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1827: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1828: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1829: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1842: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1847: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1850: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1851: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1852: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1853: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1854: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1856: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1864: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1867: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1869: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1872: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1873: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1874: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1898: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1904: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1907: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1908: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1909: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1910: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1911: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1912: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1913: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1914: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1915: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1916: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1930: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1935: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1938: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1939: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1940: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1941: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1942: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1943: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1944: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1946: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1953: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1957: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1957: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1961: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1967: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1971: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1971: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1978: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1982: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1982: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1989: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1993: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:1993: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:1999: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2003: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2003: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2014: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2014: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2018: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2024: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2028: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2028: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2032: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2038: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2042: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2042: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2050: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2050: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2055: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2055: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2060: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2060: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2065: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2065: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2070: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2070: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2075: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2075: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2080: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2080: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2085: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2085: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2090: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2090: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2095: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2095: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2107: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2108: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2108: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2113: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2115: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2117: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2129: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2131: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2131: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2138: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2139: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2141: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2142: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2143: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2151: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2151: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2157: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2159: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2159: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2166: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2166: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2167: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2168: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2168: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2172: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2172: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2173: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2174: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2179: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2180: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2181: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2187: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2187: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2188: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2188: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2192: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2193: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2193: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2200: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2201: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2202: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2206: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2213: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2217: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2217: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2223: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2227: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2227: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2227: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2227: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2227: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2234: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2236: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2244: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2249: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2250: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2250: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2250: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2250: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2252: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2252: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2252: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2252: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2264: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2265: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2266: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2267: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2268: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2269: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2270: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2271: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2276: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2278: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2279: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2281: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2281: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2285: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2285: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2291: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2291: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2295: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2297: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2298: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2299: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2308: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2309: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2310: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2310: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2317: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2320: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2329: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2331: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2333: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2338: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2340: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2345: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2347: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2349: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2355: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2355: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2356: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2356: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2360: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2361: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2361: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2369: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2370: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2376: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2380: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2381: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2383: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2383: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2387: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2387: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2387: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2391: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2392: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2392: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2394: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2394: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2394: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2398: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2399: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2399: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2401: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2401: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2401: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2405: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2405: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2409: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2416: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2416: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2417: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2417: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2421: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2422: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2422: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2427: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2428: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2428: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2429: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2429: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2435: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2435: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2436: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2436: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2440: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2441: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2441: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2449: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2452: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2458: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2461: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2484: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2486: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2486: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2491: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2491: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2495: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2495: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2501: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2501: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2505: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2505: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2509: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2509: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2509: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2515: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2521: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2521: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2525: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2525: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2525: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2529: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2529: error: ‘$’ was not declared in this scope
+adl_yacc.grm:2535: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2537: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2539: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2541: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2548: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2548: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2554: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2557: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2564: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2564: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2564: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2573: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2573: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2577: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2577: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2577: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2583: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2587: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2592: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2596: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2596: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2602: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2606: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2611: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2617: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2620: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2620: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2625: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2625: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2627: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2632: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2636: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2639: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2639: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2645: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2648: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2648: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2655: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2658: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2658: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2663: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2666: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2666: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2671: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2673: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2673: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2677: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2680: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2680: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2692: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2701: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2702: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2702: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2706: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2706: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2707: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2707: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2713: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2713: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2713: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2713: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2718: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2720: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2724: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2740: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2743: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2744: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2744: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2744: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2746: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2746: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2761: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2767: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2767: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2767: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2774: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2778: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2806: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2806: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2810: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2810: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2811: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2815: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2815: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2816: warning: deprecated conversion from string constant to ‘char*’
+adl_yacc.grm:2825: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2825: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2826: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2826: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2829: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2830: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2832: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2853: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2856: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2858: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2876: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2878: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2880: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2883: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2886: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2894: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2895: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2895: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2899: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2899: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2900: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2900: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2905: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2907: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2907: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2911: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2913: error: ‘struct yyparsestate’ has no member named ‘val’
+adl_yacc.grm:2913: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2925: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2927: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2929: error: ‘struct yyparsestate’ has no member named ‘vsp’
+adl_yacc.grm:2932: error: ‘struct yyparsestate’ has no member named ‘val’
+btyaccpa.ske:595: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:608: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:608: error: ‘struct yyparsestate’ has no member named ‘val’
+btyaccpa.ske:609: error: ‘yyretlval’ was not declared in this scope
+btyaccpa.ske:609: error: ‘struct yyparsestate’ has no member named ‘val’
+btyaccpa.ske:620: warning: deprecated conversion from string constant to ‘char*’
+btyaccpa.ske:645: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:645: error: ‘struct yyparsestate’ has no member named ‘val’
+btyaccpa.ske:667: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:667: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:674: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:674: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:674: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:674: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:677: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:677: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:677: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske:677: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:677: error: ‘YYSCopy’ was not declared in this scope
+btyaccpa.ske:679: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:679: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:691: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:691: error: ‘pv’ was not declared in this scope
+btyaccpa.ske:692: error: ‘struct yyparsestate’ has no member named ‘vs’
+btyaccpa.ske:692: error: ‘struct yyparsestate’ has no member named ‘vsp’
+btyaccpa.ske: In function ‘int YYLex1()’:
+btyaccpa.ske:734: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:734: error: ‘yylve’ was not declared in this scope
+btyaccpa.ske:735: error: ‘yylval’ was not declared in this scope
+btyaccpa.ske:740: error: ‘yylvlim’ was not declared in this scope
+btyaccpa.ske:744: error: ‘yylval’ was not declared in this scope
+btyaccpa.ske: In function ‘int yyexpand()’:
+btyaccpa.ske:756: error: ‘yylvp’ was not declared in this scope
+btyaccpa.ske:756: error: ‘yylvals’ was not declared in this scope
+btyaccpa.ske:757: error: ‘yylvlim’ was not declared in this scope
+btyaccpa.ske:760: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:760: error: ‘tv’ was not declared in this scope
+btyaccpa.ske:762: error: expected type-specifier before ‘YYSTYPE’
+btyaccpa.ske:762: error: expected `;' before ‘YYSTYPE’
+btyaccpa.ske:766: error: ‘YYSCopy’ was not declared in this scope
+btyaccpa.ske:769: error: type ‘<type error>’ argument given to ‘delete’, expected pointer
+btyaccpa.ske:772: error: ‘yylve’ was not declared in this scope
+btyaccpa.ske: At global scope:
+btyaccpa.ske:780: error: variable or field ‘YYSCopy’ declared void
+btyaccpa.ske:780: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:780: error: ‘to’ was not declared in this scope
+btyaccpa.ske:780: error: ‘YYSTYPE’ was not declared in this scope
+btyaccpa.ske:780: error: ‘from’ was not declared in this scope
+btyaccpa.ske:780: error: expected primary-expression before ‘int’
+make[2]: *** [adl_yacc.o] Error 1
+make[1]: *** [all-recursive] Error 1
+make: *** [all] Error 2

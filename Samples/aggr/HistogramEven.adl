@@ -1,0 +1,152 @@
+table traffic     (in1 INT, time1 TIMESTAMP) memory;
+TABLE EH(TSExpGlobal INT, TSFirst INT, TSLast INT, val INT, valCount INT) MEMORY;
+TABLE state(maxID INT) MEMORY;
+TABLE stateMaxVal(maxID INT, val INT) MEMORY;
+
+
+
+AGGREGATE  mergeAggr (size INT, k INT): (ret INT)
+{
+	/* merging buckets with size > 1 */
+	INSERT INTO EH 
+		SELECT A.TSExpGlobal, A.TSFirst, B.TSLast, A.val, A.valCount+B.valCount 
+		FROM EH AS A, EH AS B 
+		WHERE 
+		A.val=B.val AND
+		(A.TSLast=B.TSFirst) AND /* 2 consecutive buckets */
+		(A.valCount=B.valCount) AND
+		(A.valCount=size) AND
+		((SELECT COUNT(TSFirst) FROM EH AS C WHERE C.valCount=size AND C.val=A.val) > k/2+1 ) AND /* update condition */
+		(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.valCount=B.valCount AND C.val=B.val));
+	/* they should be the oldest buckets having previous conditions */
+
+	/*deleting just merged buckets*/
+	DELETE FROM EH 
+		WHERE
+		EXISTS (SELECT TSFirst FROM EH AS B 
+				WHERE EH.valCount < B.valCount AND EH.val = B.val
+				AND
+				((EH.TSFirst = B.TSFirst) OR 
+				 (EH.TSLast  = B.TSLast)) );
+
+	/* calling mergeAggr recursively */
+	Select mergeAggr(size*2, k) 
+		FROM EH AS A, EH AS B 
+		WHERE 
+		A.val=B.val AND
+		((SELECT COUNT(TSFirst) FROM EH WHERE valCount=(size*2)) > k/2+1 ) AND /* update condition */
+		(A.TSLast=B.TSFirst) AND /* 2 consecutive buckets */
+		(A.valCount=B.valCount) AND
+		(A.valCount=(size*2)) AND
+		(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.valCount=B.valCount));
+
+};
+
+
+/*
+   The function estimates the number of values goes in each bar of
+   a histogram.
+   the idea is to use EHbasicCounter for counting each value. 
+
+
+   k		[1/epsilon] and it must be an even number in order for the EH working efficiently
+   W		window size
+   barNo	Number of bars in our histogram diagram
+   minVal	minimum acceptable value
+   maxVal	maximum acceptable value
+ */
+AGGREGATE HistogramEven(k INT, W INT, barNo INT, minVal INT, maxVal INT, Next INT) : 
+(TSFirst INT, TSLast INT, valCount INT)
+{
+
+
+INITIALIZE:
+	{
+	INSERT INTO state VALUES (0);        
+	INSERT INTO stateMaxVal VALUES (0, ((Next-minVal)*barNo)/ (maxVal-minVal));        
+		
+	INSERT INTO EH VALUES ( (Select maxID FROM state)+1,
+							(Select maxID FROM stateMaxVal WHERE val=((Next-minVal)*barNo)/(maxVal-minVal))+1,
+                            (Select maxID FROM stateMaxVal WHERE val=((Next-minVal)*barNo)/(maxVal-minVal)),
+                            ((Next-minVal)*barNo)/ (maxVal-minVal),
+                            1);
+
+	}
+ITERATE:
+	{
+		UPDATE state SET maxID=maxID+1;
+		
+		/* updating time stamp for each value */
+		UPDATE stateMaxVal SET maxID=maxID+1
+		WHERE 
+			val=((Next-minVal)*barNo)/ (maxVal-minVal);
+		INSERT INTO stateMaxVal VALUES (0,((Next-minVal)*barNo)/ (maxVal-minVal))
+		WHERE 
+			NOT EXISTS (SELECT val FROM stateMaxVal WHERE val=((Next-minVal)*barNo)/(maxVal-minVal));
+
+
+		INSERT INTO EH VALUES (	(Select maxID FROM state)+1, 
+								(Select maxID FROM stateMaxVal WHERE val=((Next-minVal)*barNo)/(maxVal-minVal))+1,
+								(Select maxID FROM stateMaxVal WHERE val=((Next-minVal)*barNo)/(maxVal-minVal)), 
+								((Next-minVal)*barNo)/ (maxVal-minVal),
+								1);
+
+
+		/* merging buckets with size 1 for each value */
+		INSERT INTO EH 
+			SELECT A.TSExpGlobal, A.TSFirst, B.TSLast,A.val, A.valCount+B.valCount 
+			FROM EH AS A, EH AS B 
+			WHERE 
+			A.val=B.val AND
+			(A.TSLast=B.TSFirst) AND /* 2 consecutive bucket */
+			(A.valCount=B.valCount) AND
+			(A.valCount=1) AND
+			((SELECT COUNT(TSFirst) FROM EH AS C WHERE valCount=1 and C.val=A.val) > k+1 ) AND /* update condition */
+			(NOT EXISTS (SELECT TSFirst FROM EH AS C WHERE C.TSFirst <= B.TSLast AND C.valCount=B.valCount and C.val=B.val));
+		/* they should be the oldest buckets having previous conditions */
+
+		/*deleting just merged buckets*/
+		DELETE FROM EH 
+			WHERE
+			EXISTS (SELECT TSFirst FROM EH AS B 
+					WHERE EH.valCount < B.valCount AND EH.val = B.val
+					AND
+					((EH.TSFirst = B.TSFirst) OR 
+					 (EH.TSLast  = B.TSLast)) );
+
+
+		Select mergeAggr(2, k) FROM state;
+
+
+
+		/*expiring the last bucket if needed */
+/*		INSERT INTO return values (111111, 1111111, 111111);
+		INSERT INTO return values ((select min(TSFirst)FROM EH), W, (select maxID FROM state));
+		INSERT INTO return values (222222, 2222222, 222222);
+*/		delete FROM EH WHERE TSExpGlobal+W < (select maxID FROM state);
+
+
+		/* printing current bucket status */
+/*		INSERT INTO return SELECT TSFirst, TSLast, valCount*1000000+TSExpGlobal FROM EH WHERE val = 4;
+		INSERT INTO return values (333333, 33333333, 333333);
+*/
+		/* this can be done using an aggregate to make it faster
+		   but since the number of rows are few that seems ok */
+		INSERT INTO return values (444444, 44444444, 444444);
+		INSERT INTO return SELECT val, sum(valCount), count(valCount) FROM EH GROUP BY val;
+
+/*-
+			(SELECT valCount/2 FROM EH 
+ 			 WHERE TSFirst=(select MIN(TSFirst) FROM EH)));*/
+
+
+		
+
+	}
+
+TERMINATE: {}
+};
+
+LOAD FROM './test1' INTO traffic;
+
+SELECT HistogramEven(8, 5000, 10, 0, 10000, in1) FROM traffic;

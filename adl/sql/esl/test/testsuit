@@ -1,0 +1,54 @@
+#!/bin/sh
+INCLUDES="-I../../../ -I../../../dbug -I../../ -I../"
+esl_LDADD="/usr/lib/libmm.a ../../libatlas.a ../../../dbug/libdbug.a -ldl"
+export LD_LIBRARY_PATH=./lib
+
+RunTest() {
+    BASENAME=`echo $i | cut -d. -f 1`
+    echo testing $BASENAME ...
+
+    if [ ! -f $BASENAME.result ]; then
+        echo "skipped. Can't locate $BASENAME.result"
+    else
+	
+	$BASENAME > adltestsuittmp
+
+	dos2unix adltestsuittmp 2>null
+
+        cmp=`diff -b adltestsuittmp $BASENAME.result`
+
+        if [ "$cmp" = "" ]; then
+            echo "TEST $i : PASS"
+        else
+	    sort adltestsuittmp > sort.1
+	    sort $BASENAME.result > sort.2
+	    cmp= `diff sort.1 sort.2`
+	    if [ "$cmp" = "" ]; then
+		echo "TEST $BASENAME **ORDER**"
+	    else 
+	echo "*********CURRENT RESULT***************"
+	cat adltestsuittmp
+	echo "*********ORIGINAL RESULT**************"
+	cat $BASENAME.result
+	echo "**************************************"
+
+
+		echo "TEST $BASENAME FAILED"
+	    fi
+        fi
+
+	rm -rf adlctmp adlctmp.*
+    fi
+}
+
+if [ $# -ne 0 ]
+then
+  for arg in "$@"
+  do
+    RunTest $arg
+  done            
+else
+  for i in `ls src/winbuf_test src/buf`; do
+    RunTest $i
+  done
+fi

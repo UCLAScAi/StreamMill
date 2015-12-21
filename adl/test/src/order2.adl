@@ -1,0 +1,10 @@
+table test(a char(10), b int, c char(10));
+
+insert into test values('tom',2,'shoe'),('mary',1x,'cust'),('jim',3,'research'),('andy',200,'sales');
+
+
+insert into stdout SELECT a, b,c FROM test order by a;
+insert into stdout SELECT a, b,c FROM test order by b;
+insert into stdout SELECT a, b,c FROM test order by c;
+
+

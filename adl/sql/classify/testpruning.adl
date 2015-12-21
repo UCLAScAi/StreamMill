@@ -1,0 +1,128 @@
+table costresult (id int, c1 real);
+table decisiontree ( seqno int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+
+aggregate lgg (num real):real
+ {
+ initialize:
+ iterate:
+   {
+     insert into return values (num*num) ;
+   }
+ };
+
+aggregate transfer (num real):real
+{
+ initialize:
+ iterate:
+  {
+    insert into return values (num);
+  }
+};
+
+aggregate computecost (currentid int):real
+{
+
+table rec (id int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+table rec2 (id int, col int, yorn char(1), parent int, pvalue char(1), enumber int, pnumber int);
+table leafcost(c real);
+table newcost(c real);
+table cost(c real);
+table children (id int);
+table tmp (c real);
+table realnum (en real, logen real, pn real, logpn real);
+table pai (p real) as values (3.141593);
+
+initialize:
+iterate:
+  { 
+    insert into rec select d.seqno, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber from decisiontree d where d.seqno=currentid;  
+    
+    insert into leafcost select 1+lgg(20)+lgg(10) from rec where pnumber=0 ;
+ 
+    insert into realnum select transfer(enumber), lgg(enumber+pnumber)-lgg(enumber),  
+                               transfer(pnumber), lgg(enumber+pnumber)-lgg(pnumber)  
+                        from rec where pnumber<>0;
+ 
+    
+    insert into leafcost select 1+lgg(20)+lgg(10)+lgg((en+pn)/2)/2+lgg(p)
+    from realnum, pai where pn<>0 ;
+ 
+    insert into leafcost select en*logen+pn*logpn from realnum where pn<>0;
+    insert into cost select sum(l.c) from leafcost l;
+ 
+    insert into tmp values (0);
+    insert into children select d.seqno from decisiontree d where d.parent=currentid;
+
+    insert into tmp select computecost(id) from children;
+
+
+    insert into newcost select sum(t.c) from tmp t;
+    insert into newcost select 1+lgg(20)+lgg(10)+lgg(22);
+    
+    
+    
+    insert into cost select sum(n.c) from newcost n;
+    
+    
+    delete from rec where 1=1;
+ 
+    insert into rec select  d.seqno, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                    from decisiontree d 
+                    where not exists (select c.id from children c where c.id=d.seqno);
+    insert into rec2 select  d.seqno, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                    from decisiontree d 
+                    where exists (select c.id from children c where c.id=d.seqno);
+ 
+    delete from decisiontree where 1=1;
+ 
+    insert into decisiontree select d.id, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                             from rec d;  
+    insert into decisiontree select d.id, d.col, d.yorn, d.parent, d.pvalue, d.enumber, d.pnumber 
+                             from rec2 d
+                             where (select min(co.c) from cost co)=(select sum(n.c) from newcost n);  
+    update decisiontree set col=0 where seqno=currentid and (select min(co.c) from cost co)<(select sum(n.c) from newcost n);  
+   
+    insert into costresult select currentid, c from cost;
+    insert into return select min(c) from cost;    
+ 
+    delete from rec WHERE 1=1;
+ 
+    delete from leafcost WHERE 1=1;
+    delete from newcost WHERE 1=1;
+    delete from cost WHERE 1=1;
+    delete from children WHERE 1=1;
+    delete from tmp WHERE 1=1;
+    delete from realnum WHERE 1=1;
+ 
+    
+  }
+};
+
+insert into decisiontree values
+(1,5,'e',0,'-',60,40),
+(2,0,'p',1,'y',5,0),
+(3,0,'p',1,'f',21,0),
+(4,0,'e',1,'a',5,0),
+(5,20,'e',1,'n',47,4),
+(6,0,'e',5,'k',20,0),
+(7,0,'e',5,'n',17,0),
+(8,8,'e',5,'w',7,1),
+(9,0,'e',8,'b',7,0),
+(10,0,'p',8,'n',1,0),
+(11,0,'p',5,'r',3,0),
+(12,0,'e',5,'b',2,0),
+(13,0,'e',5,'h',1,0),
+(14,0,'p',1,'s',4,0),
+(15,0,'p',1,'p',3,0),
+(16,0,'e',1,'l',8,0),
+(17,0,'p',1,'c',3,0);
+select computecost(1);
+insert into stdout select  seqno, col, yorn, parent, pvalue, enumber, pnumber from decisiontree; 
+
+insert into stdout select id, c1 from costresult;
+
+/* update aggregate problem*/
+/* delete from in aggregate*/
+/* delete from decisiontree d where (select min(co.c) from cost co)=(select sum(n.c) from newcost n) 
+                                     and exists (select c.id from children c where c.id=d.seqno);
+    */

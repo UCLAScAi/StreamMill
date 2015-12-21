@@ -1,0 +1,47 @@
+/* For each customer, show the average-length of calls made to area
+   codes 201 and 301 (in the same output record) */
+
+table calls(FromAC int, FromTel int, ToAC int,
+	    ToTel int, date int, length int);
+
+
+AGGREGATE ross2(length int, areacode int, aggrarea int): int
+{
+  table temp (lsum int, lcnt int);
+  initialize : 
+    {
+      insert into temp values (length, 1)
+	where aggrarea=areacode;
+      
+      insert into temp values (0, 0)
+	where SQLCODE > 0;
+    }
+  iterate : 
+    {
+      update temp set lsum = lsum + length, 
+	              lcnt = lcnt + 1
+      where aggrarea=areacode;
+    }
+  terminate :
+    {
+      insert into return 
+	select lsum/lcnt from temp;
+    }
+}
+
+insert into calls values
+    (210, 1234567, 310, 7654321, 901, 100),
+    (210, 1234567, 210, 7766554, 901, 120),
+    (210, 1234567, 310, 7766554, 901, 120),
+    (310, 2121211, 310, 1212121, 901, 150),
+    (310, 2121211, 210, 1212121, 901, 150),
+    (310, 1111111, 210, 2342542, 901, 80),
+    (310, 1111111, 310, 2342542, 901, 60);
+
+insert into stdout
+select FromAC, FromTel, 
+       ross2(length, ToAC, 310), 
+       ross2(length, ToAC, 210) 
+from calls 
+group by FromAC, FromTel;
+

@@ -1,0 +1,99 @@
+Total_Time() {
+	etime=${1:-SECONDS}
+	stime=${2:-0}
+	ss=`expr $etime - $stime`
+		mm=`expr $ss / 60`
+		ss=`expr $ss % 60`
+		hh=`expr $mm / 60`
+		mm=`expr $mm % 60`
+		name=${3}
+		echo "$name -- |$hh:$mm:$ss|Total Time|"
+}
+
+start_timesql10=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select aggregatetesta(i) from tenrows;
+.EXIT
+EOF
+end_timesql10=$SECONDS
+
+
+start_timesql100=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select aggregatetesta(i) from hundredrows;
+.EXIT
+EOF
+end_timesql100=$SECONDS
+
+
+start_timesql1000=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select aggregatetesta(i) from thousandrows;
+.EXIT
+EOF
+end_timesql1000=$SECONDS
+
+
+start_timesql10000=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select aggregatetesta(i) from tenthousandrows;
+.EXIT
+EOF
+end_timesql10000=$SECONDS
+
+
+start_timec10=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select tdaggregatetesta(i) from tenrows;
+.EXIT
+EOF
+end_timec10=$SECONDS
+
+start_timec100=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select tdaggregatetesta(i) from hundredrows;
+.EXIT
+EOF
+end_timec100=$SECONDS
+
+
+start_timec1000=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select tdaggregatetesta(i) from thousandrows;
+.EXIT
+EOF
+end_timec1000=$SECONDS
+
+start_timec10000=$SECONDS
+bteq << EOF
+.logon teradata/nlaptev,nickltd22;
+database testdb;
+select tdaggregatetesta(i) from tenthousandrows;
+.EXIT
+EOF
+end_timec10000=$SECONDS
+
+echo ""
+echo "Resuls:"
+Total_Time $end_timec10 $start_timec10 "C Scalar UDF (10 rows)" 
+Total_Time $end_timec100 $start_timec100 "C Scalar UDF (100 rows)" 
+Total_Time $end_timec1000 $start_timec1000 "C Scalar UDF (1000 rows)" 
+Total_Time $end_timec10000 $start_timec10000 "C Scalar UDF (10000 rows)" 
+Total_Time $end_timesql10 $start_timesql10 "SQL Scalar UDF (10 rows)" 
+Total_Time $end_timesql100 $start_timesql100 "SQL Scalar UDF (100 rows)" 
+Total_Time $end_timesql1000 $start_timesql1000 "SQL Scalar UDF (1000 rows)" 
+Total_Time $end_timesql10000 $start_timesql10000 "SQL Scalar UDF (10000 rows)" 

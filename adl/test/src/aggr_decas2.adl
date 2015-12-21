@@ -1,0 +1,15 @@
+table temp(a int);
+
+AGGREGATE mcount(start int) : int
+{
+    TABLE tmp(i int) AS VALUES(start);
+    INITIALIZE : ITERATE :
+    {
+	UPDATE tmp SET i=i+1;
+	INSERT INTO return SELECT i FROM tmp;
+    }
+}
+
+insert into temp values(5),(4),(3),(2),(1); 
+
+insert into stdout SELECT mcount(3) FROM temp;
