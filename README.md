@@ -5,9 +5,6 @@ The complete data stream management system must support relational streams,
 XML streams, and languages more powerful than SQL and XQuery--as required,
 e.g., for mining queries and queries for finding patterns in data streams.
 
-Instructions
-============
-
 Introduction
 =============
 
@@ -24,5 +21,5 @@ We are developing the enabling technology to overcome these proble ms. In partic
 References
 ==========
 
-[Language Manual](http://wis.cs.ucla.edu/old_wis/stream-mill/doc/esl-manual.pdf)
-[System Manual](http://yellowstone.cs.ucla.edu/projects/images/5/5a/StreamMillClassic.pdf)
+* [Language Manual](http://wis.cs.ucla.edu/old_wis/stream-mill/doc/esl-manual.pdf)
+* [System Manual](http://yellowstone.cs.ucla.edu/projects/images/5/5a/StreamMillClassic.pdf)
