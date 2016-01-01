@@ -1,1 +1,0 @@
-g++ -g -shared -m32 $2 -w -I${ATLAS_HOME}/include -o ../exe/$1.so ../exe/$1.cc -lpthread ${ATLAS_HOME}/lib/libatlas.a ${ATLAS_HOME}/lib/libdbug.a ${ATLAS_HOME}/lib/libdb.a ${ATLAS_HOME}/lib/libimdb.a -ldl -lmm
