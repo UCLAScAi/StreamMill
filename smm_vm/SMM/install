@@ -1,6 +1,0 @@
-sudo cp ./include/* /usr/local/include/
-sudo cp ./lib/* /usr/local/lib/
-sudo cp ./bin/* /usr/local/bin/ 
-sudo cp ./lib/* /lib/
-sudo rm /bin/sh
-sudo ln -s /bin/bash /bin/sh
