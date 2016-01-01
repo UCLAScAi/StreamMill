@@ -10,14 +10,14 @@ Installation & Running Instructions
 
 * Set ```ATLAS_HOME``` path to point to the absolute path of atlas folder.
 
-*   ```./configure```
+* Run ```./configure```
 
 *   create a symbolic link "BerkeleyDB" that points to the installed
 BerkeleyDB package (preferably version 3.1.17) under the AXL/ diretory
 
-*   ``` make```
+* Run  ``` make```
 
-*   ```make install``` (installs SMM into /usr/local).
+*  Run ```make install``` (installs SMM into /usr/local).
 
 *  Run tests: 
 ```
