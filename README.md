@@ -5,6 +5,26 @@ The complete data stream management system must support relational streams,
 XML streams, and languages more powerful than SQL and XQuery--as required,
 e.g., for mining queries and queries for finding patterns in data streams.
 
+Installation & Running Instructions
+===================================
+
+* Set ```ATLAS_HOME``` path to point to the absolute path of atlas folder.
+
+* Run ```./configure```
+
+*   create a symbolic link "BerkeleyDB" that points to the installed
+BerkeleyDB package (preferably version 3.1.17) under the AXL/ diretory
+
+* Run  ``` make```
+
+*  Run ```make install``` (installs SMM into /usr/local).
+
+*  Run tests: 
+```
+    cd test
+    ./testsuit | grep TEST
+```
+
 Introduction
 =============
 
