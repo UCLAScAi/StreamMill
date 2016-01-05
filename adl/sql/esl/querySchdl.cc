@@ -381,9 +381,9 @@ void querySchdl::SNAP_SHOT_CMD_CODE_hndl(bufferMngr* bm, char * id) {
             //fflush(stdout);
             int
                 (*snapshot)(bufferMngr*, int, buffer*, hash_map<const char*,
-                    void*, hash<const char*> , eqstrTab>*) =
+                    void*, std::hash<const char*> , eqstrTab>*) =
                 (int(*)(bufferMngr*, int, buffer*,
-                        hash_map<const char*, void*, hash<const char*>, eqstrTab>*))dlsym(handle, funcName);
+                        hash_map<const char*, void*, std::hash<const char*>, eqstrTab>*))dlsym(handle, funcName);
 
             if ((error = dlerror()) != NULL) {
               printf("dlerror in snapshot query, stmt %d\n", stmt);
@@ -1838,7 +1838,7 @@ int querySchdl::compile(char* id) {
             }
             if (!(((*itr2)->func)
                 = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-                    void*, hash<const char*> , eqstrTab>*)) dlsym(handle,
+                    void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle,
                     (*itr2)->name))) {
               fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
               err = true;
@@ -1847,7 +1847,7 @@ int querySchdl::compile(char* id) {
           }
         } else if (!(((*itr)->func)
             = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*, void*,
-                hash<const char*> , eqstrTab>*)) dlsym(handle, (*itr)->name))) {
+                std::hash<const char*> , eqstrTab>*)) dlsym(handle, (*itr)->name))) {
           fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
           err = true;
           break;
@@ -1867,7 +1867,7 @@ int querySchdl::compile(char* id) {
           cout << "current sub statement name is " << (*itr)->name << endl;
         }
         if (!(((*itr)->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<
-            const char*, void*, hash<const char*> , eqstrTab>*)) dlsym(handle,
+            const char*, void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle,
             (*itr)->name))) {
           fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
           err = true;
@@ -1888,7 +1888,7 @@ int querySchdl::compile(char* id) {
           cout << "current sub statement name is " << (*itr)->name << endl;
         }
         if (!(((*itr)->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<
-            const char*, void*, hash<const char*> , eqstrTab>*)) dlsym(handle,
+            const char*, void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle,
             (*itr)->name))) {
           fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
           err = true;
@@ -1899,7 +1899,7 @@ int querySchdl::compile(char* id) {
       //different from union, the join statement itself also has compiled function. (Union does not)
       if (!((s->func)
           = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*, void*,
-              hash<const char*> , eqstrTab>*)) dlsym(handle, id))) {
+              std::hash<const char*> , eqstrTab>*)) dlsym(handle, id))) {
         fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
         err = true;
       }
@@ -1907,7 +1907,7 @@ int querySchdl::compile(char* id) {
     } else if (s->type == stmt_normal) {
       if (!((s->func)
           = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*, void*,
-              hash<const char*> , eqstrTab>*)) dlsym(handle, id))) {
+              std::hash<const char*> , eqstrTab>*)) dlsym(handle, id))) {
         fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
         err = true;
       }
@@ -2013,7 +2013,7 @@ int querySchdl::simpleTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2050,7 +2050,7 @@ int querySchdl::forkTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2068,7 +2068,7 @@ int querySchdl::forkTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream2"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream2"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2084,7 +2084,7 @@ int querySchdl::forkTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2100,7 +2100,7 @@ int querySchdl::forkTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream4"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream4"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2172,7 +2172,7 @@ int querySchdl::tUnionTest() {
         != s1->sub_stmts.end(); itr++) {
       cout << "current sub statement name is " << (*itr)->name << endl;
       if (!(((*itr)->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<
-          const char*, void*, hash<const char*> , eqstrTab>*)) dlsym(handle,
+          const char*, void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle,
           (*itr)->name))) {
         fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
         exit(1);
@@ -2183,7 +2183,7 @@ int querySchdl::tUnionTest() {
     }
   } else if (s->type == stmt_normal) {
     if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-        void*, hash<const char*> , eqstrTab>*)) dlsym(handle, sname))) {
+        void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, sname))) {
       fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
       exit(1);
     }
@@ -2226,7 +2226,7 @@ int querySchdl::tlUnionTest() {
         != s1->sub_stmts.end(); itr++) {
       cout << "current sub statement name is " << (*itr)->name << endl;
       if (!(((*itr)->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<
-          const char*, void*, hash<const char*> , eqstrTab>*)) dlsym(handle,
+          const char*, void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle,
           (*itr)->name))) {
         fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
         exit(1);
@@ -2237,7 +2237,7 @@ int querySchdl::tlUnionTest() {
     }
   } else if (s->type == stmt_normal) {
     if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-        void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "test"))) {
+        void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "test"))) {
       fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
       exit(1);
     }
@@ -2270,7 +2270,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2288,7 +2288,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream2"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream2"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2304,7 +2304,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2320,7 +2320,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream4"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream4"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2336,7 +2336,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream5"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream5"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2353,7 +2353,7 @@ int querySchdl::splitTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream3"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2382,7 +2382,7 @@ int querySchdl::compTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }
@@ -2400,7 +2400,7 @@ int querySchdl::compTest() {
     return -1;
   }
   if (!((s->func) = (int(*)(bufferMngr*, int, buffer*, hash_map<const char*,
-      void*, hash<const char*> , eqstrTab>*)) dlsym(handle, "stream5"))) {
+      void*, std::hash<const char*> , eqstrTab>*)) dlsym(handle, "stream5"))) {
     fprintf(stderr, "dlsym: %s %d\n", dlerror(), __LINE__);
     exit(1);
   }

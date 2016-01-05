@@ -3643,7 +3643,7 @@ namespace ESL {
 			return run_success;
 		}
 
-		SegmentQuotaStrategy::SegmentQuotaStrategy(Driver* drv, long quota, bool fixed):QuotaStrategy(drv, quota, fixed),SegmentMap(drv),last_itr(NULL)/*,stateTableChanged(false)*/
+		SegmentQuotaStrategy::SegmentQuotaStrategy(Driver* drv, long quota, bool fixed):QuotaStrategy(drv, quota, fixed),SegmentMap(drv)/*,stateTableChanged(false)*/
 		{
 			extraInfo = new ExtraInfoMapType();  
 		}

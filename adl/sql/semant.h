@@ -37,7 +37,7 @@ struct expty {
 typedef struct sqlsem *Sql_sem;
 
 
-hash_map<const char*, void*, hash<const char*>, eqstrTab>* getInMemTables();
+hash_map<const char*, void*, std::hash<const char*>, eqstrTab>* getInMemTables();
 
 struct sqlsem {
   T_expty predec;

@@ -982,7 +982,7 @@ namespace ESL{
     virtual ~extra_info_ety() {}
   } extra_info_entry;
 
-  typedef hash_map<char*, extra_info_entry*, hash<char*>, eqstr> ExtraInfoMapType; 
+  typedef hash_map<char*, extra_info_entry*, std::hash<char*>, eqstr> ExtraInfoMapType; 
 
   //a funtor used to specifically sort stmtInfo based on rank stored
   struct greater_on_rank : public binary_function<quota_entry*, quota_entry*, bool> {

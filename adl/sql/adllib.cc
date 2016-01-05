@@ -1091,7 +1091,7 @@ struct columnConfig {
   char* type;
   char* datatype;
   vector<rangeAssignment*>* rangeAssign;
-  hash_map<const char*, double, hash<const char*>, eqstr>* catMap;
+  hash_map<const char*, double, std::hash<const char*>, eqstr>* catMap;
 };
 
 void addRange(columnConfig* cc, double low, double high, double val) {
@@ -1143,7 +1143,7 @@ columnConfig* ColumnConfig(int index, char* t, char* dt) {
     c->catMap = NULL;
   }
   else if(strcmp(c->type, "c") == 0) {
-    c->catMap = new hash_map<const char*, double, hash<const char*>, eqstr>;
+    c->catMap = new hash_map<const char*, double, std::hash<const char*>, eqstr>;
     c->rangeAssign = NULL;
   }
   return c;

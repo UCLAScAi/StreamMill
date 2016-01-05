@@ -73,7 +73,7 @@ class stmt
   buffer* out;
   char outBufName[256]; 
   int (*func)(bufferMngr*, int, buffer*, 
-	      hash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables); // function entry
+	      hash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables); // function entry
   char name[256]; // DLL file name, unique key for stmt
   bool sub_stmt; //flag to indicate whether this statement is a substatement
 
