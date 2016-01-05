@@ -37,13 +37,13 @@ using namespace std;
 
 extern A_list global_functions;
 
-static hash_map<const char*, void*, hash<const char*> , eqstrTab>* inMemTables;
+static hash_map<const char*, void*, std::hash<const char*> , eqstrTab>* inMemTables;
 
-hash_map<const char*, void*, hash<const char*> , eqstrTab>* getInMemTables() {
+hash_map<const char*, void*, std::hash<const char*> , eqstrTab>* getInMemTables() {
   if (inMemTables == NULL) {
     SMLog::SMLOG(12, "\tgetInMemTables: inMemTables is null");
     inMemTables
-        = new hash_map<const char*, void*, hash<const char*> , eqstrTab> ;
+        = new hash_map<const char*, void*, std::hash<const char*> , eqstrTab> ;
   }
   return inMemTables;
 }
@@ -7216,10 +7216,10 @@ vector<void*> aggregates, char* target_handle, cStmt* cstmt) {
               temp,
               "extern \"C\" int adhoc_%d(bufferMngr *bm, int freeVars = 0,"
                 "\n\tbuffer* backBuf = (buffer*)NULL, "
-                "\n\thash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables=NULL);"
+                "\n\thash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables=NULL);"
                 "\nextern \"C\" int adhoc_%d(bufferMngr *bm, int freeVars, "
                 "\n\tbuffer* backBuf, "
-                "\n\thash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables)",
+                "\n\thash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables)",
               getAdHocNum(), getAdHocNum());
           setAdHocNum(getAdHocNum() + 1);
         } else if (strlen(queryName) == 0) {
@@ -7232,7 +7232,7 @@ vector<void*> aggregates, char* target_handle, cStmt* cstmt) {
               "\nbufferMngr *bm;"
               "\nint freeVars;"
               "\nbuffer* backBuf;"
-              "\nhash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables;"
+              "\nhash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables;"
               "\n};"
               "\nvoid *HeartBeat(void* arguments);");
         	} else {
@@ -7242,9 +7242,9 @@ vector<void*> aggregates, char* target_handle, cStmt* cstmt) {
             temp, "%s"
             "\nextern \"C\" int %s(bufferMngr *bm, int freeVars = 0,"
             "buffer* backBuf = (buffer*)NULL, "
-            "\n\thash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables = NULL);"
+            "\n\thash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables = NULL);"
             "\nextern \"C\" int %s(bufferMngr *bm, int freeVars, buffer* backBuf, "
-            "\t\nhash_map<const char*, void*, hash<const char*>, eqstrTab>* inMemTables)",
+            "\t\nhash_map<const char*, void*, std::hash<const char*>, eqstrTab>* inMemTables)",
               heartbeat_buffer, queryName, queryName); 
         }
 

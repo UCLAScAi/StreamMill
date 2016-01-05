@@ -141,9 +141,9 @@ namespace ESL {
     long_sensor win_cumul_input_buf_size; 
   } input_entry;
 
-  typedef hash_map<char*, stmt_entry*, hash<char*>, eqstr> StmtStatMapType; //keyed by a copy of stmt.name
-  typedef hash_map<char*, output_entry*, hash<char*>, eqstr> OutputStatMapType; //keyed by the same copy of stmt.name as above
-  typedef hash_map<char*, input_entry*, hash<char*>, eqstr> InputStatMapType; //keyed by a copy of inbuffer.name
+  typedef hash_map<char*, stmt_entry*, std::hash<char*>, eqstr> StmtStatMapType; //keyed by a copy of stmt.name
+  typedef hash_map<char*, output_entry*, std::hash<char*>, eqstr> OutputStatMapType; //keyed by the same copy of stmt.name as above
+  typedef hash_map<char*, input_entry*, std::hash<char*>, eqstr> InputStatMapType; //keyed by a copy of inbuffer.name
 
   class Monitor {
     friend class DrvMgr;

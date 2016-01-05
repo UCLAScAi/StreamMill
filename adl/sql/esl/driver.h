@@ -98,9 +98,9 @@ struct eqstr
 
 class Driver;
 
-typedef hash_multimap<char*, Driver*, hash<char*>, eqstr> BufMapType;
-typedef hash_map<char*, b_entry, hash<char*>, eqstr> BufStateTblType;
-typedef hash_map<char*, Driver*, hash<char*>, eqstr > StmtMapType;
+typedef hash_multimap<char*, Driver*, std::hash<char*>, eqstr> BufMapType;
+typedef hash_map<char*, b_entry, std::hash<char*>, eqstr> BufStateTblType;
+typedef hash_map<char*, Driver*, std::hash<char*>, eqstr > StmtMapType;
 
 class Strategy;
 class Monitor;

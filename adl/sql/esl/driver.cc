@@ -2264,7 +2264,7 @@ run_rc Driver::run(int* nTuples)
 		SMLog::SMLOG(10, "Entering DrvMgr::DrvMgr");	
 		drivers = new list<Driver*>();
 		bufToDrvMap = new BufMapType();
-		stmtToDrvMap = new hash_map<char*, Driver*, hash<char*>, eqstr >();
+		stmtToDrvMap = new hash_map<char*, Driver*, std::hash<char*>, eqstr >();
 		monitor = new Monitor();
 	}
 
