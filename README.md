@@ -10,7 +10,7 @@ Installation & Running Instructions
 
 * Set ```ATLAS_HOME``` path to point to the absolute path of atlas folder.
 
-* cd adl/
+* ```cd adl/```
 
 * Run ```./configure```
 
