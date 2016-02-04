@@ -12,16 +12,16 @@ Installation & Running Instructions
 
 * ```cd adl/```
 
-* Run ```./configure```
+* ```./configure```
 
 *   create a symbolic link "BerkeleyDB" that points to the installed
 BerkeleyDB package (preferably version 3.1.17) under the AXL/ diretory
 
-* Run  ``` make```
+*  ``` make```
 
-*  Run ```make install``` (installs SMM into /usr/local).
+*  ```make install``` (installs SMM into /usr/local).
 
-*  Run tests: 
+*  (Optional, run tests): 
 ```
     cd test
     ./testsuit | grep TEST
