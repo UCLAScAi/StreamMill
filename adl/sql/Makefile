@@ -58,7 +58,7 @@ LIBRARIES = $(lib_LIBRARIES)
 AR = ar
 ARFLAGS = cru
 libatlas_a_AR = $(AR) $(ARFLAGS)
-libatlas_a_DEPENDENCIES = /usr/local/lib/libmm.a \
+libatlas_a_DEPENDENCIES = ../libmm/libmm.a \
 	../im_db/hash-arbitrary.o
 am_libatlas_a_OBJECTS = adllib.$(OBJEXT) atlaswin.$(OBJEXT) \
 	adl_yacc.$(OBJEXT) lex.$(OBJEXT) absyn.$(OBJEXT) \
@@ -85,29 +85,29 @@ PROGRAMS = $(bin_PROGRAMS)
 am_adlc_OBJECTS = adlc.$(OBJEXT)
 adlc_OBJECTS = $(am_adlc_OBJECTS)
 adlc_DEPENDENCIES = libatlas.a ../im_db/libimdb.a ../dbug/libdbug.a \
-	/usr/local/lib/libmm.a ../BerkeleyDB/lib/libdb.a
+	../libmm/libmm.a ../BerkeleyDB/lib/libdb.a
 am_atlaswin_test_OBJECTS = atlaswin_test.$(OBJEXT)
 atlaswin_test_OBJECTS = $(am_atlaswin_test_OBJECTS)
 atlaswin_test_DEPENDENCIES = ./libatlas.a
 am_esl_start_OBJECTS = esl.$(OBJEXT)
 esl_start_OBJECTS = $(am_esl_start_OBJECTS)
 esl_start_DEPENDENCIES = libatlas.a ../im_db/libimdb.a \
-	/usr/local/lib/libmm.a ../dbug/libdbug.a \
+	../libmm/libmm.a ../dbug/libdbug.a \
 	../BerkeleyDB/lib/libdb.a
 am_eslc_OBJECTS = eslc.$(OBJEXT)
 eslc_OBJECTS = $(am_eslc_OBJECTS)
 eslc_DEPENDENCIES = libatlas.a ../im_db/libimdb.a \
-	/usr/local/lib/libmm.a ../dbug/libdbug.a \
+	../libmm/libmm.a ../dbug/libdbug.a \
 	../BerkeleyDB/lib/libdb.a
 am_eslt_OBJECTS = eslt.$(OBJEXT)
 eslt_OBJECTS = $(am_eslt_OBJECTS)
 eslt_DEPENDENCIES = libatlas.a ../im_db/libimdb.a \
-	/usr/local/lib/libmm.a ../dbug/libdbug.a \
+	../libmm/libmm.a ../dbug/libdbug.a \
 	../BerkeleyDB/lib/libdb.a
 am_testq_OBJECTS = testq.$(OBJEXT)
 testq_OBJECTS = $(am_testq_OBJECTS)
 testq_DEPENDENCIES = libatlas.a ../BerkeleyDB/lib/libdb.a \
-	../im_db/libimdb.a ../rtree/librtree.a /usr/local/lib/libmm.a \
+	../im_db/libimdb.a ../rtree/librtree.a ../libmm/libmm.a \
 	../dbug/libdbug.a
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 SCRIPTS = $(bin_SCRIPTS)
@@ -140,24 +140,24 @@ AMTAR = tar
 AUTOCONF = autoconf
 AUTOHEADER = autoheader
 AUTOMAKE = automake-1.10
-AWK = mawk
+AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -g -O2 -w -m32
 CPP = gcc -E
 CPPFLAGS = -DSWIM
 CXX = g++
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -g -O2 -w -D__CORRECT_ISO_CPP_STRINGS_H_PROTO -m32 
 CYGPATH_W = echo
-DEFS = -DHAVE_CONFIG_H
+DEFS = -DHAVE_CONFIG_H -m32
 DEPDIR = .deps
-ECHO_C = 
-ECHO_N = -n
+ECHO_C = \c
+ECHO_N = 
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-GREP = /bin/grep
+GREP = /usr/bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -165,11 +165,11 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -lm -ldl 
+LIBS = -ltermcap -lm -ldl 
 LN_S = ln -s
 LTLIBOBJS = 
 MAKEINFO = makeinfo
-MKDIR_P = /bin/mkdir -p
+MKDIR_P = .././install-sh -c -d
 OBJEXT = o
 PACKAGE = adl
 PACKAGE_BUGREPORT = 
@@ -187,10 +187,10 @@ YACC = bison -y
 # AM_CFLAGS = -g
 # AM_CXXFLAGS = -g
 YFLAGS = -d
-abs_builddir = /home/training/workspace/SMMServer/adl/sql
-abs_srcdir = /home/training/workspace/SMMServer/adl/sql
-abs_top_builddir = /home/training/workspace/SMMServer/adl
-abs_top_srcdir = /home/training/workspace/SMMServer/adl
+abs_builddir = /Users/nlaptev/Documents/work/2015/StreamMill/adl/sql
+abs_srcdir = /Users/nlaptev/Documents/work/2015/StreamMill/adl/sql
+abs_top_builddir = /Users/nlaptev/Documents/work/2015/StreamMill/adl
+abs_top_srcdir = /Users/nlaptev/Documents/work/2015/StreamMill/adl
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -212,16 +212,16 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = $(SHELL) /home/training/workspace/SMMServer/adl/install-sh
+install_sh = $(SHELL) /Users/nlaptev/Documents/work/2015/StreamMill/adl/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
 localstatedir = ${prefix}/var
 mandir = ${datarootdir}/man
-mkdir_p = /bin/mkdir -p
+mkdir_p = $(top_builddir)/./install-sh -c -d
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /Users/nlaptev/Documents/work/2015/StreamMill/atlas
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
@@ -236,18 +236,18 @@ SUFFIXES = .grm .c .o
 bin_SCRIPTS = adlcc eslcc
 lib_LIBRARIES = libatlas.a libswimfis.a
 eslc_SOURCES = esl/eslc.cc
-eslc_LDADD = libatlas.a ../im_db/libimdb.a /usr/local/lib/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
+eslc_LDADD = libatlas.a ../im_db/libimdb.a ../libmm/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
 esl_start_SOURCES = esl/esl.cc 
-esl_start_LDADD = libatlas.a ../im_db/libimdb.a /usr/local/lib/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
+esl_start_LDADD = libatlas.a ../im_db/libimdb.a ../libmm/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
 eslt_SOURCES = esl/eslt.cc
-eslt_LDADD = libatlas.a ../im_db/libimdb.a /usr/local/lib/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
+eslt_LDADD = libatlas.a ../im_db/libimdb.a ../libmm/libmm.a ../dbug/libdbug.a -ldl ../BerkeleyDB/lib/libdb.a
 testq_SOURCES = esl/testq.cc
-testq_LDADD = libatlas.a ../BerkeleyDB/lib/libdb.a ../im_db/libimdb.a ../rtree/librtree.a /usr/local/lib/libmm.a ../dbug/libdbug.a -ldl
+testq_LDADD = libatlas.a ../BerkeleyDB/lib/libdb.a ../im_db/libimdb.a ../rtree/librtree.a ../libmm/libmm.a ../dbug/libdbug.a -ldl
 libswimfis_a_SOURCES = uda-swim/common/fptree.h uda-swim/common/memmgr.h uda-swim/common/histmgr.h uda-swim/common/timeval.h uda-swim/swimlib.c uda-swim/common/fptree.c uda-swim/common/histmgr.c uda-swim/common/memmgr.c uda-swim/common/timeval.c
 libatlas_a_SOURCES = adllib.cc atlaswin.cc adllib.h atlaswin.h adl_yacc.cc lex.cc absyn.cc sql_rewrite.cc oid_rewrite.cc semant.cc bind.cc sqlsem.cc builtin.cc udf.cc semant_aggr.cc aggr_info.cc table.cc trans2C.cc symbol.cc SMLog.cc types.cc env.cc adl_sys.cc io.cc adl_obj.cc util.cc list.cc err.cc getopt.c getopt1.c err.h  getopt.h io.h lex.h list.h adl_obj.h adl_sys.h system.h absyn.h trans2C.h const.h irtree.h semant.h aggr_info.h table.h types.h env.h temp.h util.h symbol.h SMLog.h adlhash.h atlaswin.h basic.h esl/GUIClient.cc esl/buffer.cc winbuf.cc esl/dbt.cc esl/querySchdl.cc esl/driver.cc esl/monitor.cc esl/strategy.cc esl/stmt.cc esl/compiler.cc esl/windowBuf.cc esl/ios/ios.cc
-libatlas_a_LIBADD = /usr/local/lib/libmm.a ../im_db/hash-arbitrary.o
+libatlas_a_LIBADD = ../libmm/libmm.a ../im_db/hash-arbitrary.o
 adlc_SOURCES = adlc.cc
-adlc_LDADD = libatlas.a ../im_db/libimdb.a ../dbug/libdbug.a /usr/local/lib/libmm.a ../BerkeleyDB/lib/libdb.a
+adlc_LDADD = libatlas.a ../im_db/libimdb.a ../dbug/libdbug.a ../libmm/libmm.a ../BerkeleyDB/lib/libdb.a
 atlaswin_test_SOURCES = atlaswin_test.cc 
 atlaswin_test_LDADD = ./libatlas.a
 include_HEADERS = ../BerkeleyDB/include/db.h adlhash.h atlaswin.h adllib.h esl/buffer.h winbuf.h esl/stmt.h types.h const.h abstypes.h absyn.h adlhash.h adllib.h adl_obj.h adl_sys.h adl_yacc.h basic.h env.h err.h getopt.h heap.h io.h irtree.h lex.h list.h semant.h sql_rewrite.h symbol.h SMLog.h system.h table.h trans2C.h translate.h util.h win.h esl/compiler.h esl/dbt.h esl/driver.h esl/monitor.h esl/strategy.h esl/GUIClient.h esl/querySchdl.h esl/ios/ios.h esl/windowBuf.h uda-swim/swimlib.h uda-swim/common/fptree.h  uda-swim/common/memmgr.h uda-swim/common/histmgr.h  uda-swim/common/timeval.h
