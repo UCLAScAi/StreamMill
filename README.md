@@ -9,6 +9,9 @@ Installation & Running Instructions
 ===================================
 
 * Set ```ATLAS_HOME``` path to point to the absolute path of atlas folder.
+  ```
+    export ATLAS_HOME=`pwd`/atlas
+  ```
 
 * ```cd adl/```
 
