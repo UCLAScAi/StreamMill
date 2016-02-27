@@ -10,8 +10,6 @@
 #include "timeval.h"
 //#include "adllib.h"
 
-#include <mcheck.h>
-
 struct SwimFisStatus{
 		int trans_avg_len;
 		int no_items;

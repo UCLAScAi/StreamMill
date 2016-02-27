@@ -15,7 +15,6 @@ extern "C"{
    #include "memmgr.h"
    #include "timeval.h"
    #include "histmgr.h"
-   #include <mcheck.h>
 }
 #include "adllib.h"
 #include <ext/hash_map>
